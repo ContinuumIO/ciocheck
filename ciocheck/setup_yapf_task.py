@@ -21,14 +21,14 @@ import sys
 from yapf.yapflib.yapf_api import FormatFile
 
 # Local imports
-from ciotest import CONFIGURATION_FILE
-from ciotest.setup_atomic_replace import atomic_replace
+from ciocheck import CONFIGURATION_FILE
+from ciocheck.setup_atomic_replace import atomic_replace
 
 
 def _format_file(path):
     """
     """
-    root_path = os.environ.get('CIOTEST_PROJECT_ROOT', None)
+    root_path = os.environ.get('CIOCHECK_PROJECT_ROOT', None)
     style_config = None
 
     if root_path:

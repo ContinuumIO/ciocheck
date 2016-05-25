@@ -30,8 +30,10 @@ import pep257
 import pytest_cov.plugin
 
 # Local imports
-from ciotest.setup_atomic_replace import atomic_replace
-import ciotest
+from ciocheck import (CONFIGURATION_FILE, COPYRIGHT_HEADER_FILE,
+                      DEFAULT_COPYRIGHT_HEADER, DEFAULT_ENCODING_HEADER,
+                      ENCODING_HEADER_FILE)
+from ciocheck.setup_atomic_replace import atomic_replace
 
 
 HERE = dirname(realpath(__file__))
@@ -84,9 +86,12 @@ class Test(object):
 
         # Variables
         self._cpu_count = None
+        self.copyright_header = DEFAULT_COPYRIGHT_HEADER
+        self.encoding_header = DEFAULT_ENCODING_HEADER
         self.failed = []
-        self.pyfiles = None
         self.git_staged_pyfiles = None
+        self.pyfiles = None
+        self.config_file = os.path.join(self.root, CONFIGURATION_FILE)
 
         # Setup
         self._clean()
@@ -102,9 +107,9 @@ class Test(object):
         module = self.root_modules[0]
         cov = '--cov={0}'.format(module)
         coverage_args = [cov, '--no-cov-on-fail']
-        coverage_rc_file = os.path.join(self.root, ciotest.CONFIGURATION_FILE)
-        if os.path.isfile(coverage_rc_file):
-            cov_config = ['--cov-config', coverage_rc_file]
+
+        if os.path.isfile(self.config_file):
+            cov_config = ['--cov-config', self.config_file]
             coverage_args = cov_config + coverage_args
 
         if PY2:
@@ -120,6 +125,15 @@ class Test(object):
     def _setup_headers(self):
         """
         """
+        encoding_path = osp.join(self.root, COPYRIGHT_HEADER_FILE)
+        if osp.isfile(encoding_path):
+            with open(encoding_path, 'r') as f:
+                self.copyright_header = f.read()
+
+        header_path = osp.join(self.root, ENCODING_HEADER_FILE)
+        if osp.isfile(header_path):
+            with open(header_path, 'r') as f:
+                self.encoding_header = f.read()
 
     def _clean(self):
         """
@@ -160,10 +174,9 @@ class Test(object):
     def _create_flake8_pep257_config(self):
         """
         """
-        config_file = os.path.join(self.root, ciotest.CONFIGURATION_FILE)
-        if os.path.isfile(config_file):
+        if os.path.isfile(self.config_file):
             config = configparser.ConfigParser()
-            with open(config_file, 'r') as f:
+            with open(self.config_file, 'r') as f:
                 config.readfp(f)
             self._create_config(config, 'flake8', '.flake8')
             self._create_config(config, 'pep257', '.pep257')
@@ -270,7 +283,7 @@ class Test(object):
         with codecs.open(path, 'r', 'utf-8') as f:
             old_contents = f.read()
 
-        have_coding = (ciotest.ENCODING_HEADER_FILE in old_contents)
+        have_coding = (self.encoding_header in old_contents)
         have_copyright = (self.COPYRIGHT_RE.search(old_contents) is not None)
 
         if have_coding and have_copyright:
@@ -298,11 +311,11 @@ class Test(object):
 
         if not have_copyright:
             print("Adding copyright header to: " + path)
-            contents = ciotest.COPYRIGHT_HEADER_FILE + contents
+            contents = self.copyright_header + contents
 
         if not have_coding:
             print("Adding encoding header to: " + path)
-            contents = ciotest.ENCODING_HEADER_FILE + contents
+            contents = self.encoding_header + contents
 
         atomic_replace(path, contents, 'utf-8')
 
@@ -311,7 +324,7 @@ class Test(object):
         """
         cmd = [sys.executable, os.path.join(HERE, 'setup_yapf_task.py')]
         env = os.environ.copy()
-        env['CIOTEST_PROJECT_ROOT'] = self.root
+        env['CIOCHECK_PROJECT_ROOT'] = self.root
         proc = subprocess.Popen(cmd + paths, env=env)
         return proc
 

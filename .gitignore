@@ -11,8 +11,7 @@
 build/
 dist/
 bin/
-anaconda_ui.egg-info/
-anaconda_navigator.egg-info
+ciocheck.egg-info/
 Thumbs.db
 .DS_Store/
 .DS_Store

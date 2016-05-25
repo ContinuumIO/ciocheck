@@ -18,16 +18,16 @@ VERSION = '0.1dev0'
 
 
 packages = find_packages()
-setup(name='ciotest',
+setup(name='ciocheck',
       version=VERSION,
-      description='Continuum test suite',
+      description='Continuum IO check/test suite',
       author='Continuum Analytics',
       packages=packages,
       dependencies=['coverage', 'flake8', 'pep257', 'pytest', 'pytest-cov',
                     'yapf==0.6.2', 'pytest-xdist'],
       entry_points={
           'gui_scripts': [
-              'ciotest = ciotest.main:main'
+              'ciocheck = ciocheck.main:main'
           ]
       },
       include_package_data=True,

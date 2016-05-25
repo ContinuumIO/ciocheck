@@ -37,7 +37,7 @@ def main():
     args = parser.parse_args()
 
     root = os.getcwd()
-    from ciotest.test import Test
+    from ciocheck.test import Test
     test = Test(root,
                 module=args.module,
                 format_only=args.format_only,
