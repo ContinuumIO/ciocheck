@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
-# ----------------------------------------------------------------------------
-# Copyright © 2016, Continuum Analytics, Inc. All rights reserved.
+# -----------------------------------------------------------------------------
+# Copyright 2016 Continuum Analytics, Inc.
 #
-# The full license is in the file LICENSE.txt, distributed with this software.
-# ----------------------------------------------------------------------------
+# May be copied and distributed freely only as part of an Anaconda or
+# Miniconda installation.
+# -----------------------------------------------------------------------------
 
 """
 Setup script module with _atomic_replace function.

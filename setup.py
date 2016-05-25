@@ -14,13 +14,11 @@ from setuptools import setup, find_packages
 from setuptools.command.install import install
 
 
-# Local imports
-from ciotest import __version__
-
+VERSION = '0.1dev0'
 
 packages = find_packages()
 setup(name='ciotest',
-      version=__version__,
+      version=VERSION,
       description='Continuum test suite',
       author='Continuum Analytics',
       packages=packages,
@@ -32,5 +30,4 @@ setup(name='ciotest',
           ]
       },
       include_package_data=True,
-)
-
+      )
