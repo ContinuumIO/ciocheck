@@ -48,7 +48,7 @@ inherit = false
 omit = tests/*
 
 [report]
-fail_under = 30
+fail_under = 100
 show_missing = true
 skip_covered = true
 
