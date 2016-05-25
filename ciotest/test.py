@@ -24,52 +24,26 @@ import subprocess
 import sys
 
 # Third party imports
-from coverage.summary import SummaryReporter
-from flake8.engine import get_style_guide
-from pep257 import (
-    run_pep257, NO_VIOLATIONS_RETURN_CODE, VIOLATIONS_RETURN_CODE,
-    INVALID_OPTIONS_RETURN_CODE
-    )
-from pep257 import log as pep257_log
-from pytest_cov.plugin import CoverageError
+import coverage.summary
+import flake8.engine
+import pep257
+import pytest_cov.plugin
 
 # Local imports
 from ciotest.setup_atomic_replace import atomic_replace
+import ciotest
 
 
 HERE = dirname(realpath(__file__))
 PY2 = sys.version_info[0] == 2
 
-coding_utf8_header = u"# -*- coding: utf-8 -*-\n"
-copyright_header = u"""
-# -----------------------------------------------------------------------------
-# Copyright 2016 Continuum Analytics, Inc.
-#
-# May be copied and distributed freely only as part of an Anaconda or
-# Miniconda installation.
-# -----------------------------------------------------------------------------
-""".lstrip()
 
-copyright_re = re.compile('# *Copyright ')
-
-# -----------------------------------------------------------------------------
-# --- Monkey patch coverage
-# -----------------------------------------------------------------------------
-try:
-    # Attempt to force coverage to skip_covered, which pytest-cov does not
-    # expose as an option (.coveragerc option is ignored by pytest-cov)
-    original_init = SummaryReporter.__init__
-
-    def modified_init(self, coverage, config):
-        config.skip_covered = True
-        original_init(self, coverage, config)
-
-    SummaryReporter.__init__ = modified_init
-
-    print("Coverage monkeypatched to skip_covered")
-except Exception as e:
-    print("Failed to monkeypatch coverage: {0}".format(str(e)),
-          file=sys.stderr)
+if PY2:
+    # Python 2
+    import ConfigParser as configparser
+else:
+    # Python 3
+    import configparser
 
 
 class Profiler(object):
@@ -92,11 +66,15 @@ class Profiler(object):
 class Test(object):
     """
     """
+    FLAKE8_CONFIG = '.flake8'
+    PEP257_CONFIG = '.pep257'
+    COPYRIGHT_RE = re.compile('# *Copyright ')
 
     def __init__(self, root, module=None, format_only=False,
                  git_staged_only=False, profile_formatting=False,
                  pytestqt=False):
 
+        # Run options
         self.root = root
         self.root_modules = [module]
         self.git_staged_only = git_staged_only
@@ -104,16 +82,31 @@ class Test(object):
         self.profile_formatting = profile_formatting
         self.pytestqt = pytestqt
 
+        # Variables
         self._cpu_count = None
         self.failed = []
         self.pyfiles = None
         self.git_staged_pyfiles = None
 
-        coverage_rc = os.path.join(root, ".coveragerc")
+        # Setup
+        self._clean()
+        self._create_flake8_pep257_config()
+        self._setup_pytest_coverage_args()
+        self._setup_headers()
+
+    # --- Helpers
+    # -------------------------------------------------------------------------
+    def _setup_pytest_coverage_args(self):
+        """
+        """
+        module = self.root_modules[0]
         cov = '--cov={0}'.format(module)
-        coverage_args = ['--cov-config', coverage_rc, cov,
-                         '--cov-report=term-missing', '--cov-report=html',
-                         '--no-cov-on-fail']
+        coverage_args = [cov, '--no-cov-on-fail']
+        coverage_rc_file = os.path.join(self.root, ciotest.CONFIGURATION_FILE)
+        if os.path.isfile(coverage_rc_file):
+            cov_config = ['--cov-config', coverage_rc_file]
+            coverage_args = cov_config + coverage_args
+
         if PY2:
             # xdist appears to lock up the test suite with python2, maybe due
             # to an interaction with coverage
@@ -124,10 +117,10 @@ class Test(object):
         self.pytest_args = ['-rfew', '--durations=10'] + enable_xdist
         self.pytest_args = self.pytest_args + coverage_args
 
-        self._clean()
+    def _setup_headers(self):
+        """
+        """
 
-    # --- Helpers
-    # -------------------------------------------------------------------------
     def _clean(self):
         """
         """
@@ -141,6 +134,64 @@ class Test(object):
                 print("Failed to remove {0}: {1}".format(BUILD_TMP, str(e)))
             else:
                 print("Done removing {0}".format(BUILD_TMP))
+
+        # Remove config files
+        remove_files = [osp.join(self.root, fname) for fname in
+                        ('.flake8', '.pep257')]
+        for fpath in remove_files:
+            if osp.isfile(fpath):
+                os.remove(fpath)
+
+    def _create_config(self, config, section, fname):
+        """
+        """
+        if config.has_section(section):
+            items = config.items(section)
+            new_config_file = os.path.join(self.root, fname)
+            new_config = configparser.ConfigParser()
+            new_config.add_section(section)
+
+            for option, value in items:
+                new_config.set(section, option, value)
+
+            with open(new_config_file, 'w') as f:
+                new_config.write(f)
+
+    def _create_flake8_pep257_config(self):
+        """
+        """
+        config_file = os.path.join(self.root, ciotest.CONFIGURATION_FILE)
+        if os.path.isfile(config_file):
+            config = configparser.ConfigParser()
+            with open(config_file, 'r') as f:
+                config.readfp(f)
+            self._create_config(config, 'flake8', '.flake8')
+            self._create_config(config, 'pep257', '.pep257')
+
+            if config.has_section('report'):
+                if config.has_option('report', 'skip_covered'):
+                    skip = config.get('report', 'skip_covered').lower()
+                    if skip == 'true':
+                        self._monkey_path_coverage()
+
+    def _monkey_path_coverage(self):
+        """
+        Attempt to force coverage to skip_covered, which pytest-cov does not
+        expose as an option (.coveragerc option is ignored by pytest-cov).
+        """
+        try:
+            original_init = coverage.summary.SummaryReporter.__init__
+
+            def modified_init(self, coverage, config):
+                config.skip_covered = True
+                original_init(self, coverage, config)
+
+            coverage.summary.SummaryReporter.__init__ = modified_init
+
+            print("Coverage monkeypatched to skip_covered")
+        except Exception as e:
+            print("Failed to monkeypatch coverage: {0}".format(str(e)),
+                  file=sys.stderr)
 
     @property
     def cpu_count(self):
@@ -219,8 +270,8 @@ class Test(object):
         with codecs.open(path, 'r', 'utf-8') as f:
             old_contents = f.read()
 
-        have_coding = (coding_utf8_header in old_contents)
-        have_copyright = (copyright_re.search(old_contents) is not None)
+        have_coding = (ciotest.ENCODING_HEADER_FILE in old_contents)
+        have_copyright = (self.COPYRIGHT_RE.search(old_contents) is not None)
 
         if have_coding and have_copyright:
             return
@@ -247,11 +298,11 @@ class Test(object):
 
         if not have_copyright:
             print("Adding copyright header to: " + path)
-            contents = copyright_header + contents
+            contents = ciotest.COPYRIGHT_HEADER_FILE + contents
 
         if not have_coding:
             print("Adding encoding header to: " + path)
-            contents = coding_utf8_header + contents
+            contents = ciotest.ENCODING_HEADER_FILE + contents
 
         atomic_replace(path, contents, 'utf-8')
 
@@ -326,7 +377,7 @@ class Test(object):
         """
         print("running flake8...")
 
-        flake8_style = get_style_guide(paths=self.get_files())
+        flake8_style = flake8.engine.get_style_guide(paths=self.get_files())
         report = flake8_style.check_files()
 
         if report.total_errors > 0:
@@ -346,7 +397,7 @@ class Test(object):
         def ignore_set_level(level):
             pass
 
-        pep257_log.setLevel = ignore_set_level
+        pep257.log.setLevel = ignore_set_level
 
         # Hack (replacing argv temporarily because pep257 looks at it)
         old_argv = sys.argv
@@ -354,17 +405,17 @@ class Test(object):
         try:
             for module in self.root_modules:
                 sys.argv = ['pep257', os.path.join(self.root, module)]
-                code = run_pep257()
+                code = pep257.run_pep257()
         finally:
             sys.argv = old_argv
 
-        if code == INVALID_OPTIONS_RETURN_CODE:
+        if code == pep257.INVALID_OPTIONS_RETURN_CODE:
             print("pep257 found invalid configuration.")
             self.failed.append('pep257')
-        elif code == VIOLATIONS_RETURN_CODE:
+        elif code == pep257.VIOLATIONS_RETURN_CODE:
             print("pep257 reported some violations.")
             self.failed.append('pep257')
-        elif code == NO_VIOLATIONS_RETURN_CODE:
+        elif code == pep257.NO_VIOLATIONS_RETURN_CODE:
             print("pep257 says docstrings look good.")
         else:
             raise RuntimeError("unexpected code from pep257: "
@@ -387,7 +438,7 @@ class Test(object):
             if errno != 0:
                 print("pytest failed, code {errno}".format(errno=errno))
                 self.failed.append('pytest')
-        except CoverageError as e:
+        except pytest_cov.plugin.CoverageError as e:
             print("Test coverage failure: {0}".format(str(e)))
             self.failed.append('pytest-coverage')
 
@@ -435,3 +486,5 @@ class Test(object):
                 print("Formatting looks good, but didn't run tests.")
             else:
                 print("All tests passed!")
+
+        self._clean()

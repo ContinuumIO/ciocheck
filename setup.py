@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # -----------------------------------------------------------------------------
 # Copyright 2016 Continuum Analytics, Inc.
-# 
+#
 # May be copied and distributed freely only as part of an Anaconda or
 # Miniconda installation.
 # -----------------------------------------------------------------------------
@@ -15,6 +15,7 @@ from setuptools.command.install import install
 
 
 VERSION = '0.1dev0'
+
 
 packages = find_packages()
 setup(name='ciotest',

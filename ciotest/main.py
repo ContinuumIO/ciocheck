@@ -32,7 +32,8 @@ def main():
                         help='Profile the linter and formatter steps')
     parser.add_argument('--pytestqt', dest='pytestqt',
                         action='store_const', const=True, default=False,
-                        help='If using pytestqt, qtpy is imported first.')
+                        help='If using pytestqt, qtpy is imported first to '
+                             'avoid qt shim issues')
     args = parser.parse_args()
 
     root = os.getcwd()
