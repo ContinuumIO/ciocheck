@@ -1,22 +1,23 @@
 # ciocheck
-Continuum check/test suite helper
+Continuum check/test suite helper.
 
+# How does ciocheck work?
 
-```bash
-usage: ciocheck [-h] [--format] [--staged] [--profile] [--pytestqt] module
+It leverages on the different available linting, formatting and testing tools 
+availbale for Python, including:
+- [pytest]()
+- [coverage]()
+- [pytest-cov]()
+- [YAPF]()
+- [Flake8]()
+- [PEP257]()
+- [isort]()
 
-Run Continuum IO test suite.
-
-positional arguments:
-  module
-
-optional arguments:
-  -h, --help  show this help message and exit
-  --format    Only run the linters and formatters not the actual tests
-  --staged    Only run the linters and formatters on files added to the commit
-  --profile   Profile the linter and formatter steps
-  --pytestqt  If using pytestqt, qtpy is imported first to avoid qt shim issues.
-```
+Plus some extra goodies, like:
+- Single file configuration for all the tools (still working on eliminating 
+  redundancy)
+- Auto addition of `__init__.py` files
+- Auto addition of custom encoding and copyright header files
 
 # Example config file
 Configuration is saved in a single file named `.ciocheck`
@@ -80,7 +81,27 @@ spaces_before_comment = 2
 split_before_logical_operator = true
 ```
 
+# Copyright and encoding headers
+
+TODO
+
 # Usage
+
+```bash
+usage: ciocheck [-h] [--format] [--staged] [--profile] [--pytestqt] module
+
+Run Continuum IO test suite.
+
+positional arguments:
+  module
+
+optional arguments:
+  -h, --help  show this help message and exit
+  --format    Only run the linters and formatters not the actual tests
+  --staged    Only run the linters and formatters on files added to the commit
+  --profile   Profile the linter and formatter steps
+  --pytestqt  If using pytestqt, qtpy is imported first to avoid qt shim issues.
+```
 
 Check format only in `some_module`.
 
