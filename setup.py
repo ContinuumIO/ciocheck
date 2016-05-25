@@ -20,7 +20,7 @@ setup(name='ciocheck',
       author='Continuum Analytics',
       packages=packages,
       dependencies=['coverage', 'flake8', 'pep257', 'pytest', 'pytest-cov',
-                    'yapf', 'pytest-xdist'],
+                    'yapf', 'pytest-xdist', 'isort'],
       entry_points={
           'gui_scripts': [
               'ciocheck = ciocheck.main:main'

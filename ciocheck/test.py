@@ -24,6 +24,7 @@ import sys
 
 # Third party imports
 import coverage.summary
+import isort
 import flake8.engine
 import pep257
 import pytest_cov.plugin
@@ -96,7 +97,7 @@ class Test(object):
 
         # Setup
         self._clean()
-        self._create_flake8_pep257_config()
+        self._create_linters_config()
         self._setup_pytest_coverage_args()
         self._setup_headers()
 
@@ -152,7 +153,7 @@ class Test(object):
 
         # Remove config files
         remove_files = [osp.join(self.root, fname)
-                        for fname in ('.flake8', '.pep257')]
+                        for fname in ('.flake8', '.pep257', '.isort.cfg')]
         for fpath in remove_files:
             if osp.isfile(fpath):
                 os.remove(fpath)
@@ -172,7 +173,7 @@ class Test(object):
             with open(new_config_file, 'w') as f:
                 new_config.write(f)
 
-    def _create_flake8_pep257_config(self):
+    def _create_linters_config(self):
         """
         """
         if os.path.isfile(self.config_file):
@@ -181,7 +182,9 @@ class Test(object):
                 config.readfp(f)
             self._create_config(config, 'flake8', '.flake8')
             self._create_config(config, 'pep257', '.pep257')
+            self._create_config(config, 'settings', '.isort.cfg')
 
+            # Additional check for coveragerc
             if config.has_section('report'):
                 if config.has_option('report', 'skip_covered'):
                     skip = config.get('report', 'skip_covered').lower()
@@ -340,6 +343,22 @@ class Test(object):
         for pyfile in self.get_files():
             self._add_headers(pyfile)
 
+    def check_isort(self):
+        """
+        """
+        print("running isort...")
+
+        for path in self.get_files():
+            with open(path, 'r') as f:
+                old_contents = f.read()
+            new_contents = isort.SortImports(file_contents=old_contents).output
+
+            with open(path, 'w') as f:
+                f.write(new_contents)
+
+            if new_contents != old_contents:
+                print("Sorted imports in {0}".format(path))
+
     def check_yapf(self):
         """
         this uses some silly multi-process stuff because Yapf is
@@ -471,6 +490,7 @@ class Test(object):
 
         self.add_missing_init_py()
         self.check_headers()
+        self.check_isort()
 
         # Only yapf is slow enough to really be worth profiling
         if self.profile_formatting:

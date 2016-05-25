@@ -23,6 +23,20 @@ Configuration is saved in a single file named `.ciocheck`
 
 ```config
 # -----------------------------------------------------------------------------
+# isort
+# https://github.com/timothycrosley/isort#configuring-isort
+# -----------------------------------------------------------------------------
+[settings]
+line_length = 80
+known_future_library = future,pies
+known_standard_library = std,std2
+known_third_party = randomthirdparty
+known_first_party = mylib1,mylib2
+indent='    '
+multi_line_output = 3
+length_sort = 1
+
+# -----------------------------------------------------------------------------
 # Flake 8
 # http://flake8.readthedocs.io/en/latest/config.html
 # -----------------------------------------------------------------------------
@@ -71,6 +85,6 @@ split_before_logical_operator = true
 Check format only in `some_module`.
 
 ```bash
-ciocheck some_module/ --format
+$ ciocheck some_module/ --format
 ```
 
