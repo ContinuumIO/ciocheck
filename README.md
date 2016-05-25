@@ -1,5 +1,5 @@
-# ciotest
-Continuum test suite helper
+# ciocheck
+Continuum check/test suite helper
 
 
 ```bash
