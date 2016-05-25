@@ -21,7 +21,7 @@ optional arguments:
 # Example config file
 Configuration is saved in a single file named `.ciocheck`
 
-```config
+```ini
 # -----------------------------------------------------------------------------
 # isort
 # https://github.com/timothycrosley/isort/wiki/isort-Settings
