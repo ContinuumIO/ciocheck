@@ -42,9 +42,34 @@ PY2 = sys.version_info[0] == 2
 if PY2:
     # Python 2
     import ConfigParser as configparser
+    from cStringIO import StringIO
 else:
     # Python 3
+    from io import StringIO
     import configparser
+
+
+class ShortOutput(object):
+    def __init__(self, root):
+        self._root = root
+
+    def __enter__(self):
+        self._stdout = sys.stdout
+        self._stderr = sys.stderr
+        sys.stdout = self._stringio_output = StringIO()
+        sys.stderr = self._stringio_error = StringIO()
+
+    def __exit__(self, *args):
+        out = self._stringio_output.getvalue().splitlines()
+        err = self._stringio_error.getvalue().splitlines()
+        sys.stdout = self._stdout
+        sys.stderr = self._stderr
+
+        for line in out:
+            print(line.replace(self._root, '\n.'))
+
+        for line in err:
+            print(line.replace(self._root, '\n.'))
 
 
 class Profiler(object):
@@ -67,8 +92,9 @@ class Profiler(object):
 class Test(object):
     """
     """
-    FLAKE8_CONFIG = '.flake8'
-    PEP257_CONFIG = '.pep257'
+    CONFIG_SECTIONS = {'.flake8': ['flake8'],
+                       '.pep257': ['pep257'],
+                       '.isort.cfg': ['settings'], }
     COPYRIGHT_RE = re.compile('# *Copyright ')
 
     def __init__(self,
@@ -94,6 +120,7 @@ class Test(object):
         self.failed = []
         self.git_staged_pyfiles = None
         self.pyfiles = None
+        self.step = 0
         self.config_file = os.path.join(self.root, CONFIGURATION_FILE)
 
         # Setup
@@ -154,26 +181,27 @@ class Test(object):
 
         # Remove config files
         remove_files = [osp.join(self.root, fname)
-                        for fname in ('.flake8', '.pep257', '.isort.cfg')]
+                        for fname in self.CONFIG_SECTIONS]
         for fpath in remove_files:
-            print(fpath)
             if osp.isfile(fpath):
                 os.remove(fpath)
 
-    def _create_config(self, config, section, fname):
+    def _create_config(self, config, sections, fname):
         """
         """
-        if config.has_section(section):
-            items = config.items(section)
-            new_config_file = os.path.join(self.root, fname)
-            new_config = configparser.ConfigParser()
-            new_config.add_section(section)
+        new_config = configparser.ConfigParser()
+        new_config_file = os.path.join(self.root, fname)
 
-            for option, value in items:
-                new_config.set(section, option, value)
+        for section in sections:
+            if config.has_section(section):
+                items = config.items(section)
+                new_config.add_section(section)
 
-            with open(new_config_file, 'w') as f:
-                new_config.write(f)
+                for option, value in items:
+                    new_config.set(section, option, value)
+
+                with open(new_config_file, 'w') as f:
+                    new_config.write(f)
 
     def _create_linters_config(self):
         """
@@ -182,9 +210,10 @@ class Test(object):
             config = configparser.ConfigParser()
             with open(self.config_file, 'r') as f:
                 config.readfp(f)
-            self._create_config(config, 'flake8', '.flake8')
-            self._create_config(config, 'pep257', '.pep257')
-            self._create_config(config, 'settings', '.isort.cfg')
+
+            for configfile in self.CONFIG_SECTIONS:
+                section = self.CONFIG_SECTIONS[configfile]
+                self._create_config(config, section, configfile)
 
             # Additional check for coveragerc
             if config.has_section('report'):
@@ -207,9 +236,9 @@ class Test(object):
 
             coverage.summary.SummaryReporter.__init__ = modified_init
 
-            print("Coverage monkeypatched to skip_covered")
+            print("\nCoverage monkeypatched to skip_covered")
         except Exception as e:
-            print("Failed to monkeypatch coverage: {0}".format(str(e)),
+            print("\nFailed to monkeypatch coverage: {0}".format(str(e)),
                   file=sys.stderr)
 
     @property
@@ -336,20 +365,40 @@ class Test(object):
         proc = subprocess.Popen(cmd + paths, env=env)
         return proc
 
+    def shorten_path(self, path):
+        """
+        """
+        return path.replace(self.root, '.')
+
+    def print_section(self, text):
+        """
+        """
+        max_line_size = 80
+        self.step += 1
+        new_text = " {0}. {1} ".format(self.step, text)
+
+        left = int((max_line_size - len(new_text)) / 2)
+        right = max_line_size - left - len(new_text)
+        print('\n')
+        print('=' * left + new_text + '=' * right)
+        print()
+
     # --- Checks
     # -------------------------------------------------------------------------
     def check_headers(self):
         """
         """
-        print("Checking file headers...")
+        self.print_section("Checking file headers")
         for pyfile in self.get_files():
             self._add_headers(pyfile)
 
     def check_isort(self):
         """
         """
-        print("running isort...")
+        self.print_section("Running isort")
+        files_isorted = 0
         for pyfile in self.get_files():
+            short_path = self.shorten_path(pyfile)
             with open(pyfile, 'r') as f:
                 old_contents = f.read()
             new_contents = isort.SortImports(file_contents=old_contents).output
@@ -358,7 +407,11 @@ class Test(object):
                 f.write(new_contents)
 
             if new_contents != old_contents:
-                print("Sorted imports in {0}".format(pyfile))
+                print("Sorted imports in {0}".format(short_path))
+                files_isorted += 1
+
+        plural = '' if files_isorted == 1 else 's'
+        print("Sorted imports in {0} file{1}.".format(files_isorted, plural))
 
     def check_yapf(self):
         """
@@ -367,7 +420,7 @@ class Test(object):
         Not using a multiprocessing because not sure how its "magic"
         (pickling, __main__ import) really works.
         """
-        print("Formatting files...")
+        self.print_section("Running YAPF")
         print("{0} CPUs to run yapf processes".format(self.cpu_count))
         processes = []
 
@@ -411,22 +464,27 @@ class Test(object):
     def check_flake8(self):
         """
         """
-        print("running flake8...")
+        asdasdASDASD = 545
 
+        asdasdASDASsas = 545
+
+        self.print_section("Running flake8")
         flake8_style = flake8.engine.get_style_guide(paths=self.get_files())
-        report = flake8_style.check_files()
+
+        with ShortOutput(self.root):
+            report = flake8_style.check_files()
 
         if report.total_errors > 0:
-            print("{0} flake8 errors, see above to fix "
+            print("\n{0} flake8 errors, see above to fix "
                   "them".format(str(report.total_errors)))
             self.failed.append('flake8')
         else:
-            print("flake8 passed!")
+            print("\nflake8 passed!")
 
     def check_pep257(self):
         """
         """
-        print("running pep257...")
+        self.print_section("Running pep257")
 
         # Hack pep257 not to spam enormous amounts of debug logging if you use
         # pytest -s. run_pep257() below calls log.setLevel
@@ -441,18 +499,20 @@ class Test(object):
         try:
             for module in self.root_modules:
                 sys.argv = ['pep257', os.path.join(self.root, module)]
-                code = pep257.run_pep257()
+
+                with ShortOutput(self.root):
+                    code = pep257.run_pep257()
         finally:
             sys.argv = old_argv
 
         if code == pep257.INVALID_OPTIONS_RETURN_CODE:
-            print("pep257 found invalid configuration.")
+            print("\npep257 found invalid configuration.")
             self.failed.append('pep257')
         elif code == pep257.VIOLATIONS_RETURN_CODE:
-            print("pep257 reported some violations.")
+            print("\npep257 reported some violations.")
             self.failed.append('pep257')
         elif code == pep257.NO_VIOLATIONS_RETURN_CODE:
-            print("pep257 says docstrings look good.")
+            print("\npep257 says docstrings look good.")
         else:
             raise RuntimeError("unexpected code from pep257: "
                                "{0}".format(str(code)))
@@ -460,7 +520,7 @@ class Test(object):
     def check_pytest(self):
         """
         """
-        print("running pytest...")
+        self.print_section("Running pytest")
 
         if self.pytestqt:
             try:
@@ -474,10 +534,10 @@ class Test(object):
         try:
             errno = pytest.main(self.pytest_args)
             if errno != 0:
-                print("pytest failed, code {errno}".format(errno=errno))
+                print("\npytest failed, code {errno}".format(errno=errno))
                 self.failed.append('pytest')
         except pytest_cov.plugin.CoverageError as e:
-            print("Test coverage failure: {0}".format(str(e)))
+            print("\nTest coverage failure: {0}".format(str(e)))
             self.failed.append('pytest-coverage')
 
     def run(self):
@@ -517,14 +577,15 @@ class Test(object):
                   "installing the deps and deleting .eggs")
             self.failed.append("eggs-directory-exists")
 
+        self.print_section('Summary')
         if len(self.failed) > 0:
-            print("Failures in: {0}".format(repr(self.failed)))
+            print("Failures in: {0}\n".format(repr(self.failed)))
             sys.exit(1)
         else:
             if self.git_staged_only:
                 print("Skipped some files (only checked {0} added/modified "
-                      "files).".format(len(self.get_git_staged_py_files())))
+                      "files).\n".format(len(self.get_git_staged_py_files())))
             if self.format_only:
-                print("Formatting looks good, but didn't run tests.")
+                print("Formatting looks good, but didn't run tests.\n")
             else:
-                print("All tests passed!")
+                print("All tests passed!\n")

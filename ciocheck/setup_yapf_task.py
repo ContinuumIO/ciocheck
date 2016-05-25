@@ -30,6 +30,7 @@ def _format_file(path):
     """
     root_path = os.environ.get('CIOCHECK_PROJECT_ROOT', None)
     style_config = None
+    short_path = path.replace(root_path, '\n.')
 
     if root_path:
         style_config_path = os.path.join(root_path, CONFIGURATION_FILE)
@@ -53,13 +54,14 @@ def _format_file(path):
                 contents = ""
             changed = (old_contents != contents)
     except Exception as e:
-        error = "yapf crashed on {path}: {error}".format(path=path, error=e)
+        error = "yapf crashed on {path}: {error}".format(path=short_path,
+                                                         error=e)
         print(error, file=sys.stderr)
         return False
 
     if changed:
         atomic_replace(path, contents, encoding)
-        print("Reformatted:     {path}".format(path=path))
+        print("Reformatted:     {path}".format(path=short_path))
         return False
     else:
         return True

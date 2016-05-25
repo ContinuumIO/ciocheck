@@ -20,7 +20,6 @@ sections=FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER
 exclude = tests/*
 ignore = E126,E401
 max-line-length = 79
-max-complexity = 10
 
 # -----------------------------------------------------------------------------
 # PEP257
