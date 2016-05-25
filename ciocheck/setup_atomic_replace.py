@@ -5,7 +5,6 @@
 # May be copied and distributed freely only as part of an Anaconda or
 # Miniconda installation.
 # -----------------------------------------------------------------------------
-
 """
 Setup script module with _atomic_replace function.
 """

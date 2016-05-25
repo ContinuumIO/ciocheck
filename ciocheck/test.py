@@ -5,7 +5,6 @@
 # May be copied and distributed freely only as part of an Anaconda or
 # Miniconda installation.
 # -----------------------------------------------------------------------------
-
 """
 Tests script.
 """
@@ -35,10 +34,8 @@ from ciocheck import (CONFIGURATION_FILE, COPYRIGHT_HEADER_FILE,
                       ENCODING_HEADER_FILE)
 from ciocheck.setup_atomic_replace import atomic_replace
 
-
 HERE = dirname(realpath(__file__))
 PY2 = sys.version_info[0] == 2
-
 
 if PY2:
     # Python 2
@@ -72,8 +69,12 @@ class Test(object):
     PEP257_CONFIG = '.pep257'
     COPYRIGHT_RE = re.compile('# *Copyright ')
 
-    def __init__(self, root, module=None, format_only=False,
-                 git_staged_only=False, profile_formatting=False,
+    def __init__(self,
+                 root,
+                 module=None,
+                 format_only=False,
+                 git_staged_only=False,
+                 profile_formatting=False,
                  pytestqt=False):
 
         # Run options
@@ -150,8 +151,8 @@ class Test(object):
                 print("Done removing {0}".format(BUILD_TMP))
 
         # Remove config files
-        remove_files = [osp.join(self.root, fname) for fname in
-                        ('.flake8', '.pep257')]
+        remove_files = [osp.join(self.root, fname)
+                        for fname in ('.flake8', '.pep257')]
         for fpath in remove_files:
             if osp.isfile(fpath):
                 os.remove(fpath)
@@ -227,8 +228,10 @@ class Test(object):
             for root, dirs, files in os.walk(self.root):
                 # Chop out hidden directories
                 files = [f for f in files if not f[0] == '.']
-                dirs[:] = [d for d in dirs if (d[0] != '.' and d != 'build' and
-                                               d != '__pycache__')]
+                dirs[:] = [
+                    d for d in dirs
+                    if (d[0] != '.' and d != 'build' and d != '__pycache__')
+                ]
                 # Now walk files
                 for f in files:
                     if f.endswith(".py"):
@@ -242,9 +245,9 @@ class Test(object):
         if self.git_staged_pyfiles is None:
             # --diff-filter=AM means "added" and "modified"
             # -z means nul-separated names
-            out = subprocess.check_output(['git', 'diff', '--cached',
-                                           '--name-only', '--diff-filter=AM',
-                                           '-z'])
+            out = subprocess.check_output(
+                ['git', 'diff', '--cached', '--name-only', '--diff-filter=AM',
+                 '-z'])
             git_changed = set(out.decode('utf-8').split('\x00'))
             git_changed.discard('')  # There's an empty line in git output
             git_changed = {osp.join(self.root, fname) for fname in git_changed}
@@ -268,8 +271,8 @@ class Test(object):
         """
         for srcdir in self.root_modules:
             for root, dirs, files in os.walk(os.path.join(self.root, srcdir)):
-                dirs[:] = [d for d in dirs if not (d[0] == '.' or
-                                                   d == '__pycache__')]
+                dirs[:] = [d for d in dirs
+                           if not (d[0] == '.' or d == '__pycache__')]
                 for d in dirs:
                     init_py = os.path.join(root, d, "__init__.py")
                     if not os.path.exists(init_py):
@@ -444,6 +447,8 @@ class Test(object):
                 import qtpy  # analysis:ignore
             except ImportError:
                 pass
+            finally:
+                qtpy.QtCore.Qt
         import pytest
 
         try:
@@ -460,8 +465,9 @@ class Test(object):
         """
         if self.git_staged_only:
             print("Only formatting {0} git-staged python files, skipping {1} "
-                  "files".format(len(self.get_git_staged_py_files()),
-                                 len(self.get_py_files())))
+                  "files".format(
+                      len(self.get_git_staged_py_files()), len(
+                          self.get_py_files())))
 
         self.add_missing_init_py()
         self.check_headers()

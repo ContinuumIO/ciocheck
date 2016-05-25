@@ -3,7 +3,7 @@ Continuum check/test suite helper
 
 
 ```bash
-usage: ciotest [-h] [--format] [--staged] [--profile] [--pytestqt] module
+usage: ciocheck [-h] [--format] [--staged] [--profile] [--pytestqt] module
 
 Run Continuum IO test suite.
 

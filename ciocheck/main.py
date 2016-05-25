@@ -5,7 +5,6 @@
 # May be copied and distributed freely only as part of an Anaconda or
 # Miniconda installation.
 # -----------------------------------------------------------------------------
-
 """
 Tests script.
 """
@@ -19,21 +18,33 @@ def main():
     description = 'Run Continuum IO test suite.'
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('module', help='')
-    parser.add_argument('--format', dest='format_only',
-                        action='store_const', const=True, default=False,
+    parser.add_argument('--format',
+                        dest='format_only',
+                        action='store_const',
+                        const=True,
+                        default=False,
                         help='Only run the linters and formatters not the '
-                             'actual tests')
-    parser.add_argument('--staged', dest='git_staged_only',
-                        action='store_const', const=True, default=False,
+                        'actual tests')
+    parser.add_argument('--staged',
+                        dest='git_staged_only',
+                        action='store_const',
+                        const=True,
+                        default=False,
                         help='Only run the linters and formatters on files '
-                             'added to the commit')
-    parser.add_argument('--profile', dest='profile_formatting',
-                        action='store_const', const=True, default=False,
+                        'added to the commit')
+    parser.add_argument('--profile',
+                        dest='profile_formatting',
+                        action='store_const',
+                        const=True,
+                        default=False,
                         help='Profile the linter and formatter steps')
-    parser.add_argument('--pytestqt', dest='pytestqt',
-                        action='store_const', const=True, default=False,
+    parser.add_argument('--pytestqt',
+                        dest='pytestqt',
+                        action='store_const',
+                        const=True,
+                        default=False,
                         help='If using pytestqt, qtpy is imported first to '
-                             'avoid qt shim issues')
+                        'avoid qt shim issues')
     args = parser.parse_args()
 
     root = os.getcwd()
