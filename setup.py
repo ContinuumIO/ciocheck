@@ -8,8 +8,8 @@
 """
 """
 
-# Third party imports
-from setuptools import setup, find_packages
+# Local imports
+from setuptools import find_packages, setup
 
 VERSION = '0.1dev0'
 

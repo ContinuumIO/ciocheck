@@ -9,8 +9,9 @@
 Setup script module with _atomic_replace function.
 """
 
+from __future__ import absolute_import, print_function
+
 # Standard library imports
-from __future__ import print_function, absolute_import
 import codecs
 import errno
 import os

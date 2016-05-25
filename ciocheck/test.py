@@ -9,8 +9,9 @@
 Tests script.
 """
 
-# Standard library imports
 from __future__ import print_function
+
+# Standard library imports
 from os.path import dirname, realpath
 import codecs
 import cProfile
@@ -24,8 +25,8 @@ import sys
 
 # Third party imports
 import coverage.summary
-import isort
 import flake8.engine
+import isort
 import pep257
 import pytest_cov.plugin
 
@@ -155,6 +156,7 @@ class Test(object):
         remove_files = [osp.join(self.root, fname)
                         for fname in ('.flake8', '.pep257', '.isort.cfg')]
         for fpath in remove_files:
+            print(fpath)
             if osp.isfile(fpath):
                 os.remove(fpath)
 
@@ -347,17 +349,16 @@ class Test(object):
         """
         """
         print("running isort...")
-
-        for path in self.get_files():
-            with open(path, 'r') as f:
+        for pyfile in self.get_files():
+            with open(pyfile, 'r') as f:
                 old_contents = f.read()
             new_contents = isort.SortImports(file_contents=old_contents).output
 
-            with open(path, 'w') as f:
+            with open(pyfile, 'w') as f:
                 f.write(new_contents)
 
             if new_contents != old_contents:
-                print("Sorted imports in {0}".format(path))
+                print("Sorted imports in {0}".format(pyfile))
 
     def check_yapf(self):
         """
@@ -489,8 +490,8 @@ class Test(object):
                           self.get_py_files())))
 
         self.add_missing_init_py()
-        self.check_headers()
         self.check_isort()
+        self.check_headers()
 
         # Only yapf is slow enough to really be worth profiling
         if self.profile_formatting:
@@ -504,6 +505,8 @@ class Test(object):
 
         if not self.format_only:
             self.check_pytest()
+
+        self._clean()
 
         if os.path.exists(os.path.join(self.root, '.eggs')):
             print(".eggs directory exists which means some dependency was "
@@ -525,5 +528,3 @@ class Test(object):
                 print("Formatting looks good, but didn't run tests.")
             else:
                 print("All tests passed!")
-
-        self._clean()

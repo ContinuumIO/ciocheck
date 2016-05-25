@@ -9,8 +9,9 @@
 Setup script auxiliary process so we can "yapf" in parallel.
 """
 
-# Standard library imports
 from __future__ import absolute_import, print_function
+
+# Standard library imports
 import codecs
 import os
 import platform
