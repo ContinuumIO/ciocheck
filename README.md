@@ -65,3 +65,12 @@ column_limit = 79
 spaces_before_comment = 2
 split_before_logical_operator = true
 ```
+
+# Usage
+
+Check format only in `some_module`.
+
+```bash
+ciocheck some_module/ --format
+```
+
