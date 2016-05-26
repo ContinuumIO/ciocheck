@@ -1,0 +1,33 @@
+package:
+  name: ciocheck
+  version: {{ environ.get('GIT_DESCRIBE_TAG', '').replace('v', '') }}
+
+source:
+  git_url: ../
+  git_tag: {% if environ.get('PRERELEASE', '') %} HEAD {% else %} {{ environ.get('GIT_DESCRIBE_TAG') }} {% endif %}
+
+build:
+  noarch_python: {% if environ.get('PRERELEASE', '') and not environ.get('BINSTAR_BUILD', '') %} True {% else %} {% endif %} [not win]
+  number: {% if environ.get('PRERELEASE', '') %} {{ environ.get('GIT_DESCRIBE_NUMBER', 0) }} {% else %} 0 {% endif %}
+  script_env:
+    - PRERELEASE
+
+requirements:
+  build:
+    - python
+    - setuptools
+  run:
+    - python
+    - coverage
+    - flake8
+    - isort          # pending
+    - pep257         # pending
+    - pytest
+    - pytest-cov
+    - pytest-xdist   # bokeh
+    - yapf           # pending
+
+about:
+  home: https://github.com/ContinuumIO/ciocheck
+  summary: Continuum check/test suite helper.
+
