@@ -30,7 +30,7 @@ def _format_file(path):
     """
     root_path = os.environ.get('CIOCHECK_PROJECT_ROOT', None)
     style_config = None
-    short_path = path.replace(root_path, '\n.')
+    short_path = path.replace(root_path, '.')
 
     if root_path:
         style_config_path = os.path.join(root_path, CONFIGURATION_FILE)
@@ -61,7 +61,7 @@ def _format_file(path):
 
     if changed:
         atomic_replace(path, contents, encoding)
-        print("Reformatted:     {path}".format(path=short_path))
+        print("\nReformatted:     {path}".format(path=short_path))
         return False
     else:
         return True

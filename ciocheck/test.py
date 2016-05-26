@@ -41,8 +41,8 @@ PY2 = sys.version_info[0] == 2
 
 if PY2:
     # Python 2
-    import ConfigParser as configparser
     from cStringIO import StringIO
+    import ConfigParser as configparser
 else:
     # Python 3
     from io import StringIO
@@ -65,11 +65,12 @@ class ShortOutput(object):
         sys.stdout = self._stdout
         sys.stderr = self._stderr
 
-        for line in out:
-            print(line.replace(self._root, '\n.'))
-
-        for line in err:
-            print(line.replace(self._root, '\n.'))
+        for output in [out, err]:
+            count = 0
+            for line in output:
+                if self._root in line:
+                    count += 1
+                print(line.replace(self._root, '\n{0}.\t.'.format(count)))
 
 
 class Profiler(object):
@@ -257,9 +258,10 @@ class Test(object):
     def get_py_files(self):
         """
         """
+        module_path = osp.join(self.root, self.root_modules[0])
         if self.pyfiles is None:
             pyfiles = []
-            for root, dirs, files in os.walk(self.root):
+            for root, dirs, files in os.walk(module_path):
                 # Chop out hidden directories
                 files = [f for f in files if not f[0] == '.']
                 dirs[:] = [
@@ -317,6 +319,7 @@ class Test(object):
     def _add_headers(self, path):
         """
         """
+        short_path = self.shorten_path(path)
         with codecs.open(path, 'r', 'utf-8') as f:
             old_contents = f.read()
 
@@ -327,38 +330,35 @@ class Test(object):
             return
 
         if not have_coding:
-            print("No encoding header comment in " + path)
+            print("\nNo encoding header comment in \t" + short_path)
             if "encoding_header" not in self.failed:
                 self.failed.append("encoding_header")
 
         if not have_copyright:
-            print("No copyright header comment in " + path)
+            print("\nNo copyright header comment in \t" + short_path)
             if "copyright_header" not in self.failed:
                 self.failed.append("copyright_header")
 
-        # Note: do NOT automatically change the copyright owner or
-        # date.  The copyright owner/date is a statement of legal
-        # reality, not a way to create legal reality. All we do
-        # here is add an owner/date if there is none; if it's
-        # incorrect, the person creating/reviewing the pull
-        # request will need to fix it. If there's already an
-        # owner/date then we leave it as-is assuming someone
-        # has manually chosen it.
+        # Note: do NOT automatically change the copyright owner or date. The
+        # copyright owner/date is a statement of legal reality, not a way to
+        # create legal reality. All we do here is add an owner/date if there
+        # is none; if it's incorrect, the person creating/reviewing the pull
+        # request will need to fix it. If there's already an owner/date then
+        # we leave it as-is assuming someone has manually chosen it.
         contents = old_contents
 
         if not have_copyright:
-            print("Adding copyright header to: " + path)
+            print("\nAdding copyright header to: \t" + short_path)
             contents = self.copyright_header + contents
 
         if not have_coding:
-            print("Adding encoding header to: " + path)
+            print("\nAdding encoding header to: \t" + short_path)
             contents = self.encoding_header + contents
 
         atomic_replace(path, contents, 'utf-8')
 
     def _start_format_files(self, paths):
-        """
-        """
+        """check_yapf helper method to start a seaparate subprocess."""
         cmd = [sys.executable, os.path.join(HERE, 'setup_yapf_task.py')]
         env = os.environ.copy()
         env['CIOCHECK_PROJECT_ROOT'] = self.root
@@ -366,13 +366,11 @@ class Test(object):
         return proc
 
     def shorten_path(self, path):
-        """
-        """
+        """Remove the `root` part from the path."""
         return path.replace(self.root, '.')
 
     def print_section(self, text):
-        """
-        """
+        """Pretty print section and numbering."""
         max_line_size = 80
         self.step += 1
         new_text = " {0}. {1} ".format(self.step, text)
@@ -386,15 +384,13 @@ class Test(object):
     # --- Checks
     # -------------------------------------------------------------------------
     def check_headers(self):
-        """
-        """
+        """Run headers formatter."""
         self.print_section("Checking file headers")
         for pyfile in self.get_files():
             self._add_headers(pyfile)
 
     def check_isort(self):
-        """
-        """
+        """Run isort formatter."""
         self.print_section("Running isort")
         files_isorted = 0
         for pyfile in self.get_files():
@@ -407,18 +403,21 @@ class Test(object):
                 f.write(new_contents)
 
             if new_contents != old_contents:
-                print("Sorted imports in {0}".format(short_path))
+                print("\nSorted imports in {0}".format(short_path))
                 files_isorted += 1
 
         plural = '' if files_isorted == 1 else 's'
-        print("Sorted imports in {0} file{1}.".format(files_isorted, plural))
+        print("\nSorted imports in {0} file{1}.".format(files_isorted, plural))
 
     def check_yapf(self):
         """
-        this uses some silly multi-process stuff because Yapf is
-        very very slow and CPU-bound.
-        Not using a multiprocessing because not sure how its "magic"
-        (pickling, __main__ import) really works.
+        Run yapf formatter.
+
+        This uses some silly multi-process stuff because Yapf is very very
+        slow and CPU-bound.
+
+        Not using a multiprocessing because not sure how its "magic" (pickling,
+        __main__ import) really works.
         """
         self.print_section("Running YAPF")
         print("{0} CPUs to run yapf processes".format(self.cpu_count))
@@ -448,10 +447,11 @@ class Test(object):
 
         all_files = list(self.get_files())
         while all_files:
-            # we send a few files to each process to try to reduce
+            # We send a few files to each process to try to reduce
             # per-process setup time
             some_files = take_n(all_files, 3)
             processes.append(self._start_format_files(some_files))
+
             # Don't run too many at once, this is a goofy algorithm
             if len(processes) > (self.cpu_count * 3):
                 while len(processes) > self.cpu_count:
@@ -462,12 +462,7 @@ class Test(object):
         assert [] == processes
 
     def check_flake8(self):
-        """
-        """
-        asdasdASDASD = 545
-
-        asdasdASDASsas = 545
-
+        """Run flake8 checks."""
         self.print_section("Running flake8")
         flake8_style = flake8.engine.get_style_guide(paths=self.get_files())
 
@@ -482,8 +477,7 @@ class Test(object):
             print("\nflake8 passed!")
 
     def check_pep257(self):
-        """
-        """
+        """Run pep257 checks."""
         self.print_section("Running pep257")
 
         # Hack pep257 not to spam enormous amounts of debug logging if you use
@@ -518,8 +512,7 @@ class Test(object):
                                "{0}".format(str(code)))
 
     def check_pytest(self):
-        """
-        """
+        """Run pytest test suite."""
         self.print_section("Running pytest")
 
         if self.pytestqt:
@@ -541,8 +534,7 @@ class Test(object):
             self.failed.append('pytest-coverage')
 
     def run(self):
-        """
-        """
+        """Run all checks."""
         if self.git_staged_only:
             print("Only formatting {0} git-staged python files, skipping {1} "
                   "files".format(

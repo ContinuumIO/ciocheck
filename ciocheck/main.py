@@ -5,9 +5,7 @@
 # May be copied and distributed freely only as part of an Anaconda or
 # Miniconda installation.
 # -----------------------------------------------------------------------------
-"""
-Tests script.
-"""
+"""CLI Parser for `ciocheck`."""
 
 # Standard library imports
 import argparse
@@ -15,6 +13,7 @@ import os
 
 
 def main():
+    """CLI `Parser for ciocheck`."""
     description = 'Run Continuum IO test suite.'
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('module', help='')
