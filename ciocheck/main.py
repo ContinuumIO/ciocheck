@@ -16,7 +16,7 @@ def main():
     """CLI `Parser for ciocheck`."""
     description = 'Run Continuum IO test suite.'
     parser = argparse.ArgumentParser(description=description)
-    parser.add_argument('module', help='')
+    parser.add_argument('module', help='module to analize')
     parser.add_argument('--format',
                         dest='format_only',
                         action='store_const',
@@ -37,13 +37,7 @@ def main():
                         const=True,
                         default=False,
                         help='Profile the linter and formatter steps')
-    parser.add_argument('--pytestqt',
-                        dest='pytestqt',
-                        action='store_const',
-                        const=True,
-                        default=False,
-                        help='If using pytestqt, qtpy is imported first to '
-                        'avoid qt shim issues')
+
     args = parser.parse_args()
 
     root = os.getcwd()
@@ -52,8 +46,7 @@ def main():
                 module=args.module,
                 format_only=args.format_only,
                 git_staged_only=args.git_staged_only,
-                profile_formatting=args.profile_formatting,
-                pytestqt=args.pytestqt)
+                profile_formatting=args.profile_formatting)
     test.run()
 
 

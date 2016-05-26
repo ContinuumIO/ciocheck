@@ -5,9 +5,7 @@
 # May be copied and distributed freely only as part of an Anaconda or
 # Miniconda installation.
 # -----------------------------------------------------------------------------
-"""
-Tests script.
-"""
+"""Tests script."""
 
 from __future__ import print_function
 
@@ -26,7 +24,6 @@ import sys
 # Third party imports
 import coverage.summary
 import flake8.engine
-import isort
 import pep257
 import pytest_cov.plugin
 
@@ -50,16 +47,27 @@ else:
 
 
 class ShortOutput(object):
+    """Context manager for capturing and formating stdout and stderr."""
+
     def __init__(self, root):
+        """Context manager for capturing and formating stdout and stderr.
+
+        Parameter
+        ---------
+        root : str
+            Path where ciocheck script was called (root directory).
+        """
         self._root = root
 
     def __enter__(self):
+        """Capture stdout and stderr in a StringIO."""
         self._stdout = sys.stdout
         self._stderr = sys.stderr
         sys.stdout = self._stringio_output = StringIO()
         sys.stderr = self._stringio_error = StringIO()
 
     def __exit__(self, *args):
+        """Restore stdout and stderr and format found values."""
         out = self._stringio_output.getvalue().splitlines()
         err = self._stringio_error.getvalue().splitlines()
         sys.stdout = self._stdout
@@ -74,25 +82,27 @@ class ShortOutput(object):
 
 
 class Profiler(object):
-    """
-    """
+    """Context manager profiler."""
 
     def __init__(self):
+        """Context manager profiler."""
         self._profiler = cProfile.Profile()
 
+    def __enter__(self):
+        """Enable profiler."""
+        self._profiler.enable()
+
     def __exit__(self, type, value, traceback):
+        """Disable profiler and print stats."""
         self._profiler.disable()
         ps = pstats.Stats(self._profiler,
                           stream=sys.stdout).sort_stats('cumulative')
         ps.print_stats()
 
-    def __enter__(self):
-        self._profiler.enable()
-
 
 class Test(object):
-    """
-    """
+    """Main test/check linter tool."""
+
     CONFIG_SECTIONS = {'.flake8': ['flake8'],
                        '.pep257': ['pep257'],
                        '.isort.cfg': ['settings'], }
@@ -100,19 +110,31 @@ class Test(object):
 
     def __init__(self,
                  root,
-                 module=None,
+                 module,
                  format_only=False,
                  git_staged_only=False,
-                 profile_formatting=False,
-                 pytestqt=False):
+                 profile_formatting=False):
+        """Main test/check linter tool.
 
+        Parameters
+        ----------
+        root : str
+            Path where ciocheck script was called (root directory).
+        module : str
+            Path of module to analize.
+        format_only : bool (optional)
+            Only apply format checks.
+        git_staged_only : bool (optional)
+            Use git staged files only.
+        profile_formatting : bool (optional)
+            Profile yapf formating.
+        """
         # Run options
         self.root = root
         self.root_modules = [module]
         self.git_staged_only = git_staged_only
         self.format_only = format_only
         self.profile_formatting = profile_formatting
-        self.pytestqt = pytestqt
 
         # Variables
         self._cpu_count = None
@@ -133,8 +155,7 @@ class Test(object):
     # --- Helpers
     # -------------------------------------------------------------------------
     def _setup_pytest_coverage_args(self):
-        """
-        """
+        """Setup pytest-cov arguments and config file path."""
         module = self.root_modules[0]
         cov = '--cov={0}'.format(module)
         coverage_args = [cov, '--no-cov-on-fail']
@@ -154,8 +175,7 @@ class Test(object):
         self.pytest_args = self.pytest_args + coverage_args
 
     def _setup_headers(self):
-        """
-        """
+        """Load custom encoding and copyright headers if defined."""
         encoding_path = osp.join(self.root, COPYRIGHT_HEADER_FILE)
         if osp.isfile(encoding_path):
             with open(encoding_path, 'r') as f:
@@ -167,8 +187,7 @@ class Test(object):
                 self.encoding_header = f.read()
 
     def _clean(self):
-        """
-        """
+        """Remove build directories and temporal config files."""
         # Clean up leftover trash as best we can
         BUILD_TMP = os.path.join(self.root, 'build', 'tmp')
         if os.path.isdir(BUILD_TMP):
@@ -188,8 +207,7 @@ class Test(object):
                 os.remove(fpath)
 
     def _create_config(self, config, sections, fname):
-        """
-        """
+        """Create a config file for for a given config fname and sections."""
         new_config = configparser.ConfigParser()
         new_config_file = os.path.join(self.root, fname)
 
@@ -205,8 +223,7 @@ class Test(object):
                     new_config.write(f)
 
     def _create_linters_config(self):
-        """
-        """
+        """Create a config file for the differet tools based on `.checkio`."""
         if os.path.isfile(self.config_file):
             config = configparser.ConfigParser()
             with open(self.config_file, 'r') as f:
@@ -224,9 +241,10 @@ class Test(object):
                         self._monkey_path_coverage()
 
     def _monkey_path_coverage(self):
-        """
-        Attempt to force coverage to skip_covered, which pytest-cov does not
-        expose as an option (.coveragerc option is ignored by pytest-cov).
+        """Enforce the value of `skip_covered`, ignored by pytest-cov.
+
+        pytest-cov ignores the option even if included in the .coveragerc
+        configuration file.
         """
         try:
             original_init = coverage.summary.SummaryReporter.__init__
@@ -244,8 +262,7 @@ class Test(object):
 
     @property
     def cpu_count(self):
-        """
-        """
+        """Return the cpu count."""
         if self._cpu_count is None:
             try:
                 import multiprocessing
@@ -256,8 +273,7 @@ class Test(object):
         return self._cpu_count
 
     def get_py_files(self):
-        """
-        """
+        """Return all python files in the module."""
         module_path = osp.join(self.root, self.root_modules[0])
         if self.pyfiles is None:
             pyfiles = []
@@ -276,8 +292,7 @@ class Test(object):
         return self.pyfiles
 
     def get_git_staged_py_files(self):
-        """
-        """
+        """Return the git staged python files in the module."""
         if self.git_staged_pyfiles is None:
             # --diff-filter=AM means "added" and "modified"
             # -z means nul-separated names
@@ -295,16 +310,14 @@ class Test(object):
         return self.git_staged_pyfiles
 
     def get_files(self):
-        """
-        """
+        """Return all (or only staged) python files in the module."""
         if self.git_staged_only:
             return self.get_git_staged_py_files()
         else:
             return self.get_py_files()
 
     def add_missing_init_py(self):
-        """
-        """
+        """Add missing __init__.py files in the module subdirectories."""
         for srcdir in self.root_modules:
             for root, dirs, files in os.walk(os.path.join(self.root, srcdir)):
                 dirs[:] = [d for d in dirs
@@ -317,7 +330,9 @@ class Test(object):
                             handle.flush()
 
     def _add_headers(self, path):
-        """
+        """Add headers as needed in file.
+
+        This is a helper method for `check_headers`.
         """
         short_path = self.shorten_path(path)
         with codecs.open(path, 'r', 'utf-8') as f:
@@ -388,26 +403,6 @@ class Test(object):
         self.print_section("Checking file headers")
         for pyfile in self.get_files():
             self._add_headers(pyfile)
-
-    def check_isort(self):
-        """Run isort formatter."""
-        self.print_section("Running isort")
-        files_isorted = 0
-        for pyfile in self.get_files():
-            short_path = self.shorten_path(pyfile)
-            with open(pyfile, 'r') as f:
-                old_contents = f.read()
-            new_contents = isort.SortImports(file_contents=old_contents).output
-
-            with open(pyfile, 'w') as f:
-                f.write(new_contents)
-
-            if new_contents != old_contents:
-                print("\nSorted imports in {0}".format(short_path))
-                files_isorted += 1
-
-        plural = '' if files_isorted == 1 else 's'
-        print("\nSorted imports in {0} file{1}.".format(files_isorted, plural))
 
     def check_yapf(self):
         """
@@ -515,13 +510,12 @@ class Test(object):
         """Run pytest test suite."""
         self.print_section("Running pytest")
 
-        if self.pytestqt:
-            try:
-                import qtpy  # analysis:ignore
-            except ImportError:
-                pass
-            finally:
-                qtpy.QtCore.Qt
+        # If used with qtpy and pytest-qt
+        try:
+            import qtpy  # analysis:ignore
+            qtpy.QtCore.Qt
+        except ImportError:
+            pass
         import pytest
 
         try:
@@ -542,7 +536,6 @@ class Test(object):
                           self.get_py_files())))
 
         self.add_missing_init_py()
-        self.check_isort()
         self.check_headers()
 
         # Only yapf is slow enough to really be worth profiling

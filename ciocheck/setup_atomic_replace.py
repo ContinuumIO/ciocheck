@@ -5,9 +5,7 @@
 # May be copied and distributed freely only as part of an Anaconda or
 # Miniconda installation.
 # -----------------------------------------------------------------------------
-"""
-Setup script module with _atomic_replace function.
-"""
+"""Setup script module with _atomic_replace function."""
 
 from __future__ import absolute_import, print_function
 
@@ -19,8 +17,6 @@ import uuid
 
 
 def _rename_over_existing(src, dest):
-    """
-    """
     try:
         # On Windows, this will throw EEXIST, on Linux it won't.
         os.rename(src, dest)
@@ -45,8 +41,7 @@ def _rename_over_existing(src, dest):
 
 
 def atomic_replace(path, contents, encoding):
-    """
-    """
+    """Try to do an atomic replace."""
     tmp = "{0}tmp-{1}".format(path, str(uuid.uuid4()))
     try:
         with codecs.open(tmp, 'w', encoding) as f:

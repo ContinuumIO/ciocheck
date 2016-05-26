@@ -5,6 +5,7 @@
 # May be copied and distributed freely only as part of an Anaconda or
 # Miniconda installation.
 # -----------------------------------------------------------------------------
+"""ciocheck check/tester tool."""
 
 CONFIGURATION_FILE = '.ciocheck'
 ENCODING_HEADER_FILE = '.cioencoding'

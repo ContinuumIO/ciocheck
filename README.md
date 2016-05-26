@@ -88,19 +88,18 @@ TODO
 # Usage
 
 ```bash
-usage: ciocheck [-h] [--format] [--staged] [--profile] [--pytestqt] module
+usage: ciocheck [-h] [--format] [--staged] [--profile] module
 
 Run Continuum IO test suite.
 
 positional arguments:
-  module
+  module      module to analize
 
 optional arguments:
   -h, --help  show this help message and exit
   --format    Only run the linters and formatters not the actual tests
   --staged    Only run the linters and formatters on files added to the commit
   --profile   Profile the linter and formatter steps
-  --pytestqt  If using pytestqt, qtpy is imported first to avoid qt shim issues.
 ```
 
 Check format only in `some_module`.
