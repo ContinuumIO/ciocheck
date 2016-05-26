@@ -66,15 +66,13 @@ def _format_file(path):
         print(error, file=sys.stderr)
         return False
 
-    if changed or isort_changed:
-        if changed:
-            atomic_replace(path, contents, encoding)
-            print("\nReformatted:     {path}".format(path=short_path))
-        if isort_changed:
-            print("\nSorted imports in {path}.".format(path=short_path))
-        return False
-    else:
-        return True
+    if changed:
+        atomic_replace(path, contents, encoding)
+        print("\nReformatted:     {path}".format(path=short_path))
+    if isort_changed:
+        print("\nSorted imports in {path}.".format(path=short_path))
+
+    return changed and isort_changed
 
 
 exit_code = 0
