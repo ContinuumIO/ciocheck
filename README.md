@@ -26,7 +26,6 @@ Configuration is saved in a single file named `.ciocheck`
 # https://github.com/timothycrosley/isort/wiki/isort-Settings
 # -----------------------------------------------------------------------------
 [settings]
-balanced_wrapping = true
 from_first = true
 import_heading_stdlib = Standard library imports
 import_heading_firstparty = Local imports
@@ -73,10 +72,8 @@ directory = coverage_html_report
 # https://github.com/google/yapf#formatting-style
 # -----------------------------------------------------------------------------
 [style]
-based_on_style = pep8
 column_limit = 79
 spaces_before_comment = 2
-split_before_logical_operator = true
 ```
 
 # Copyright and encoding headers
