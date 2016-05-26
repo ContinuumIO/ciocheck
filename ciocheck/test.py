@@ -110,7 +110,7 @@ class Test(object):
 
     def __init__(self,
                  root,
-                 module,
+                 folder_or_file,
                  format_only=False,
                  git_staged_only=False,
                  profile_formatting=False):
@@ -120,8 +120,8 @@ class Test(object):
         ----------
         root : str
             Path where ciocheck script was called (root directory).
-        module : str
-            Path of module to analize.
+        folder_or_file : str
+            Path of module or file to analize.
         format_only : bool (optional)
             Only apply format checks.
         git_staged_only : bool (optional)
@@ -131,10 +131,16 @@ class Test(object):
         """
         # Run options
         self.root = root
-        self.root_modules = [module]
         self.git_staged_only = git_staged_only
         self.format_only = format_only
         self.profile_formatting = profile_formatting
+
+        if osp.isfile(folder_or_file):
+            self.root_modules = None
+            self.file = folder_or_file
+        else:
+            self.root_modules = [folder_or_file]
+            self.file = None
 
         # Variables
         self._cpu_count = None
@@ -156,7 +162,11 @@ class Test(object):
     # -------------------------------------------------------------------------
     def _setup_pytest_coverage_args(self):
         """Setup pytest-cov arguments and config file path."""
-        module = self.root_modules[0]
+        if self.file:
+            module = self.file
+        else:
+            module = self.root_modules[0]
+
         cov = '--cov={0}'.format(module)
         coverage_args = [cov, '--no-cov-on-fail']
 
@@ -274,21 +284,25 @@ class Test(object):
 
     def get_py_files(self):
         """Return all python files in the module."""
-        module_path = osp.join(self.root, self.root_modules[0])
-        if self.pyfiles is None:
-            pyfiles = []
-            for root, dirs, files in os.walk(module_path):
-                # Chop out hidden directories
-                files = [f for f in files if not f[0] == '.']
-                dirs[:] = [
-                    d for d in dirs
-                    if (d[0] != '.' and d != 'build' and d != '__pycache__')
-                ]
-                # Now walk files
-                for f in files:
-                    if f.endswith(".py"):
-                        pyfiles.append(os.path.join(root, f))
-            self.pyfiles = pyfiles
+        if self.file:
+            self.pyfiles = [self.file]
+        else:
+            module_path = osp.join(self.root, self.root_modules[0])
+            if self.pyfiles is None:
+                pyfiles = []
+                for root, dirs, files in os.walk(module_path):
+                    # Chop out hidden directories
+                    files = [f for f in files if not f[0] == '.']
+                    dirs[:] = [d for d in dirs
+                               if (d[0] != '.' and d != 'build' and d !=
+                                   '__pycache__')]
+
+                    # Now walk files
+                    for f in files:
+                        if f.endswith(".py"):
+                            pyfiles.append(os.path.join(root, f))
+                self.pyfiles = pyfiles
+
         return self.pyfiles
 
     def get_git_staged_py_files(self):
@@ -318,6 +332,9 @@ class Test(object):
 
     def add_missing_init_py(self):
         """Add missing __init__.py files in the module subdirectories."""
+        if self.file:
+            return
+
         for srcdir in self.root_modules:
             for root, dirs, files in os.walk(os.path.join(self.root, srcdir)):
                 dirs[:] = [d for d in dirs
@@ -486,11 +503,14 @@ class Test(object):
         old_argv = sys.argv
 
         try:
-            for module in self.root_modules:
-                sys.argv = ['pep257', os.path.join(self.root, module)]
+            if self.file:
+                path = self.file
+            else:
+                path = os.path.join(self.root, self.root_modules[0])
 
-                with ShortOutput(self.root):
-                    code = pep257.run_pep257()
+            sys.argv = ['pep257', path]
+            with ShortOutput(self.root):
+                code = pep257.run_pep257()
         finally:
             sys.argv = old_argv
 
@@ -512,8 +532,8 @@ class Test(object):
 
         # If used with qtpy and pytest-qt
         try:
-            import qtpy  # analysis:ignore
-            qtpy.QtCore.Qt
+            from qtpy.QtCore import Qt  # analysis:ignore
+            Qt
         except ImportError:
             pass
         import pytest

@@ -16,7 +16,8 @@ def main():
     """CLI `Parser for ciocheck`."""
     description = 'Run Continuum IO test suite.'
     parser = argparse.ArgumentParser(description=description)
-    parser.add_argument('module', help='module to analize')
+    parser.add_argument('folder_or_file',
+                        help='module (folder) or file to analize')
     parser.add_argument('--format',
                         dest='format_only',
                         action='store_const',
@@ -43,7 +44,7 @@ def main():
     root = os.getcwd()
     from ciocheck.test import Test
     test = Test(root,
-                module=args.module,
+                folder_or_file=args.folder_or_file,
                 format_only=args.format_only,
                 git_staged_only=args.git_staged_only,
                 profile_formatting=args.profile_formatting)

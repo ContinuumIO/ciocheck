@@ -5,8 +5,7 @@
 # May be copied and distributed freely only as part of an Anaconda or
 # Miniconda installation.
 # -----------------------------------------------------------------------------
-"""
-"""
+"""ciocheck setup script."""
 
 # Local imports
 from setuptools import find_packages, setup

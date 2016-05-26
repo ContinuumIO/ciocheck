@@ -88,18 +88,19 @@ TODO
 # Usage
 
 ```bash
-usage: ciocheck [-h] [--format] [--staged] [--profile] module
+usage: ciocheck [-h] [--format] [--staged] [--profile] folder_or_file
 
 Run Continuum IO test suite.
 
 positional arguments:
-  module      module to analize
+  folder_or_file  module (folder) or file to analize
 
 optional arguments:
-  -h, --help  show this help message and exit
-  --format    Only run the linters and formatters not the actual tests
-  --staged    Only run the linters and formatters on files added to the commit
-  --profile   Profile the linter and formatter steps
+  -h, --help      show this help message and exit
+  --format        Only run the linters and formatters not the actual tests
+  --staged        Only run the linters and formatters on files added to the
+                  commit
+  --profile       Profile the linter and formatter steps
 ```
 
 Check format only in `some_module`.
