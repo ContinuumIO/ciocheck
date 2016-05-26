@@ -5,13 +5,13 @@ Continuum check/test suite helper.
 
 It leverages on the different available linting, formatting and testing tools 
 availbale for Python, including:
-- [pytest]()
-- [coverage]()
-- [pytest-cov]()
-- [YAPF]()
-- [Flake8]()
-- [PEP257]()
-- [isort]()
+- [pytest](http://pytest.org/latest/)
+- [coverage](http://coverage.readthedocs.io/en/latest)
+- [pytest-cov](http://pytest-cov.readthedocs.io/en/latest/)
+- [YAPF](https://github.com/google/yapf)
+- [Flake8](http://flake8.readthedocs.io/en/latest/)
+- [PEP257](https://pep257.readthedocs.io/en/latest/)
+- [isort](https://github.com/timothycrosley/isort/)
 
 Plus some extra goodies, like:
 - Single file configuration for all the tools (still working on eliminating 
