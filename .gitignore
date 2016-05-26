@@ -8,6 +8,7 @@
 .directory
 
 # Special dirs and files
+coverage_html_report/
 build/
 dist/
 bin/
