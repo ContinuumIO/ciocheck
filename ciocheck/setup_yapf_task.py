@@ -72,7 +72,7 @@ def _format_file(path):
     if isort_changed:
         print("\nSorted imports in {path}.".format(path=short_path))
 
-    return changed and isort_changed
+    return (changed and isort_changed) or (not changed and not isort_changed)
 
 
 exit_code = 0
