@@ -5,13 +5,11 @@ Continuum check/test suite helper.
 
 It leverages on the different available linting, formatting and testing tools 
 availbale for Python, including:
-- [pytest](http://pytest.org/latest/)
-- [coverage](http://coverage.readthedocs.io/en/latest)
-- [pytest-cov](http://pytest-cov.readthedocs.io/en/latest/)
-- [YAPF](https://github.com/google/yapf)
-- [Flake8](http://flake8.readthedocs.io/en/latest/)
-- [PEP257](https://pep257.readthedocs.io/en/latest/)
-- [isort](https://github.com/timothycrosley/isort/)
+- [pytest-cov](http://pytest-cov.readthedocs.io/en/latest/)  (Run code [coverage](http://coverage.readthedocs.io/en/latest) with the [pytest](http://pytest.org/latest/) library)
+- [Flake8](http://flake8.readthedocs.io/en/latest/)  (Style check based on [pep8](https://github.com/PyCQA/pycodestyle) and [pyflakes](https://github.com/pyflakes/pyflakes))
+- [PEP257](https://pep257.readthedocs.io/en/latest/)  (Style check docstrings)
+- [YAPF](https://github.com/google/yapf)  (Formatter for code)
+- [isort](https://github.com/timothycrosley/isort/)  (Formatter for import statements)
 
 Plus some extra goodies, like:
 - Single file configuration for all the tools (still working on eliminating 
