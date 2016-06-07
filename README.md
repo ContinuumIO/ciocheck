@@ -5,13 +5,11 @@ Continuum check/test suite helper.
 
 It leverages on the different available linting, formatting and testing tools 
 availbale for Python, including:
-- [pytest](http://pytest.org/latest/)
-- [coverage](http://coverage.readthedocs.io/en/latest)
-- [pytest-cov](http://pytest-cov.readthedocs.io/en/latest/)
-- [YAPF](https://github.com/google/yapf)
-- [Flake8](http://flake8.readthedocs.io/en/latest/)
-- [PEP257](https://pep257.readthedocs.io/en/latest/)
-- [isort](https://github.com/timothycrosley/isort/)
+- [pytest-cov](http://pytest-cov.readthedocs.io/en/latest/)  (Run code [coverage](http://coverage.readthedocs.io/en/latest) with the [pytest](http://pytest.org/latest/) library)
+- [Flake8](http://flake8.readthedocs.io/en/latest/)  (Style check based on [pep8](https://github.com/PyCQA/pycodestyle) and [pyflakes](https://github.com/pyflakes/pyflakes))
+- [PEP257](https://pep257.readthedocs.io/en/latest/)  (Style check docstrings)
+- [YAPF](https://github.com/google/yapf)  (Formatter for code)
+- [isort](https://github.com/timothycrosley/isort/)  (Formatter for import statements)
 
 Plus some extra goodies, like:
 - Single file configuration for all the tools (still working on eliminating 
@@ -28,7 +26,6 @@ Configuration is saved in a single file named `.ciocheck`
 # https://github.com/timothycrosley/isort/wiki/isort-Settings
 # -----------------------------------------------------------------------------
 [settings]
-balanced_wrapping = true
 from_first = true
 import_heading_stdlib = Standard library imports
 import_heading_firstparty = Local imports
@@ -75,10 +72,8 @@ directory = coverage_html_report
 # https://github.com/google/yapf#formatting-style
 # -----------------------------------------------------------------------------
 [style]
-based_on_style = pep8
 column_limit = 79
 spaces_before_comment = 2
-split_before_logical_operator = true
 ```
 
 # Copyright and encoding headers
