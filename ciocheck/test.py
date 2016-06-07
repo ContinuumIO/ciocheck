@@ -25,6 +25,7 @@ import sys
 import coverage.summary
 import flake8.engine
 import pep257
+import pylint.epylint
 import pytest_cov.plugin
 
 # Local imports
@@ -32,6 +33,10 @@ from ciocheck import (CONFIGURATION_FILE, COPYRIGHT_HEADER_FILE,
                       DEFAULT_COPYRIGHT_HEADER, DEFAULT_ENCODING_HEADER,
                       ENCODING_HEADER_FILE)
 from ciocheck.setup_atomic_replace import atomic_replace
+
+YAPF_CODE = 10
+ISORT_CODE = 11
+YAPF_ISORT_CODE = 12
 
 HERE = dirname(realpath(__file__))
 PY2 = sys.version_info[0] == 2
@@ -105,15 +110,20 @@ class Test(object):
 
     CONFIG_SECTIONS = {'.flake8': ['flake8'],
                        '.pep257': ['pep257'],
-                       '.isort.cfg': ['settings'], }
+                       '.isort.cfg': ['settings'],
+                       '.pylintrc': ['MESSAGES CONTROL'], }
     COPYRIGHT_RE = re.compile('# *Copyright ')
 
     def __init__(self,
                  root,
                  folder_or_file,
-                 format_only=False,
+                 format_code=False,
+                 format_imports=False,
                  git_staged_only=False,
-                 profile_formatting=False):
+                 profile_formatting=False,
+                 add_init=False,
+                 add_headers=False,
+                 run_test=False):
         """Main test/check linter tool.
 
         Parameters
@@ -131,9 +141,13 @@ class Test(object):
         """
         # Run options
         self.root = root
+        self.format_code = format_code
+        self.format_imports = format_imports
         self.git_staged_only = git_staged_only
-        self.format_only = format_only
         self.profile_formatting = profile_formatting
+        self.add_init = add_init
+        self.add_headers = add_headers
+        self.run_test = run_test
 
         if osp.isfile(folder_or_file):
             self.root_modules = None
@@ -146,7 +160,7 @@ class Test(object):
         self._cpu_count = None
         self.copyright_header = DEFAULT_COPYRIGHT_HEADER
         self.encoding_header = DEFAULT_ENCODING_HEADER
-        self.failed = []
+        self.failed = set()
         self.git_staged_pyfiles = None
         self.pyfiles = None
         self.step = 0
@@ -285,7 +299,7 @@ class Test(object):
     def get_py_files(self):
         """Return all python files in the module."""
         if self.file:
-            self.pyfiles = [self.file]
+            self.pyfiles = [osp.join(self.root, self.file)]
         else:
             module_path = osp.join(self.root, self.root_modules[0])
             if self.pyfiles is None:
@@ -364,12 +378,12 @@ class Test(object):
         if not have_coding:
             print("\nNo encoding header comment in \t" + short_path)
             if "encoding_header" not in self.failed:
-                self.failed.append("encoding_header")
+                self.failed.add("encoding_header")
 
         if not have_copyright:
             print("\nNo copyright header comment in \t" + short_path)
             if "copyright_header" not in self.failed:
-                self.failed.append("copyright_header")
+                self.failed.add("copyright_header")
 
         # Note: do NOT automatically change the copyright owner or date. The
         # copyright owner/date is a statement of legal reality, not a way to
@@ -394,6 +408,8 @@ class Test(object):
         cmd = [sys.executable, os.path.join(HERE, 'setup_yapf_task.py')]
         env = os.environ.copy()
         env['CIOCHECK_PROJECT_ROOT'] = self.root
+        env['CIOCHECK_YAPF'] = str(self.format_code)
+        env['CIOCHECK_ISORT'] = str(self.format_imports)
         proc = subprocess.Popen(cmd + paths, env=env)
         return proc
 
@@ -440,11 +456,19 @@ class Test(object):
                 # we pop(0) because the first process is the oldest
                 proc = processes.pop(0)
                 proc.wait()
-                if proc.returncode != 0:
-                    # we fail the tests if we reformat anything, because
+                code = proc.returncode
+                print([code])
+                if code != 0:
+                    print(code)
+                    # We fail the tests if we reformat anything, because
                     # we want CI to complain if a PR didn't run yapf
-                    if len(self.failed) == 0 or self.failed[-1] != 'yapf':
-                        self.failed.append("yapf")
+                    if code == YAPF_CODE and not self.format_imports:
+                        self.failed.add("yapf")
+                    elif code == ISORT_CODE and not self.format_code:
+                        self.failed.add("isort")
+                    elif (code == YAPF_ISORT_CODE and self.format_code and
+                            self.format_imports):
+                        self.failed.add("yapf-isort")
 
         def await_all_processes():
             while processes:
@@ -484,7 +508,7 @@ class Test(object):
         if report.total_errors > 0:
             print("\n{0} flake8 errors, see above to fix "
                   "them".format(str(report.total_errors)))
-            self.failed.append('flake8')
+            self.failed.add('flake8')
         else:
             print("\nflake8 passed!")
 
@@ -504,7 +528,7 @@ class Test(object):
 
         try:
             if self.file:
-                path = self.file
+                path = os.path.join(self.root, self.file)
             else:
                 path = os.path.join(self.root, self.root_modules[0])
 
@@ -516,15 +540,39 @@ class Test(object):
 
         if code == pep257.INVALID_OPTIONS_RETURN_CODE:
             print("\npep257 found invalid configuration.")
-            self.failed.append('pep257')
+            self.failed.add('pep257')
         elif code == pep257.VIOLATIONS_RETURN_CODE:
             print("\npep257 reported some violations.")
-            self.failed.append('pep257')
+            self.failed.add('pep257')
         elif code == pep257.NO_VIOLATIONS_RETURN_CODE:
             print("\npep257 says docstrings look good.")
         else:
             raise RuntimeError("unexpected code from pep257: "
                                "{0}".format(str(code)))
+
+    def check_pylint(self):
+        """Run pylint checks."""
+        self.print_section("Running PyLint")
+        lint = pylint.epylint
+        count = 0
+        failed = False
+        for module_name in self.get_files():
+            out, err = lint.py_run(module_name, return_std=True)
+            for output in [out.read().split('\n'), err.read().split('\n')]:
+                for line in output:
+                    if self.root in line:
+                        count += 1
+                    new_line = line.replace(' error ', '\n\terror ')
+                    new_line = new_line.replace(' warning ', '\n\twarning ')
+
+                    if new_line.strip():
+                        print(new_line.replace(self.root,
+                                               '\n{0}.\t.'.format(count)))
+                    if '\n\terror ' in new_line and not failed:
+                        failed = True
+
+        if count and failed:
+            self.failed.add('pylint')
 
     def check_pytest(self):
         """Run pytest test suite."""
@@ -542,10 +590,10 @@ class Test(object):
             errno = pytest.main(self.pytest_args)
             if errno != 0:
                 print("\npytest failed, code {errno}".format(errno=errno))
-                self.failed.append('pytest')
+                self.failed.add('pytest')
         except pytest_cov.plugin.CoverageError as e:
             print("\nTest coverage failure: {0}".format(str(e)))
-            self.failed.append('pytest-coverage')
+            self.failed.add('pytest-coverage')
 
     def run(self):
         """Run all checks."""
@@ -555,24 +603,28 @@ class Test(object):
                       len(self.get_git_staged_py_files()), len(
                           self.get_py_files())))
 
-        self.add_missing_init_py()
-        self.check_headers()
+        if self.add_init:
+            self.add_missing_init_py()
+
+        if self.add_headers:
+            self.check_headers()
 
         # Only yapf is slow enough to really be worth profiling
         if self.profile_formatting:
-            with Profiler():
-                self.check_yapf()
-        else:
+            if self.format_code or self.format_imports:
+                with Profiler():
+                    self.check_yapf()
+        elif self.format_code or self.format_imports:
             self.check_yapf()
 
         self.check_flake8()
         self.check_pep257()
+#        self.check_pylint()
 
-        if not self.format_only:
+        if self.run_test:
             self.check_pytest()
 
         self._clean()
-
         if os.path.exists(os.path.join(self.root, '.eggs')):
             print(".eggs directory exists which means some dependency was "
                   "not installed via conda/pip")
@@ -580,7 +632,7 @@ class Test(object):
                   "in .binstar.yml)")
             print("  (if this happens on your workstation, try conda/pip "
                   "installing the deps and deleting .eggs")
-            self.failed.append("eggs-directory-exists")
+            self.failed.add("eggs-directory-exists")
 
         self.print_section('Summary')
         if len(self.failed) > 0:
@@ -590,7 +642,7 @@ class Test(object):
             if self.git_staged_only:
                 print("Skipped some files (only checked {0} added/modified "
                       "files).\n".format(len(self.get_git_staged_py_files())))
-            if self.format_only:
+            if not self.run_test:
                 print("Formatting looks good, but didn't run tests.\n")
             else:
                 print("All tests passed!\n")
