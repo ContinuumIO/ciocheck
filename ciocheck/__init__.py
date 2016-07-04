@@ -7,6 +7,11 @@
 # -----------------------------------------------------------------------------
 """ciocheck check/tester tool."""
 
+
+version_info = (0, 1, 0, 'dev0')
+__version__ = '.'.join(map(str, version_info))
+
+
 CONFIGURATION_FILE = '.ciocheck'
 ENCODING_HEADER_FILE = '.cioencoding'
 COPYRIGHT_HEADER_FILE = '.ciocopyright'

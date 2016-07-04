@@ -24,7 +24,7 @@ import sys
 # Third party imports
 import coverage.summary
 import flake8.engine
-import pep257
+import pydocstyle
 import pylint.epylint
 import pytest_cov.plugin
 
@@ -109,7 +109,7 @@ class Test(object):
     """Main test/check linter tool."""
 
     CONFIG_SECTIONS = {'.flake8': ['flake8'],
-                       '.pep257': ['pep257'],
+                       '.pydocstyle': ['pydocstyle'],
                        '.isort.cfg': ['settings'],
                        '.pylintrc': ['MESSAGES CONTROL'], }
     COPYRIGHT_RE = re.compile('# *Copyright ')
@@ -512,18 +512,18 @@ class Test(object):
         else:
             print("\nflake8 passed!")
 
-    def check_pep257(self):
-        """Run pep257 checks."""
-        self.print_section("Running pep257")
+    def check_pydocstyle(self):
+        """Run pydocstyle checks."""
+        self.print_section("Running pydocstyle")
 
-        # Hack pep257 not to spam enormous amounts of debug logging if you use
-        # pytest -s. run_pep257() below calls log.setLevel
+        # Hack pydocstyle not to spam enormous amounts of debug logging if you
+        # use pytest -s. run_pydocstyle() below calls log.setLevel
         def ignore_set_level(level):
             pass
 
-        pep257.log.setLevel = ignore_set_level
+        pydocstyle.log.setLevel = ignore_set_level
 
-        # Hack (replacing argv temporarily because pep257 looks at it)
+        # Hack (replacing argv temporarily because pydocstyle looks at it)
         old_argv = sys.argv
 
         try:
@@ -532,22 +532,22 @@ class Test(object):
             else:
                 path = os.path.join(self.root, self.root_modules[0])
 
-            sys.argv = ['pep257', path]
+            sys.argv = ['pydocstyle', path]
             with ShortOutput(self.root):
-                code = pep257.run_pep257()
+                code = pydocstyle.run_pydocstyle()
         finally:
             sys.argv = old_argv
 
-        if code == pep257.INVALID_OPTIONS_RETURN_CODE:
-            print("\npep257 found invalid configuration.")
-            self.failed.add('pep257')
-        elif code == pep257.VIOLATIONS_RETURN_CODE:
-            print("\npep257 reported some violations.")
-            self.failed.add('pep257')
-        elif code == pep257.NO_VIOLATIONS_RETURN_CODE:
-            print("\npep257 says docstrings look good.")
+        if code == pydocstyle.INVALID_OPTIONS_RETURN_CODE:
+            print("\npydocstyle found invalid configuration.")
+            self.failed.add('pydocstyle')
+        elif code == pydocstyle.VIOLATIONS_RETURN_CODE:
+            print("\npydocstyle reported some violations.")
+            self.failed.add('pydocstyle')
+        elif code == pydocstyle.NO_VIOLATIONS_RETURN_CODE:
+            print("\npydocstyle says docstrings look good.")
         else:
-            raise RuntimeError("unexpected code from pep257: "
+            raise RuntimeError("unexpected code from pydocstyle: "
                                "{0}".format(str(code)))
 
     def check_pylint(self):
@@ -618,7 +618,7 @@ class Test(object):
             self.check_yapf()
 
         self.check_flake8()
-        self.check_pep257()
+        self.check_pydocstyle()
 #        self.check_pylint()
 
         if self.run_test:
