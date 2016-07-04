@@ -4,13 +4,11 @@ package:
 
 source:
   git_url: ../
-  git_tag: {% if environ.get('PRERELEASE', '') %} HEAD {% else %} {{ environ.get('GIT_DESCRIBE_TAG') }} {% endif %}
+  git_tag: {{ environ.get('GIT_DESCRIBE_TAG') }}
 
 build:
-  noarch_python: {% if environ.get('PRERELEASE', '') and not environ.get('BINSTAR_BUILD', '') %} True {% else %} {% endif %} [not win]
-  number: {% if environ.get('PRERELEASE', '') %} {{ environ.get('GIT_DESCRIBE_NUMBER', 0) }} {% else %} 0 {% endif %}
-  script_env:
-    - PRERELEASE
+  noarch_python: True
+  number: 0
 
 requirements:
   build:
@@ -20,14 +18,14 @@ requirements:
     - python
     - coverage
     - flake8
-    - isort          # pending
-    - pep257         # pending
+    - isort
+    - pydocstyle
     - pytest
     - pytest-cov
-    - pytest-xdist   # bokeh
-    - yapf           # pending
+    - pytest-xdist
+    - yapf
 
 about:
   home: https://github.com/ContinuumIO/ciocheck
-  summary: Continuum check/test suite helper.
-
+  summary: "Continuum check/test suite helper"
+  dev_url: https://github.com/ContinuumIO/ciocheck
