@@ -7,7 +7,7 @@ It leverages on the different available linting, formatting and testing tools
 availbale for Python, including:
 - [pytest-cov](http://pytest-cov.readthedocs.io/en/latest/)  (Run code [coverage](http://coverage.readthedocs.io/en/latest) with the [pytest](http://pytest.org/latest/) library)
 - [Flake8](http://flake8.readthedocs.io/en/latest/)  (Style check based on [pep8](https://github.com/PyCQA/pycodestyle) and [pyflakes](https://github.com/pyflakes/pyflakes))
-- [PEP257](https://pep257.readthedocs.io/en/latest/)  (Style check docstrings)
+- [pydocstyle](https://pydocstyle.readthedocs.io/en/latest/)  (Style check docstrings)
 - [YAPF](https://github.com/google/yapf)  (Formatter for code)
 - [isort](https://github.com/timothycrosley/isort/)  (Formatter for import statements)
 
@@ -16,6 +16,10 @@ Plus some extra goodies, like:
   redundancy)
 - Auto addition of `__init__.py` files
 - Auto addition of custom encoding and copyright header files
+
+# Why ciocheck?
+There are many post commit tools out there for testing code quality, but the
+idea of ciocheck is to perform check before a commit-push.
 
 # Example config file
 Configuration is saved in a single file named `.ciocheck`
@@ -45,10 +49,10 @@ max-line-length = 79
 max-complexity = 10
 
 # -----------------------------------------------------------------------------
-# PEP257
-# https://pep257.readthedocs.io/en/latest/usage.html#example
+# pydocstyle
+# https://pydocstyle.readthedocs.io/en/latest/usage.html#example
 # -----------------------------------------------------------------------------
-[pep257]
+[pydocstyle]
 add-ignore = D203
 inherit = false
 
@@ -83,24 +87,30 @@ TODO
 # Usage
 
 ```bash
-usage: ciocheck [-h] [--format] [--staged] [--profile] folder_or_file
+usage: ciocheck [-h] [--format-imports] [--format-code] [--staged] [--profile]
+                [--add-init] [--add-headers] [--test]
+                folder_or_file
 
 Run Continuum IO test suite.
 
 positional arguments:
-  folder_or_file  module (folder) or file to analize
+  folder_or_file    module (folder) or file to analize
 
 optional arguments:
-  -h, --help      show this help message and exit
-  --format        Only run the linters and formatters not the actual tests
-  --staged        Only run the linters and formatters on files added to the
-                  commit
-  --profile       Profile the linter and formatter steps
+  -h, --help        show this help message and exit
+  --format-imports  Run isort to format python import statements
+  --format-code     Run the yapf code formatter
+  --staged          Run the options on all python files
+  --profile         Profile the linter and formatter steps
+  --add-init        Add missing __init__.py files
+  --add-headers     Add encoding and copyright headers
+  --test            Run pytest
+
 ```
 
-Check format only in `some_module`.
+Check format of imports only in `some_module`.
 
 ```bash
-$ ciocheck some_module/ --format
+$ ciocheck some_module/ --format-imports
 ```
 
