@@ -41,18 +41,19 @@ setup(
     author_email='goanpeca@gmail.com',
     maintainer='Gonzalo Peña-Castellanos',
     maintainer_email='goanpeca@gmail.com',
-    description='A stand alone PyQt/PySide GUI application for managing conda '
-                'packages and environments.',
     packages=packages,
-    dependencies=['coverage',
-                  'flake8',
-                  'isort',
-                  'pytdocstyle',
-                  'pytest',
-                  'pytest-cov',
-                  'pytest-xdist',
-                  'yapf',
-                  ],
+    dependencies=[
+        'coverage',
+        'flake8',
+        'isort',
+        'pydocstyle',
+        'pylint',
+        'pytest',
+        'pytest-cov',
+        'pytest-json',
+        'pytest-xdist',
+        'yapf',
+        ],
     entry_points={
         'gui_scripts': [
             'ciocheck = ciocheck.main:main'

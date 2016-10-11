@@ -1,10 +1,6 @@
 package:
   name: ciocheck
-  version: {{ environ.get('GIT_DESCRIBE_TAG', '').replace('v', '') }}
-
-source:
-  git_url: ../
-  git_tag: {{ environ.get('GIT_DESCRIBE_TAG') }}
+  version: '0.2'
 
 build:
   noarch_python: True
@@ -20,12 +16,15 @@ requirements:
     - flake8
     - isort
     - pydocstyle
+    - pylint
     - pytest
     - pytest-cov
+    - pytest-json
     - pytest-xdist
     - yapf
 
 about:
   home: https://github.com/ContinuumIO/ciocheck
   summary: "Continuum check/test suite helper"
+  license: MIT
   dev_url: https://github.com/ContinuumIO/ciocheck
