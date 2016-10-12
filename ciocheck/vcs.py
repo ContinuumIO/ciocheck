@@ -110,7 +110,9 @@ class GitDiffTool(DiffToolBase):
         self.path = path
         self._top_level = None
 
-    def _git_run_helper(self, branch=DEFAULT_BRANCH, files_only=False,
+    def _git_run_helper(self,
+                        branch=DEFAULT_BRANCH,
+                        files_only=False,
                         mode=None):
         """TODO."""
         command = [
@@ -135,7 +137,7 @@ class GitDiffTool(DiffToolBase):
             command += [
                 '--name-only',
                 '-z',  # Means nul-separated names
-                ]
+            ]
 
             output, error = run_command(command, cwd=self.path)
             print(error)
@@ -361,8 +363,8 @@ class GitDiffTool(DiffToolBase):
 
     def _diff_committed(self, branch='origin/master'):
         """Return changes for committed files."""
-        result = self._git_run_helper(branch=branch, files_only=False,
-                                      mode=COMMITED_MODE)
+        result = self._git_run_helper(
+            branch=branch, files_only=False, mode=COMMITED_MODE)
         return result
 
     def _diff_staged(self):
@@ -391,15 +393,14 @@ class GitDiffTool(DiffToolBase):
         else:
             output, error = run_command(
                 ['git', 'rev-parse', '--show-toplevel', '--encoding=utf-8'],
-                cwd=self.path,
-                )
+                cwd=self.path, )
             result = output.split('\n')[0]
         return result
 
     def commited_files(self, branch=DEFAULT_BRANCH):
         """Return list of commited files."""
-        result = self._git_run_helper(branch=branch, files_only=True,
-                                      mode=COMMITED_MODE)
+        result = self._git_run_helper(
+            branch=branch, files_only=True, mode=COMMITED_MODE)
         return result
 
     def staged_files(self):
@@ -440,7 +441,8 @@ class NoDiffTool(DiffToolBase):
         if lines:
             results = {}
             for r in res:
-                results[r] = ([-1], [-1],)
+                results[r] = ([-1],
+                              [-1], )
         else:
             results = res
         return results
@@ -488,7 +490,7 @@ class DiffTool(object):
         GitDiffTool,
         HgDiffTool,
         NoDiffTool,
-        ]
+    ]
 
     def __init__(self, paths):
         """Generic diff tool for handling mercurial, git and no vcs folders."""

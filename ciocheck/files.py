@@ -43,13 +43,11 @@ class FileManager(object):
                 results = get_files(paths=self.paths)
                 results = filter_files(results, extensions)
             elif file_mode == MODIFIED_FILES:
-                results = self.get_modified_files(branch=branch,
-                                                  diff_mode=diff_mode,
-                                                  extensions=extensions)
+                results = self.get_modified_files(
+                    branch=branch, diff_mode=diff_mode, extensions=extensions)
             elif file_mode == MODIFIED_LINES:
-                results = self.get_modified_file_lines(branch=branch,
-                                                       diff_mode=diff_mode,
-                                                       extensions=extensions)
+                results = self.get_modified_file_lines(
+                    branch=branch, diff_mode=diff_mode, extensions=extensions)
             self.cache[cache_key] = results
 
         return results

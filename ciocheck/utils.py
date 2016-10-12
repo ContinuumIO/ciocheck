@@ -47,8 +47,8 @@ class Profiler(object):
     def __exit__(self, type_, value, traceback):
         """Disable profiler and print stats."""
         self._profiler.disable()
-        profile_stat = pstats.Stats(self._profiler,
-                                    stream=sys.stdout).sort_stats('cumulative')
+        profile_stat = pstats.Stats(
+            self._profiler, stream=sys.stdout).sort_stats('cumulative')
         profile_stat.print_stats()
 
 
@@ -94,8 +94,7 @@ def run_command(args, cwd=None):
         args,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
-        cwd=cwd,
-        )
+        cwd=cwd, )
     output, error = process.communicate()
 
     if isinstance(output, bytes):
@@ -118,8 +117,8 @@ def get_files(paths,
             new_folders = []
             for folder in folders:
                 if folder[0] != '.':
-                    tests = [folder != ignore_folder for ignore_folder in
-                             ignore_folders]
+                    tests = [folder != ignore_folder
+                             for ignore_folder in ignore_folders]
                     if all(tests):
                         new_folders.append(folder)
             folders[:] = new_folders
@@ -129,8 +128,8 @@ def get_files(paths,
             for file in files:
                 tests, pass_tests = [True], [True]
                 if ignore_exts:
-                    tests = [not file.endswith('.' + ext) for ext in
-                             ignore_exts]
+                    tests = [not file.endswith('.' + ext)
+                             for ext in ignore_exts]
                 if exts:
                     pass_tests = [file.endswith('.' + ext) for ext in exts]
 
@@ -226,7 +225,7 @@ def make_sorted_dict(dic):
 def test():
     """Main local test."""
     paths = [os.path.dirname(os.path.realpath(__file__))]
-    files = get_files(paths, exts=('py',))
+    files = get_files(paths, exts=('py', ))
     for file in files:
         print(file)
 

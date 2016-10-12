@@ -76,7 +76,7 @@ class CoverageTool(Tool):
     """Coverage tool runner."""
     name = 'coverage'
     language = 'python'
-    extensions = ('py',)
+    extensions = ('py', )
 
     # Config
     config_file = COVERAGE_CONFIGURATION_FILE
@@ -121,7 +121,7 @@ class PytestTool(Tool):
     """Pytest tool runner."""
     name = 'pytest'
     language = 'python'
-    extensions = ('py',)
+    extensions = ('py', )
 
     config_file = 'pytest.ini'
     config_sections = [('pytest', 'pytest')]
@@ -165,8 +165,8 @@ class PytestTool(Tool):
         """Run pytest test suite."""
         # If used with qtpy and pytest-qt
         self._setup_pytest_coverage_args(paths)
-        output, error = run_command(['py.test'] + self.pytest_args,
-                                    cwd=self.cmd_root)
+        output, error = run_command(
+            ['py.test'] + self.pytest_args, cwd=self.cmd_root)
         if error:
             print(error)
 
@@ -176,8 +176,7 @@ class PytestTool(Tool):
         covered_lines = self.parse_coverage()
         pytest_report = self.parse_pytest_report()
 
-        results = {'coverage': covered_lines,
-                   'pytest': pytest_report}
+        results = {'coverage': covered_lines, 'pytest': pytest_report}
         return results
 
     def parse_pytest_report(self):

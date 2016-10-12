@@ -63,7 +63,7 @@ DEFAULT_CIOCHECK_CONFIG = {
     # Linters/Formaters/Testers
     'check': ['pep8'],
     'enforce': [],
-    }
+}
 
 
 class CustomConfigParser(configparser.ConfigParser):

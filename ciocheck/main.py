@@ -53,25 +53,27 @@ class Runner(object):
         for linter in check_linters:
             print('Running "{}"...'.format(linter.name))
             tool = linter(self.cmd_root)
-            files = self.file_manager.get_files(branch=self.branch,
-                                                diff_mode=self.diff_mode,
-                                                file_mode=self.file_mode,
-                                                extensions=tool.extensions)
+            files = self.file_manager.get_files(
+                branch=self.branch,
+                diff_mode=self.diff_mode,
+                file_mode=self.file_mode,
+                extensions=tool.extensions)
             all_tools.append(tool)
             tool.create_config(self.config)
             self.all_results[tool.name] = {
                 'files': files,
                 'results': tool.run(files),
-                }
+            }
 
         # Formaters
         for formater in check_formaters:
             print('Running "{}"'.format(formater.name))
-            tool = tool(self.cmd_root)
-            files = self.file_manager.get_files(branch=self.branch,
-                                                diff_mode=self.diff_mode,
-                                                file_mode=self.file_mode,
-                                                extensions=tool.extensions)
+            tool = formater(self.cmd_root)
+            files = self.file_manager.get_files(
+                branch=self.branch,
+                diff_mode=self.diff_mode,
+                file_mode=self.file_mode,
+                extensions=tool.extensions)
             tool.create_config(self.config)
             all_tools.append(tool)
             results = tool.format(files)
@@ -81,18 +83,19 @@ class Runner(object):
                 self.all_results[tool.name] = {
                     'files': files,
                     'results': results,
-                    }
+                }
 
         if run_multi:
             tool = MultiFormater(self.cmd_root, self.check)
-            files = self.file_manager.get_files(branch=self.branch,
-                                                diff_mode=self.diff_mode,
-                                                file_mode=self.file_mode,
-                                                extensions=tool.extensions)
+            files = self.file_manager.get_files(
+                branch=self.branch,
+                diff_mode=self.diff_mode,
+                file_mode=self.file_mode,
+                extensions=tool.extensions)
             self.all_results[tool.name] = {
                 'files': files,
                 'results': tool.format(files),
-                }
+            }
 
         # Tests
         for tester in check_testers:
@@ -100,10 +103,11 @@ class Runner(object):
             tool = tester(self.cmd_root)
             tool.create_config(self.config)
             all_tools.append(tool)
-            files = self.file_manager.get_files(branch=self.branch,
-                                                diff_mode=self.diff_mode,
-                                                file_mode=self.file_mode,
-                                                extensions=tool.extensions)
+            files = self.file_manager.get_files(
+                branch=self.branch,
+                diff_mode=self.diff_mode,
+                file_mode=self.file_mode,
+                extensions=tool.extensions)
             results = tool.run(files)
             self.all_results.update(results)
 
@@ -132,45 +136,51 @@ def main():
     """CLI `Parser for ciocheck`."""
     description = 'Run Continuum IO test suite.'
     parser = argparse.ArgumentParser(description=description)
-    parser.add_argument('folders_or_files',
-                        help='Folder to analize. Use from repo root.',
-                        nargs=1)
-    parser.add_argument('--file-mode',
-                        dest='file_mode',
-                        nargs=1,
-                        choices=['lines', 'files', 'all'],
-                        default=None,
-                        help=('Define if the tool should run on modified '
-                              'lines of files (default), modified files or '
-                              'all files'))
-    parser.add_argument('--diff-mode',
-                        dest='diff_mode',
-                        nargs=1,
-                        choices=['commited', 'staged', 'unstaged'],
-                        default=None,
-                        help='Define diff mode. Default mode is commited.')
-    parser.add_argument('--branch',
-                        dest='branch',
-                        nargs=1,
-                        default=None,
-                        help=('Define branch to compare to. Default branch is '
-                              '"origin/master"'))
-    parser.add_argument('--check',
-                        dest='check',
-                        nargs='+',
-                        choices=['pep8', 'pydocstyle', 'flake8', 'pylint',
-                                 'pyformat', 'isort', 'yapf', 'pytest'],
-                        default=None,
-                        help='Select tools to run. Default is "pep8"')
-    parser.add_argument('--enforce',
-                        dest='enforce',
-                        choices=['pep8', 'pydocstyle', 'flake8', 'pylint',
-                                 'pyformat', 'isort', 'yapf', 'pytest'],
-                        default=None,
-                        nargs='+',
-                        help=('Select tools to enforce. Enforced tools will '
-                              'fail if a result is obtained. Default is '
-                              'none.'))
+    parser.add_argument(
+        'folders_or_files',
+        help='Folder to analize. Use from repo root.',
+        nargs=1)
+    parser.add_argument(
+        '--file-mode',
+        dest='file_mode',
+        nargs=1,
+        choices=['lines', 'files', 'all'],
+        default=None,
+        help=('Define if the tool should run on modified '
+              'lines of files (default), modified files or '
+              'all files'))
+    parser.add_argument(
+        '--diff-mode',
+        dest='diff_mode',
+        nargs=1,
+        choices=['commited', 'staged', 'unstaged'],
+        default=None,
+        help='Define diff mode. Default mode is commited.')
+    parser.add_argument(
+        '--branch',
+        dest='branch',
+        nargs=1,
+        default=None,
+        help=('Define branch to compare to. Default branch is '
+              '"origin/master"'))
+    parser.add_argument(
+        '--check',
+        dest='check',
+        nargs='+',
+        choices=['pep8', 'pydocstyle', 'flake8', 'pylint', 'pyformat', 'isort',
+                 'yapf', 'pytest'],
+        default=None,
+        help='Select tools to run. Default is "pep8"')
+    parser.add_argument(
+        '--enforce',
+        dest='enforce',
+        choices=['pep8', 'pydocstyle', 'flake8', 'pylint', 'pyformat', 'isort',
+                 'yapf', 'pytest'],
+        default=None,
+        nargs='+',
+        help=('Select tools to enforce. Enforced tools will '
+              'fail if a result is obtained. Default is '
+              'none.'))
     cli_args = parser.parse_args()
     root = os.getcwd()
     folders = []

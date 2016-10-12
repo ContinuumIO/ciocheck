@@ -64,15 +64,19 @@ class Linter(Tool):
     def run(self, paths):
         """Run linter and return a list of dicts."""
         self.paths = list(paths.keys()) if isinstance(paths, dict) else paths
-        args = list(self.command)
-        args += self.paths
-        out, err = run_command(args)
-        if self.output_on_stderr:
-            string = err
+        if self.paths:
+            args = list(self.command)
+            args += self.paths
+            out, err = run_command(args)
+            if self.output_on_stderr:
+                string = err
+            else:
+                string = out
+            results = self._parse(string)
+            results = self.extra_processing(results)
         else:
-            string = out
-        results = self._parse(string)
-        results = self.extra_processing(results)
+            results = []
+
         return results
 
 
@@ -80,8 +84,8 @@ class Flake8Linter(Linter):
     """Flake8 python tool runner."""
     language = 'python'
     name = 'flake8'
-    extensions = ('py',)
-    command = ('flake8',)
+    extensions = ('py', )
+    command = ('flake8', )
     config_file = '.flake8'
     config_sections = [('flake8', 'flake8')]
 
@@ -99,8 +103,8 @@ class Pep8Linter(Linter):
     """Pep8 python tool runner."""
     language = 'python'
     name = 'pep8'
-    extensions = ('py',)
-    command = ('pep8',)
+    extensions = ('py', )
+    command = ('pep8', )
     config_file = '.pep8'
     config_sections = [('pep8', 'pep8')]
 
@@ -117,8 +121,8 @@ class PydocstyleLinter(Linter):
     """Pydocstyle python tool runner."""
     language = 'python'
     name = 'pydocstyle'
-    extensions = ('py',)
-    command = ('pydocstyle',)
+    extensions = ('py', )
+    command = ('pydocstyle', )
     config_file = '.pydocstyle'
     config_sections = [('pydocstyle', 'pydocstyle')]
     output_on_stderr = True
@@ -139,7 +143,7 @@ class PylintLinter(Linter):
     """Pylint python tool runner."""
     language = 'python'
     name = 'pylint'
-    extensions = ('py',)
+    extensions = ('py', )
     command = ('pylint', '--output-format', 'json', '-j', '0')
     config_file = '.pydocstyle'
     config_sections = [('pydocstyle', 'pydocstyle')]
@@ -147,8 +151,7 @@ class PylintLinter(Linter):
                  ('line', 'line'),
                  ('column', 'column'),
                  ('type', 'type'),
-                 ('path', 'path'),
-                 )
+                 ('path', 'path'), )
 
     def extra_processing(self, results):
         # Make path an absolute path
@@ -162,7 +165,7 @@ LINTERS = [
     PydocstyleLinter,
     Flake8Linter,
     PylintLinter,
-   ]
+]
 
 
 def test():
@@ -172,6 +175,7 @@ def test():
     res = linter.check(paths)
     for r in res:
         print(r)
+
 
 if __name__ == '__main__':
     test()

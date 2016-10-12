@@ -35,7 +35,7 @@ class Formater(Tool):
     @staticmethod
     def code():
         current = len(MULTI_FORMATERS)
-        return current*10 + 5
+        return current * 10 + 5
 
     @classmethod
     def format_task(cls, path):
@@ -48,9 +48,8 @@ class Formater(Tool):
             changed = new_contents != old_contents
 
         except Exception as e:
-            error = "{name} crashed on {path}: {error}".format(name=cls.name,
-                                                               path=path,
-                                                               error=e)
+            error = "{name} crashed on {path}: {error}".format(
+                name=cls.name, path=path, error=e)
         result = {
             'error': error,
             'changed': changed,  # pyformat might create new init files.
@@ -58,7 +57,7 @@ class Formater(Tool):
             'old-contents': old_contents,
             'diff': diff(old_contents, new_contents),
             'created': False
-            }
+        }
 
         if changed:
             atomic_replace(path, new_contents, encoding)
@@ -79,7 +78,7 @@ class IsortFormater(Formater):
     """TODO:"""
     language = 'python'
     name = 'isort'
-    extensions = ('py',)
+    extensions = ('py', )
 
     # Config
     config_file = '.isort.cfg'
@@ -102,7 +101,7 @@ class YapfFormater(Formater):
     """TODO:"""
     language = 'python'
     name = 'yapf'
-    extensions = ('py',)
+    extensions = ('py', )
 
     # Config
     config_file = '.style.yapf'
@@ -116,8 +115,7 @@ class YapfFormater(Formater):
     def format_file(cls, path):
         """Format file for use with task queue."""
         # cmd_root is assigned to formater inside format_task... ugly!
-        style_config = os.path.join(cls.cmd_root,
-                                    cls.config_file)
+        style_config = os.path.join(cls.cmd_root, cls.config_file)
         # It might be tempting to use the "inplace" option to FormatFile, but
         # it doesn't do an atomic replace, which is dangerous, so don't use
         # it unless you submit a fix to yapf.
@@ -153,8 +151,11 @@ class MultiFormater(object):
         env = os.environ.copy()
         env['CIOCHECK_PROJECT_ROOT'] = self.cmd_root
         env['CIOCHECK_CHECK'] = str(self.check)
-        proc = subprocess.Popen(cmd + paths, env=env, stdout=subprocess.PIPE,
-                                stderr=subprocess.PIPE)
+        proc = subprocess.Popen(
+            cmd + paths,
+            env=env,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE)
         return proc
 
     @property
@@ -231,7 +232,7 @@ class PythonFormater(Formater):
     """Handle __init__.py addition and headers (copyright and encoding)."""
     language = 'python'
     name = 'pyformat'
-    extensions = ('py',)
+    extensions = ('py', )
 
     COPYRIGHT_RE = re.compile('# *Copyright ')
 
@@ -295,7 +296,7 @@ class PythonFormater(Formater):
             'old-contents': old_contents,
             'created': False,
             'error': None,
-            }
+        }
         return results
 
     def _add_missing_init_py(self, paths):
@@ -316,7 +317,7 @@ class PythonFormater(Formater):
                     'new-contents': '',
                     'old-contents': '',
                     'error': None,
-                    }
+                }
                 results.append(result)
         return results
 
@@ -338,9 +339,8 @@ class PythonFormater(Formater):
         if add_header or add_copyright:
             self._setup_headers()
             for path in paths:
-                result = self._add_headers(path,
-                                           header=add_header,
-                                           copy=add_copyright)
+                result = self._add_headers(
+                    path, header=add_header, copy=add_copyright)
                 if result:
                     results_header_copyright.append(result)
 
@@ -368,7 +368,7 @@ FORMATERS = [
     PythonFormater,
     IsortFormater,
     YapfFormater,
-    ]
+]
 
 
 def test():
