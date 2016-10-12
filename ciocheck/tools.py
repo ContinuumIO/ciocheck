@@ -80,11 +80,12 @@ class CoverageTool(Tool):
 
     # Config
     config_file = COVERAGE_CONFIGURATION_FILE
-    config_sections = [('coverage:run', 'run'),
-                       ('coverage:report', 'report'),
-                       ('coverage:html', 'html'),
-                       ('coverage:xml', 'xml'),
-                       ]
+    config_sections = [
+        ('coverage:run', 'run'),
+        ('coverage:report', 'report'),
+        ('coverage:html', 'html'),
+        ('coverage:xml', 'xml'),
+    ]
 
     def _monkey_path_coverage(self):
         """Enforce the value of `skip_covered`, ignored by pytest-cov.
@@ -212,7 +213,7 @@ class PytestTool(Tool):
 TOOLS = [
     CoverageTool,
     PytestTool,
-    ]
+]
 
 
 def test():

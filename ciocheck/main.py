@@ -42,68 +42,69 @@ class Runner(object):
         """Run tools."""
         self.clean()
 
-        CHECK_LINTERS = [l for l in LINTERS if l.name in self.check]
-        CHECK_FORMATERS = [f for f in FORMATERS if f.name in self.check]
+        check_linters = [l for l in LINTERS if l.name in self.check]
+        check_formaters = [f for f in FORMATERS if f.name in self.check]
+        check_testers = [t for t in TOOLS if t.name in self.check]
         run_multi = any(f for f in MULTI_FORMATERS if f.name in self.check)
 
         all_tools = []
 
         # Linters
-        for tool in CHECK_LINTERS:
-            print('Running "{}"...'.format(tool.name))
-            t = tool(self.cmd_root)
+        for linter in check_linters:
+            print('Running "{}"...'.format(linter.name))
+            tool = linter(self.cmd_root)
             files = self.file_manager.get_files(branch=self.branch,
                                                 diff_mode=self.diff_mode,
                                                 file_mode=self.file_mode,
-                                                extensions=t.extensions)
-            all_tools.append(t)
-            t.create_config(self.config)
-            self.all_results[t.name] = {
+                                                extensions=tool.extensions)
+            all_tools.append(tool)
+            tool.create_config(self.config)
+            self.all_results[tool.name] = {
                 'files': files,
-                'results': t.check(files),
+                'results': tool.check(files),
                 }
 
         # Formaters
-        for tool in CHECK_FORMATERS:
-            print('Running "{}"'.format(tool.name))
-            t = tool(self.cmd_root)
+        for formater in check_formaters:
+            print('Running "{}"'.format(formater.name))
+            tool = tool(self.cmd_root)
             files = self.file_manager.get_files(branch=self.branch,
                                                 diff_mode=self.diff_mode,
                                                 file_mode=self.file_mode,
-                                                extensions=t.extensions)
-            t.create_config(self.config)
-            all_tools.append(t)
-            results = t.format(files)
+                                                extensions=tool.extensions)
+            tool.create_config(self.config)
+            all_tools.append(tool)
+            results = tool.format(files)
             # Pyformat might include files in results that are not in files
             # like when an init is created
             if results:
-                self.all_results[t.name] = {
+                self.all_results[tool.name] = {
                     'files': files,
                     'results': results,
                     }
 
         if run_multi:
-            t = MultiFormater(self.cmd_root, self.check)
+            tool = MultiFormater(self.cmd_root, self.check)
             files = self.file_manager.get_files(branch=self.branch,
                                                 diff_mode=self.diff_mode,
                                                 file_mode=self.file_mode,
-                                                extensions=t.extensions)
-            self.all_results[t.name] = {
+                                                extensions=tool.extensions)
+            self.all_results[tool.name] = {
                 'files': files,
-                'results': t.format(files),
+                'results': tool.format(files),
                 }
 
         # Tests
-        for tool in TOOLS:
-            print('Running "{}"'.format(tool.name))
-            t = tool(self.cmd_root)
-            t.create_config(self.config)
-            all_tools.append(t)
+        for tester in check_testers:
+            print('Running "{}"'.format(tester.name))
+            tool = tester(self.cmd_root)
+            tool.create_config(self.config)
+            all_tools.append(tool)
             files = self.file_manager.get_files(branch=self.branch,
                                                 diff_mode=self.diff_mode,
                                                 file_mode=self.file_mode,
-                                                extensions=t.extensions)
-            results = t.run(files)
+                                                extensions=tool.extensions)
+            results = tool.run(files)
             self.all_results.update(results)
 
         for tool in LINTERS + FORMATERS + TOOLS:

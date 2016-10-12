@@ -22,7 +22,7 @@ def get_version():
     """Get ciocheck version."""
     with open(os.path.join(HERE, 'ciocheck', '__init__.py')) as f:
         lines = f.read().split('\n')
-    version_info = [l for l in lines if l.startswith('version_info')][0]
+    version_info = [l for l in lines if l.startswith('VERSION_INFO')][0]
     version_info = ast.literal_eval(version_info.split('=')[-1].strip())
     return '.'.join(map(str, version_info))
 

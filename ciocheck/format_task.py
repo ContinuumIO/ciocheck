@@ -24,10 +24,10 @@ def format_file(path):
     """Format a file (path) using the available formaters."""
     root_path = os.environ.get('CIOCHECK_PROJECT_ROOT')
     check = ast.literal_eval(os.environ.get('CIOCHECK_CHECK'))
-    CHECK_MULTI_FORMATERS = [f for f in MULTI_FORMATERS if f.name in check]
+    check_multi_formaters = [f for f in MULTI_FORMATERS if f.name in check]
 
     results = {}
-    for formater in CHECK_MULTI_FORMATERS:
+    for formater in check_multi_formaters:
         paths = filter_files([path], formater.extensions)
         if paths:
             formater.cmd_root = root_path
@@ -41,9 +41,9 @@ def format_file(path):
 
 
 for filename in sys.argv[1:]:
-    results = []
-    result = format_file(filename)
-    results.append(result)
+    task_results = []
+    task_result = format_file(filename)
+    task_results.append(task_result)
 
-print(json.dumps(results))
+print(json.dumps(task_results))
 sys.exit(0)
