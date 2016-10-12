@@ -127,8 +127,9 @@ class PytestTool(Tool):
 
     def _setup_pytest_coverage_args(self, paths):
         """Setup pytest-cov arguments and config file path."""
+        if isinstance(paths, (dict, OrderedDict)):
+            paths = list(sorted(paths.keys()))
 
-        paths = list(sorted(paths.keys()))
         # FIXME: take into account more paths?
         cov = '--cov={0}'.format(self.cmd_root)
         coverage_args = [cov]
