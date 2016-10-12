@@ -13,7 +13,7 @@ import json
 import os
 
 # Local imports
-from ciocheck.config import PY2, COVERAGE_CONFIGURATION_FILE
+from ciocheck.config import COVERAGE_CONFIGURATION_FILE, PY2
 from ciocheck.utils import cpu_count, run_command
 
 if PY2:
@@ -223,6 +223,13 @@ class PytestTool(Tool):
                 covered_lines[path] = lines[path]
 
         return covered_lines
+
+    @classmethod
+    def remove_config(cls, path):
+        super(PytestTool, cls).remove_config(path)
+        remove_file = os.path.join(path, cls.REPORT_FILE)
+        if os.path.isfile(remove_file):
+            os.remove(remove_file)
 
 
 TOOLS = [

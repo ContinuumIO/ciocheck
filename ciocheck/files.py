@@ -11,9 +11,9 @@
 import os
 
 # Local imports
-from ciocheck.config import (STAGED_MODE, UNSTAGED_MODE, COMMITED_MODE,
-                             MODIFIED_LINES, MODIFIED_FILES, ALL_FILES,
-                             DEFAULT_BRANCH)
+from ciocheck.config import (ALL_FILES, COMMITED_MODE, DEFAULT_BRANCH,
+                             MODIFIED_FILES, MODIFIED_LINES, STAGED_MODE,
+                             UNSTAGED_MODE)
 from ciocheck.utils import filter_files, get_files
 from ciocheck.vcs import DiffTool
 
@@ -35,7 +35,7 @@ class FileManager(object):
                   file_mode=MODIFIED_LINES,
                   extensions=()):
         """Find files in paths."""
-        cache_key = (branch, diff_mode, file_mode, extensions)
+        cache_key = (branch, diff_mode, file_mode, tuple(extensions))
         if cache_key in self.cache:
             results = self.cache[cache_key]
         else:
@@ -59,7 +59,7 @@ class FileManager(object):
                                 diff_mode=STAGED_MODE,
                                 extensions=()):
         """Find modified lines of files in paths."""
-        cache_key = (branch, diff_mode, extensions, 'lines')
+        cache_key = (branch, diff_mode, tuple(extensions), 'lines')
         if cache_key in self.cache:
             results = self.cache[cache_key]
         else:
@@ -79,7 +79,7 @@ class FileManager(object):
                            diff_mode=STAGED_MODE,
                            extensions=()):
         """Find modified files in paths."""
-        cache_key = (branch, diff_mode, extensions)
+        cache_key = (branch, diff_mode, tuple(extensions))
         if cache_key in self.cache:
             results = self.cache[cache_key]
         else:

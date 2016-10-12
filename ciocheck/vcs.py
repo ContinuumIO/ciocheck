@@ -12,9 +12,9 @@ import os
 import re
 
 # Local imports
-from ciocheck.config import (STAGED_MODE, UNSTAGED_MODE, COMMITED_MODE,
-                             DEFAULT_BRANCH)
-from ciocheck.utils import run_command, get_files
+from ciocheck.config import (COMMITED_MODE, DEFAULT_BRANCH, STAGED_MODE,
+                             UNSTAGED_MODE)
+from ciocheck.utils import get_files, run_command
 
 
 class DiffToolBase(object):

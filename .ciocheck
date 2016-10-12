@@ -1,56 +1,101 @@
 # -----------------------------------------------------------------------------
-# isort
-# https://github.com/timothycrosley/isort/wiki/isort-Settings
+# ciocheck
+# https://github.com/ContinuumIO/ciocheck
 # -----------------------------------------------------------------------------
-[settings]
-balanced_wrapping = true
-from_first = true
-import_heading_stdlib = Standard library imports
-import_heading_firstparty = Local imports
-import_heading_thirdparty = Third party imports
-indent='    '
-line_length = 79
-sections=FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER
+[ciocheck]
+branch = origin/master
+diff_mode = commited
+file_mode = lines
+check = pep8,pydocstyle,pyformat,isort
+#enforce = pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,pytest
+
+# Python (pyformat)
+add_copyright = true
+add_header = true
+add_init = true
 
 # -----------------------------------------------------------------------------
 # Flake 8
 # http://flake8.readthedocs.io/en/latest/config.html
 # -----------------------------------------------------------------------------
 [flake8]
-exclude = tests/*
-ignore = E126,E401
+exclude = */tests/*
+ignore = E126
+max-line-length = 79
+max-complexity = 64
+
+# -----------------------------------------------------------------------------
+# pep8
+# 
+# -----------------------------------------------------------------------------
+[pep8]
+exclude = */tests/*
+ignore = E126
 max-line-length = 79
 
 # -----------------------------------------------------------------------------
-# PEP257
-# https://pep257.readthedocs.io/en/latest/usage.html#example
+# pydocstyle
+# http://www.pydocstyle.org/en/latest/usage.html#example
 # -----------------------------------------------------------------------------
-[pep257]
+[pydocstyle]
 add-ignore = D203
 inherit = false
 
 # -----------------------------------------------------------------------------
-# Coverage RC to control coverage.py
-# http://coverage.readthedocs.io/en/latest/config.html
+# pylint
+# https://pylint.readthedocs.io/en/latest/
 # -----------------------------------------------------------------------------
-[run]
-omit = tests/*
+#[pylint:messages]
 
-[report]
-fail_under = 30
-show_missing = true
-skip_covered = true
 
-[html]
-directory = coverage_html_report
+# -----------------------------------------------------------------------------
+# isort
+# https://github.com/timothycrosley/isort/wiki/isort-Settings
+# -----------------------------------------------------------------------------
+[isort]
+from_first = true
+import_heading_stdlib = Standard library imports
+import_heading_firstparty = Local imports
+import_heading_thirdparty = Third party imports
+indent = '    '
+known_first_party = anaconda_navigator
+known_third_party = six,_license,pytestqt
+line_length = 79
+sections = FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER
 
 # -----------------------------------------------------------------------------
 # YAPF
 # https://github.com/google/yapf#formatting-style
 # -----------------------------------------------------------------------------
-[style]
+[yapf:style]
 based_on_style = pep8
 column_limit = 79
 spaces_before_comment = 2
-split_before_logical_operator = true
 
+# -----------------------------------------------------------------------------
+# Coverage
+# http://coverage.readthedocs.io/en/latest/config.html
+# -----------------------------------------------------------------------------
+[coverage:run]
+omit =
+    */tests/*
+    */Navigator.app/*
+
+[coverage:report]
+fail_under = 0
+show_missing = true
+skip_covered = true
+exclude_lines =
+    # Have to re-enable the standard pragma
+    pragma: no cover
+    # Ignore local file testing
+    def test():
+    if __name__ == .__main__.:
+
+# -----------------------------------------------------------------------------
+# pytest
+# http://doc.pytest.org/en/latest/usage.html
+# -----------------------------------------------------------------------------
+[pytest]
+addopts = -rfew --durations=10
+python_functions = test_*

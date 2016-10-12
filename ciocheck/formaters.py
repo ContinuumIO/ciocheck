@@ -21,11 +21,10 @@ from yapf.yapflib.yapf_api import FormatFile
 import isort
 
 # Local imports
-from ciocheck.config import (ENCODING_HEADER_FILE, COPYRIGHT_HEADER_FILE,
-                             DEFAULT_ENCODING_HEADER, DEFAULT_COPYRIGHT_HEADER)
+from ciocheck.config import (COPYRIGHT_HEADER_FILE, DEFAULT_COPYRIGHT_HEADER,
+                             DEFAULT_ENCODING_HEADER, ENCODING_HEADER_FILE)
 from ciocheck.tools import Tool
-from ciocheck.utils import atomic_replace, diff, cpu_count
-
+from ciocheck.utils import atomic_replace, cpu_count, diff
 
 HERE = os.path.dirname(os.path.realpath(__file__))
 

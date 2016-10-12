@@ -16,7 +16,7 @@ import shutil
 # Local imports
 from ciocheck.config import load_config
 from ciocheck.files import FileManager
-from ciocheck.formaters import MultiFormater, FORMATERS, MULTI_FORMATERS
+from ciocheck.formaters import FORMATERS, MULTI_FORMATERS, MultiFormater
 from ciocheck.linters import LINTERS
 from ciocheck.tools import TOOLS
 

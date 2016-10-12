@@ -11,19 +11,18 @@ from __future__ import absolute_import, print_function
 
 # Standard library imports
 import codecs
+import cProfile
 import difflib
 import errno
-import cProfile
-import pstats
 import os
+import pstats
 import subprocess
-import uuid
 import sys
+import uuid
 
 # Local imports
-from ciocheck.config import (PY2, DEFAULT_IGNORE_EXTENSIONS,
-                             DEFAULT_IGNORE_FOLDERS)
-
+from ciocheck.config import (DEFAULT_IGNORE_EXTENSIONS, DEFAULT_IGNORE_FOLDERS,
+                             PY2)
 
 if PY2:
     # Python 2
