@@ -5,9 +5,9 @@
 # Licensed under the terms of the MIT License
 # (see LICENSE.txt for details)
 # -----------------------------------------------------------------------------
-"""TODO:"""
+"""Generic tools and custom test runner."""
 
-# Standard librry imports
+# Standard library imports
 from collections import OrderedDict
 import json
 import os
@@ -36,7 +36,7 @@ class Tool(object):
     config_sections = None  # (('ciocheck:section', 'section'))
 
     def __init__(self, cmd_root):
-        """"""
+        """A Generic tool object."""
         self.cmd_root = cmd_root
         self.config = None
 
@@ -44,25 +44,24 @@ class Tool(object):
         """Create a config file for for a given config fname and sections."""
         self.config = config
 
-        if self.config_file and self.config_sections:            
+        if self.config_file and self.config_sections:
             new_config = configparser.ConfigParser()
             new_config_file = os.path.join(self.cmd_root, self.config_file)
-    
+
             for (cio_config_section, config_section) in self.config_sections:
                 if config.has_section(cio_config_section):
                     items = config.items(cio_config_section)
                     new_config.add_section(config_section)
-    
+
                     for option, value in items:
                         new_config.set(config_section, option, value)
-    
+
                     with open(new_config_file, 'w') as f:
                         new_config.write(f)
 
     @classmethod
     def remove_config(cls, path):
         """Remove config file."""
-        # Remove config files
         if cls.config_file and cls.config_sections:
             remove_file = os.path.join(path, cls.config_file)
             if os.path.isfile(remove_file):
@@ -125,13 +124,13 @@ class PytestTool(Tool):
     config_sections = [('pytest', 'pytest')]
 
     REPORT_FILE = '.pytestreport.json'
+
     def _setup_pytest_coverage_args(self, paths):
         """Setup pytest-cov arguments and config file path."""
 
         paths = list(sorted(paths.keys()))
         # FIXME: take into account more paths?
         cov = '--cov={0}'.format(self.cmd_root)
-#        cov = '--cov={0}'.format('ciocheck')
         coverage_args = [cov]
 
         coverage_config_file = os.path.join(self.cmd_root,
@@ -148,7 +147,8 @@ class PytestTool(Tool):
             enable_xdist = ['-n', str(cpu_count())]
             enable_xdist = []
 
-        self.pytest_args = ['--json={0}'.format(self.REPORT_FILE)] + enable_xdist
+        self.pytest_args = ['--json={0}'.format(self.REPORT_FILE)]
+        self.pytest_args = self.pytest_args + enable_xdist
         self.pytest_args = self.pytest_args + coverage_args
         print(self.pytest_args)
 
@@ -157,12 +157,13 @@ class PytestTool(Tool):
         # If used with qtpy and pytest-qt
         self._setup_pytest_coverage_args(paths)
         output, error = run_command(['py.test'] + self.pytest_args,
-                                    cwd=self.cmd_root)        
+                                    cwd=self.cmd_root)
         if error:
             print(error)
 
         if output:
             print(output)
+
         covered_lines = self.parse_coverage()
         pytest_report = self.parse_pytest_report()
 
@@ -177,6 +178,31 @@ class PytestTool(Tool):
             with open(pytest_report_path, 'r') as f:
                 data = json.load(f)
         return data
+        """
+        https://github.com/mattcl/pytest-json/blob/master/example.json
+        {
+        "outcome": "error",
+        "name": "test_report.py::test_fail_during_teardown",
+        "duration": 0.0007836818695068359,
+        "teardown": {
+          "duration": 0.0001633167266845703,
+          "outcome": "error",
+          "longrepr": "def fn():\n>       assert 1 == 3\nE       assert 1 == 3\n\ntest_report.py:18: AssertionError",
+          "name": "teardown"
+        },
+        "run_index": 5,
+        "setup": {
+          "duration": 0.00025153160095214844,
+          "outcome": "passed",
+          "name": "setup"
+        },
+        "call": {
+          "duration": 0.00011730194091796875,
+          "stdout": "I will fail during teardown\n",
+          "outcome": "passed",
+          "name": "call"
+        }
+        """
 
     def parse_coverage(self):
         """ """
@@ -189,7 +215,7 @@ class PytestTool(Tool):
             with open(coverage_path, 'r') as f:
                 data = f.read()
                 data = data.replace(coverage_string, '')
-    
+
             cov = json.loads(data)
             covered_lines = OrderedDict()
             lines = cov['lines']

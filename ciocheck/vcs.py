@@ -18,7 +18,7 @@ from ciocheck.utils import run_command, get_files
 
 
 class DiffToolBase(object):
-    """TODO:."""
+    """Base version controll diff tool."""
 
     # --- Public API
     # -------------------------------------------------------------------------
@@ -30,7 +30,7 @@ class DiffToolBase(object):
     def is_repo(self):
         """Return if it is a repo of the type."""
         raise NotImplementedError
-        
+
     def commited_files(self, branch=DEFAULT_BRANCH):
         """Return list of commited files."""
         raise NotImplementedError
@@ -57,15 +57,18 @@ class DiffToolBase(object):
 
 
 class HgDiffTool(DiffToolBase):
+    """Mercurial diff tool."""
+
     def __init__(self, path):
-        """TODO."""
+        """Mercurial diff tool."""
         self.path = path
         self._top_level = None
 
     def is_repo(self):
+        """Return if it is a mercurial repo."""
         return False
 
-     
+
 class GitDiffTool(DiffToolBase):
     """Thin wrapper for a subset of the `git diff` command."""
     # Regular expressions used to parse the diff output
@@ -102,8 +105,8 @@ class GitDiffTool(DiffToolBase):
         if files_only:
             command += [
                 '--name-only',
-                '-z', # Means nul-separated names
-            ]
+                '-z',  # Means nul-separated names
+                ]
 
             output, error = run_command(command, cwd=self.path)
             result = set(output.split('\x00'))
@@ -205,7 +208,8 @@ class GitDiffTool(DiffToolBase):
         elif '--cc' in line:
             regex = self.MERGE_CONFLICT_RE
         else:
-            msg = "Do not recognize format of source in line '{0}'".format(line)
+            msg = ("Do not recognize format of source in line "
+                   "'{0}'".format(line))
             raise Exception(msg)
 
         # Parse for the source file path
@@ -316,7 +320,8 @@ class GitDiffTool(DiffToolBase):
                     return int(groups[0])
 
                 except ValueError:
-                    msg = "Could not parse '{0}' as a line number".format(groups[0])
+                    msg = ("Could not parse '{0}' as a line "
+                           "number".format(groups[0]))
                     raise Exception(msg)
 
             else:
@@ -346,14 +351,14 @@ class GitDiffTool(DiffToolBase):
     # --- Public API
     # -------------------------------------------------------------------------
     def is_repo(self):
-        """ """
+        """Return if it is a git repo."""
         args = ['git', 'rev-parse']
         output, error = run_command(args, cwd=self.path)
         return not bool(error)
 
     @property
     def top_level(self):
-        """Return the top level for the repo."""
+        """Return the top level for the git repo."""
         if self._top_level:
             result = self._top_level
         else:
@@ -397,10 +402,10 @@ class GitDiffTool(DiffToolBase):
 
 
 class NoDiffTool(DiffToolBase):
-    """Pass."""
+    """Thin wrapper for a folder not under version control."""
 
     def __init__(self, path):
-        """TODO."""
+        """Thin wrapper for a folder not under version control."""
         self.path = path
 
     def _get_files_helper(self, lines=False):
@@ -450,7 +455,7 @@ class NoDiffTool(DiffToolBase):
 
 
 class DiffTool(object):
-    """ """
+    """Generic diff tool for handling mercurial, git and no vcs folders."""
 
     TOOLS = [
         GitDiffTool,
@@ -459,7 +464,7 @@ class DiffTool(object):
         ]
 
     def __init__(self, paths):
-        """TODO."""
+        """Generic diff tool for handling mercurial, git and no vcs folders."""
         self.paths = paths
         self.diff_tools = {}
 

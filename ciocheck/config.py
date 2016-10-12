@@ -30,11 +30,6 @@ MODIFIED_LINES = 'lines'
 MODIFIED_FILES = 'files'
 ALL_FILES = 'all'
 
-# Python formatters
-YAPF_CODE = 10
-ISORT_CODE = 11
-YAPF_ISORT_CODE = 12
-
 # Configuration constants
 DEFAULT_BRANCH = 'origin/master'
 DEFAULT_IGNORE_EXTENSIONS = ('orig', 'pyc')
@@ -61,11 +56,11 @@ DEFAULT_CIOCHECK_CONFIG = {
     'branch': DEFAULT_BRANCH,
     'diff_mode': STAGED_MODE,
     'file_mode': MODIFIED_LINES,
-    # Python specific
+    # Python specific/ pyformat
     'add_copyright': True,
     'add_header': True,
     'add_init': True,
-    # Linters
+    # Linters/Formaters/Testers
     'check': ['pep8'],
     'enforce': [],
     }
@@ -80,7 +75,7 @@ class CustomConfigParser(configparser.ConfigParser):
     SECTION = MAIN_CONFIG_SECTION
 
     def get_value(self, option, section=MAIN_CONFIG_SECTION):
-        """ #TODO:"""
+        """Get config value from the defailt main section."""
         default_value = DEFAULT_CIOCHECK_CONFIG.get(option)
         val = self.get(self.SECTION, option)
         if isinstance(default_value, bool):
@@ -96,7 +91,7 @@ class CustomConfigParser(configparser.ConfigParser):
         return value
 
     def set_value(self, option, value, section=MAIN_CONFIG_SECTION):
-        """ #TODO:"""
+        """Set config value on the defailt main section."""
         default_value = DEFAULT_CIOCHECK_CONFIG.get(option)
         if not self.has_section(self.SECTION):
             self.add_section(self.SECTION)
@@ -117,6 +112,7 @@ class CustomConfigParser(configparser.ConfigParser):
 def load_config(folder, cli_args):
     """Load the configuration located at `folder` and return the parser."""
     config_file = os.path.join(folder, CONFIGURATION_FILE)
+
     if os.path.isfile(config_file):
         config = CustomConfigParser()
         with open(config_file, 'r') as f:

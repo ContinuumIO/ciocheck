@@ -5,6 +5,7 @@
 # Licensed under the terms of the MIT License
 # (see LICENSE.txt for details)
 # -----------------------------------------------------------------------------
+"""Generic and custom code linters."""
 
 # Standard library imports
 import json
@@ -23,7 +24,6 @@ class Linter(Tool):
 
     # Json matching
     json_keys = None  # ((old_key, new_key), ...)
-
     output_on_stderr = False
 
     def _parse_regex(self, string):
@@ -87,13 +87,13 @@ class Flake8Linter(Linter):
 
     # Match lines of the form:
     # path/to/file.py:328: undefined name '_thing'
-    #anaconda_navigator/widgets/tabs/tests/test_environments_tab.py:74:5: F811 redefinition of unused 'tmpfolder' from line 23
     pattern = r'''
         (?P<path>.*?):(?P<line>\d{1,1000}):
         (?P<column>\d{1,1000}):\ 
         (?P<type>[EWFCNTIBDSQ]\d{3})\ 
         (?P<message>.*)
         '''
+
 
 class Pep8Linter(Linter):
     """Pep8 python tool runner."""
@@ -112,7 +112,7 @@ class Pep8Linter(Linter):
         (?P<message>.*)
         '''
 
-    
+
 class PydocstyleLinter(Linter):
     """Pydocstyle python tool runner."""
     language = 'python'
@@ -124,7 +124,7 @@ class PydocstyleLinter(Linter):
     output_on_stderr = True
 
     # Match lines of the form:
-    #./bootstrap.py:1 at module level:
+    # ./bootstrap.py:1 at module level:
     #    D400: First line should end with a period (not 't')
     pattern = r'''
         (?P<path>.*?):
@@ -153,7 +153,6 @@ class PylintLinter(Linter):
     def extra_processing(self, results):
         # Make path an absolute path
         for item in results:
-            # FIXME:
             item['path'] = os.path.join(self.paths[0], item['path'])
         return results
 

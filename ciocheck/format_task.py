@@ -6,6 +6,7 @@
 # (see LICENSE.txt for details)
 # -----------------------------------------------------------------------------
 """Setup auxiliary process so we can run formaters in parallel."""
+
 from __future__ import absolute_import, print_function
 
 # Standard library imports
@@ -23,8 +24,9 @@ def format_file(path):
     """Format a file (path) using the available formaters."""
     root_path = os.environ.get('CIOCHECK_PROJECT_ROOT')
     check = ast.literal_eval(os.environ.get('CIOCHECK_CHECK'))
-    results = {}
     CHECK_MULTI_FORMATERS = [f for f in MULTI_FORMATERS if f.name in check]
+
+    results = {}
     for formater in CHECK_MULTI_FORMATERS:
         paths = filter_files([path], formater.extensions)
         if paths:

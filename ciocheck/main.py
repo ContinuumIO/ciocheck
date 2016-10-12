@@ -32,26 +32,29 @@ class Runner(object):
         self.file_manager = FileManager(folders=folders, files=files)
         self.all_results = OrderedDict()
 
-        check = self.config.get_value('check')
-        enforce = self.config.get_value('enforce')
-        diff_mode = self.config.get_value('diff_mode')
-        file_mode = self.config.get_value('file_mode')
-        branch = self.config.get_value('branch')
+        self.check = self.config.get_value('check')
+        self.enforce = self.config.get_value('enforce')
+        self.diff_mode = self.config.get_value('diff_mode')
+        self.file_mode = self.config.get_value('file_mode')
+        self.branch = self.config.get_value('branch')
 
+    def run(self):
+        """Run tools."""
         self.clean()
 
-        CHECK_LINTERS = [l for l in LINTERS if l.name in check]
-        CHECK_FORMATERS = [f for f in FORMATERS if f.name in check]
-        run_multi = any([f for f in MULTI_FORMATERS if f.name in check])
+        CHECK_LINTERS = [l for l in LINTERS if l.name in self.check]
+        CHECK_FORMATERS = [f for f in FORMATERS if f.name in self.check]
+        run_multi = any([f for f in MULTI_FORMATERS if f.name in self.check])
 
         all_tools = []
+
         # Linters
         for tool in CHECK_LINTERS:
             print('Running "{}"...'.format(tool.name))
             t = tool(self.cmd_root)
-            files = self.file_manager.get_files(branch=branch,
-                                                diff_mode=diff_mode,
-                                                file_mode=file_mode,
+            files = self.file_manager.get_files(branch=self.branch,
+                                                diff_mode=self.diff_mode,
+                                                file_mode=self.file_mode,
                                                 extensions=t.extensions)
             all_tools.append(t)
             t.create_config(self.config)
@@ -64,9 +67,9 @@ class Runner(object):
         for tool in CHECK_FORMATERS:
             print('Running "{}"'.format(tool.name))
             t = tool(self.cmd_root)
-            files = self.file_manager.get_files(branch=branch,
-                                                diff_mode=diff_mode,
-                                                file_mode=file_mode,
+            files = self.file_manager.get_files(branch=self.branch,
+                                                diff_mode=self.diff_mode,
+                                                file_mode=self.file_mode,
                                                 extensions=t.extensions)
             t.create_config(self.config)
             all_tools.append(t)
@@ -77,13 +80,13 @@ class Runner(object):
                 self.all_results[t.name] = {
                     'files': files,
                     'results': results,
-                    }   
+                    }
 
         if run_multi:
-            t = MultiFormater(self.cmd_root, check)
-            files = self.file_manager.get_files(branch=branch,
-                                                diff_mode=diff_mode,
-                                                file_mode=file_mode,
+            t = MultiFormater(self.cmd_root, self.check)
+            files = self.file_manager.get_files(branch=self.branch,
+                                                diff_mode=self.diff_mode,
+                                                file_mode=self.file_mode,
                                                 extensions=t.extensions)
             self.all_results[t.name] = {
                 'files': files,
@@ -96,17 +99,18 @@ class Runner(object):
             t = tool(self.cmd_root)
             t.create_config(self.config)
             all_tools.append(t)
-            files = self.file_manager.get_files(branch=branch,
-                                                diff_mode=diff_mode,
-                                                file_mode=file_mode,
+            files = self.file_manager.get_files(branch=self.branch,
+                                                diff_mode=self.diff_mode,
+                                                file_mode=self.file_mode,
                                                 extensions=t.extensions)
             results = t.run(files)
+            self.all_results.update(results)
 
         for tool in LINTERS + FORMATERS + TOOLS:
             tool.remove_config(self.cmd_root)
         self.clean()
 
-#        print(self.all_results)
+        print(self.all_results)
 
     def process_results(self, results):
         """Group all results by file path."""
@@ -124,19 +128,14 @@ class Runner(object):
             else:
                 pass
 
-    def run(self):
-        """
-        """
-        pass
-
 
 def main():
     """CLI `Parser for ciocheck`."""
     description = 'Run Continuum IO test suite.'
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument('folders_or_files',
-                        help='folders or files to analize',
-                        nargs='+')
+                        help='Folder to analize. Use from repo root.',
+                        nargs=1)
     parser.add_argument('--file-mode',
                         dest='file_mode',
                         nargs=1,
@@ -171,7 +170,8 @@ def main():
                         default=None,
                         nargs='+',
                         help=('Select tools to enforce. Enforced tools will '
-                              'fail if a result is obtained. Default is none.'))
+                              'fail if a result is obtained. Default is '
+                              'none.'))
     cli_args = parser.parse_args()
     root = os.getcwd()
     folders = []

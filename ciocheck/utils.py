@@ -32,7 +32,7 @@ else:
     # Python 3
     from io import StringIO
 
-    
+
 class Profiler(object):
     """Context manager profiler."""
 
@@ -51,7 +51,7 @@ class Profiler(object):
                           stream=sys.stdout).sort_stats('cumulative')
         ps.print_stats()
 
-        
+
 class ShortOutput(object):
     """Context manager for capturing and formating stdout and stderr."""
 
@@ -189,7 +189,7 @@ def atomic_replace(path, contents, encoding):
         except (IOError, OSError):
             pass
 
-        
+
 def diff(s1, s2):
     """Return unified diff of strings."""
     s1 = s1.splitlines(1)

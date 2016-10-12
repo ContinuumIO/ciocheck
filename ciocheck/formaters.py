@@ -5,7 +5,7 @@
 # Licensed under the terms of the MIT License
 # (see LICENSE.txt for details)
 # -----------------------------------------------------------------------------
-""""""
+"""Generic and custom code formaters."""
 
 # Standard library imports
 import codecs
@@ -17,14 +17,14 @@ import subprocess
 import sys
 
 # Third party imports
-import isort
 from yapf.yapflib.yapf_api import FormatFile
+import isort
 
 # Local imports
 from ciocheck.config import (ENCODING_HEADER_FILE, COPYRIGHT_HEADER_FILE,
                              DEFAULT_ENCODING_HEADER, DEFAULT_COPYRIGHT_HEADER)
-from ciocheck.utils import atomic_replace, diff, cpu_count
 from ciocheck.tools import Tool
+from ciocheck.utils import atomic_replace, diff, cpu_count
 
 
 HERE = os.path.dirname(os.path.realpath(__file__))
@@ -84,7 +84,7 @@ class IsortFormater(Formater):
 
     # Config
     config_file = '.isort.cfg'
-    config_sections = [('isort', 'settings'),]
+    config_sections = [('isort', 'settings')]
 
     def format(self, paths):
         pass
@@ -107,7 +107,7 @@ class YapfFormater(Formater):
 
     # Config
     config_file = '.style.yapf'
-    config_sections =  [('yapf:style', 'style'),]
+    config_sections = [('yapf:style', 'style')]
 
     def format(self, paths):
         pass
@@ -137,16 +137,17 @@ class YapfFormater(Formater):
 
 
 class MultiFormater(object):
-    """Run formatters."""
+    """Formater handling multiple formaters in parallel."""
     name = 'multiformater'
     language = 'generic'
 
     def __init__(self, cmd_root, check):
+        """Formater handling multiple formaters in parallel."""
         self.cmd_root = cmd_root
         self.check = check
 
     def _format_files(self, paths):
-        """check_yapf helper method to start a seaparate subprocess."""
+        """Helper method to start a seaparate subprocess."""
         cmd = [sys.executable, os.path.join(HERE, 'format_task.py')]
         env = os.environ.copy()
         env['CIOCHECK_PROJECT_ROOT'] = self.cmd_root
@@ -157,6 +158,7 @@ class MultiFormater(object):
 
     @property
     def extensions(self):
+        """Return all extensions of the used multiformaters."""
         all_extensions = []
         for formater in MULTI_FORMATERS:
             all_extensions += list(formater.extensions)
@@ -177,6 +179,7 @@ class MultiFormater(object):
             paths = list(sorted(paths.keys()))
 
         def await_one_process():
+            """Wait for one process and parse output."""
             if processes:
                 # We pop(0) because the first process is the oldest
                 proc = processes.pop(0)
@@ -189,6 +192,7 @@ class MultiFormater(object):
                 return output, error
 
         def await_all_processes():
+            """Wait for all processes."""
             results = []
             while processes:
                 output, error = await_one_process()
@@ -198,6 +202,7 @@ class MultiFormater(object):
             return results
 
         def take_n(items, n):
+            """Take n items to pass to the processes."""
             result = []
             while n > 0 and items:
                 result.append(items.pop())
@@ -240,7 +245,7 @@ class PythonFormater(Formater):
         encoding_path = os.path.join(self.cmd_root, COPYRIGHT_HEADER_FILE)
         if os.path.isfile(encoding_path):
             with open(encoding_path, 'r') as f:
-                self.copyright_header = f.read()      
+                self.copyright_header = f.read()
 
         header_path = os.path.join(self.cmd_root, ENCODING_HEADER_FILE)
         if os.path.isfile(header_path):
@@ -315,7 +320,7 @@ class PythonFormater(Formater):
         return results
 
     def format(self, paths):
-        """Run headers formatter."""
+        """Run pyformat formater."""
         paths = list(sorted([p for p in paths]))
         add_copyright = self.config.get_value('add_copyright')
         add_header = self.config.get_value('add_header')
@@ -363,7 +368,7 @@ FORMATERS = [
     IsortFormater,
     YapfFormater,
     ]
-    
+
 
 def test():
     pass
