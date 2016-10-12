@@ -145,7 +145,7 @@ class GitDiffTool(DiffToolBase):
         return ordered_diff_dict
 
     def _parse_source_sections(self, diff_str):
-        """"""
+        """Parse source sections from git diff."""
 
         # Create a dict to map source files to lines in the diff output
         source_dict = dict()
