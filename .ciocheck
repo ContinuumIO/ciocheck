@@ -6,8 +6,8 @@
 branch = origin/master
 diff_mode = commited
 file_mode = lines
-check = pep8,pydocstyle,pyformat,isort
-#enforce = pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,pytest
+check = pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,coverage,pytest
+#enforce = pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,coverage,pytest
 
 # Python (pyformat)
 add_copyright = true
@@ -80,6 +80,7 @@ spaces_before_comment = 2
 omit =
     */tests/*
     */Navigator.app/*
+    */build/*
 
 [coverage:report]
 fail_under = 0
