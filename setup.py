@@ -8,6 +8,7 @@
 """ciocheck setup script."""
 
 # Standard library imports
+import ast
 import os
 
 # Third party imports
@@ -15,19 +16,20 @@ from setuptools import find_packages, setup
 
 
 HERE = os.path.abspath(os.path.dirname(__file__))
-VERSION_NS = {}
 
 
-with open(os.path.join(HERE, 'ciocheck', '__init__.py')) as f:
-    exec(f.read(), {}, VERSION_NS)
-
-
-VERSION = VERSION_NS.get('__version__')
+def get_version():
+    """Get ciocheck version."""
+    with open(os.path.join(HERE, 'ciocheck', '__init__.py')) as f:
+        lines = f.read().split('\n')
+    version_info = [l for l in lines if l.startswith('version_info')][0]
+    version_info = ast.literal_eval(version_info.split('=')[-1].strip())
+    return '.'.join(map(str, version_info))
 
 
 def get_readme():
-    """ """
-    with open('README.rst') as f:
+    """Get ciocheck README."""
+    with open('README.md') as f:
         readme = str(f.read())
     return readme
 
@@ -35,8 +37,9 @@ def get_readme():
 packages = find_packages()
 setup(
     name='ciocheck',
-    version=VERSION,
+    version=get_version(),
     description='Continuum IO check/test suite',
+    long_description=get_readme(),
     author='Gonzalo Peña-Castellanos',
     author_email='goanpeca@gmail.com',
     maintainer='Gonzalo Peña-Castellanos',
