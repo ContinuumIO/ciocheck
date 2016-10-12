@@ -67,7 +67,7 @@ class Formater(Tool):
 
     @classmethod
     def format_file(cls, path):
-        """Format path with task queue."""
+        """Format file for use with task queue."""
         raise NotImplementedError
 
     def format(self, paths):
@@ -86,12 +86,12 @@ class IsortFormater(Formater):
     config_sections = [('isort', 'settings')]
 
     def format(self, paths):
+        """Format paths."""
         pass
 
     @classmethod
     def format_file(cls, path):
-        """
-        """
+        """Format file for use with task queue."""
         with open(path, 'r') as f:
             old_contents = f.read()
         new_contents = isort.SortImports(file_contents=old_contents).output
@@ -109,10 +109,12 @@ class YapfFormater(Formater):
     config_sections = [('yapf:style', 'style')]
 
     def format(self, paths):
+        """Format paths."""
         pass
 
     @classmethod
     def format_file(cls, path):
+        """Format file for use with task queue."""
         # cmd_root is assigned to formater inside format_task... ugly!
         style_config = os.path.join(cls.cmd_root,
                                     cls.config_file)

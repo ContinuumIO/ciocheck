@@ -166,6 +166,7 @@ LINTERS = [
 
 
 def test():
+    """Main local test."""
     paths = [os.path.dirname(os.path.realpath(__file__))]
     linter = PylintLinter()
     res = linter.check(paths)

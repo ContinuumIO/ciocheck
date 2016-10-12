@@ -44,7 +44,7 @@ class Runner(object):
 
         CHECK_LINTERS = [l for l in LINTERS if l.name in self.check]
         CHECK_FORMATERS = [f for f in FORMATERS if f.name in self.check]
-        run_multi = any([f for f in MULTI_FORMATERS if f.name in self.check])
+        run_multi = any(f for f in MULTI_FORMATERS if f.name in self.check)
 
         all_tools = []
 
