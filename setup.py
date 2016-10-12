@@ -20,8 +20,8 @@ HERE = os.path.abspath(os.path.dirname(__file__))
 
 def get_version():
     """Get ciocheck version."""
-    with open(os.path.join(HERE, 'ciocheck', '__init__.py')) as f:
-        lines = f.read().split('\n')
+    with open(os.path.join(HERE, 'ciocheck', '__init__.py')) as file_obj:
+        lines = file_obj.read().split('\n')
     version_info = [l for l in lines if l.startswith('VERSION_INFO')][0]
     version_info = ast.literal_eval(version_info.split('=')[-1].strip())
     return '.'.join(map(str, version_info))
@@ -29,8 +29,8 @@ def get_version():
 
 def get_readme():
     """Get ciocheck README."""
-    with open('README.md') as f:
-        readme = str(f.read())
+    with open('README.md') as file_obj:
+        readme = str(file_obj.read())
     return readme
 
 

@@ -115,8 +115,8 @@ def load_config(folder, cli_args):
 
     if os.path.isfile(config_file):
         config = CustomConfigParser()
-        with open(config_file, 'r') as f:
-            config.readfp(f)
+        with open(config_file, 'r') as file_obj:
+            config.readfp(file_obj)
 
     for key, value in DEFAULT_CIOCHECK_CONFIG.items():
         if hasattr(cli_args, key):

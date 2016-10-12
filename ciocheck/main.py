@@ -61,7 +61,7 @@ class Runner(object):
             tool.create_config(self.config)
             self.all_results[tool.name] = {
                 'files': files,
-                'results': tool.check(files),
+                'results': tool.run(files),
                 }
 
         # Formaters
@@ -120,13 +120,11 @@ class Runner(object):
     def clean(self):
         """Remove build directories and temporal config files."""
         # Clean up leftover trash as best we can
-        BUILD_TMP = os.path.join(self.cmd_root, 'build', 'tmp')
-        if os.path.isdir(BUILD_TMP):
+        build_tmp = os.path.join(self.cmd_root, 'build', 'tmp')
+        if os.path.isdir(build_tmp):
             try:
-                shutil.rmtree(BUILD_TMP, ignore_errors=True)
+                shutil.rmtree(build_tmp, ignore_errors=True)
             except Exception:
-                pass
-            else:
                 pass
 
 

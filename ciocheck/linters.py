@@ -61,7 +61,7 @@ class Linter(Tool):
         """Override in case extra processing on results is needed."""
         return results
 
-    def check(self, paths):
+    def run(self, paths):
         """Run linter and return a list of dicts."""
         self.paths = list(paths.keys()) if isinstance(paths, dict) else paths
         args = list(self.command)

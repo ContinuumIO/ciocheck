@@ -5,16 +5,16 @@
 # Licensed under the terms of the MIT License
 # (see LICENSE.txt for details)
 # -----------------------------------------------------------------------------
+"""Version control helpers. Find staged, commited, modified files/lines."""
 
 # Standard library imports
-from collections import OrderedDict
 import os
 import re
 
 # Local imports
 from ciocheck.config import (COMMITED_MODE, DEFAULT_BRANCH, STAGED_MODE,
                              UNSTAGED_MODE)
-from ciocheck.utils import get_files, run_command
+from ciocheck.utils import get_files, make_sorted_dict, run_command
 
 
 class DiffToolBase(object):
@@ -64,9 +64,38 @@ class HgDiffTool(DiffToolBase):
         self.path = path
         self._top_level = None
 
+    @property
+    def top_level(self):
+        """Return the top level for the repo."""
+        return ''
+
     def is_repo(self):
-        """Return if it is a mercurial repo."""
+        """Return if it is a repo of the type."""
         return False
+
+    def commited_files(self, branch=DEFAULT_BRANCH):
+        """Return list of commited files."""
+        return []
+
+    def staged_files(self):
+        """Return list of staged files."""
+        return []
+
+    def unstaged_files(self):
+        """Return list of unstaged files."""
+        return []
+
+    def commited_file_lines(self, branch=DEFAULT_BRANCH):
+        """Return commited files and lines modified."""
+        return {}
+
+    def staged_file_lines(self):
+        """Return unstaged files and lines modified."""
+        return {}
+
+    def unstaged_file_lines(self):
+        """Return staged files and lines modified."""
+        return {}
 
 
 class GitDiffTool(DiffToolBase):
@@ -109,6 +138,7 @@ class GitDiffTool(DiffToolBase):
                 ]
 
             output, error = run_command(command, cwd=self.path)
+            print(error)
             result = set(output.split('\x00'))
             result.discard('')  # There's an empty line in git output
             result = [os.path.join(self.top_level, i) for i in sorted(result)]
@@ -138,10 +168,7 @@ class GitDiffTool(DiffToolBase):
             # to determine lines changed for the source file
             diff_dict[full_src_path] = self._parse_lines(diff_lines)
 
-        ordered_diff_dict = OrderedDict()
-        for key in sorted(diff_dict.keys()):
-            ordered_diff_dict[key] = diff_dict[key]
-
+        ordered_diff_dict = make_sorted_dict(diff_dict)
         return ordered_diff_dict
 
     def _parse_source_sections(self, diff_str):
@@ -481,56 +508,51 @@ class DiffTool(object):
     def commited_files(self, branch=DEFAULT_BRANCH):
         """Return list of commited files."""
         results = []
-        for top_level, diff_tool in self.diff_tools.items():
+        for diff_tool in self.diff_tools.values():
             results += diff_tool.commited_files(branch=branch)
         return list(sorted(results))
 
     def staged_files(self):
         """Return list of staged files."""
         results = []
-        for top_level, diff_tool in self.diff_tools.items():
+        for diff_tool in self.diff_tools.values():
             results += diff_tool.staged_files()
         return list(sorted(results))
 
     def unstaged_files(self):
         """Return list of unstaged files."""
         results = []
-        for top_level, diff_tool in self.diff_tools.items():
+        for diff_tool in self.diff_tools.values():
             results += diff_tool.unstaged_files()
         return list(sorted(results))
-
-    def _sort_dict(self, dic):
-        ordered_results = OrderedDict()
-        for key in sorted(dic.keys()):
-            ordered_results[key] = dic[key]
-        return ordered_results
 
     def commited_file_lines(self, branch=DEFAULT_BRANCH):
         """Return commited files and lines modified."""
         results = {}
-        for top_level, diff_tool in self.diff_tools.items():
+        for diff_tool in self.diff_tools.values():
             results.update(diff_tool.commited_file_lines(branch=branch))
-        return self._sort_dict(results)
+        return make_sorted_dict(results)
 
     def staged_file_lines(self):
         """Return unstaged files and lines modified."""
         results = {}
-        for top_level, diff_tool in self.diff_tools.items():
+        for diff_tool in self.diff_tools.values():
             results.update(diff_tool.staged_file_lines())
-        return self._sort_dict(results)
+        return make_sorted_dict(results)
 
     def unstaged_file_lines(self):
         """Return staged files and lines modified."""
         results = {}
-        for top_level, diff_tool in self.diff_tools.items():
+        for diff_tool in self.diff_tools.values():
             results.update(diff_tool.unstaged_file_lines())
-        return self._sort_dict(results)
+        return make_sorted_dict(results)
 
 
 def test():
+    """Local main test."""
     paths = [os.path.dirname(os.path.realpath(__file__))]
-    g = DiffTool(paths)
-    print(g.unstaged_file_lines())
+    diff_tool = DiffTool(paths)
+    print(diff_tool.unstaged_file_lines())
 
 
 if __name__ == '__main__':

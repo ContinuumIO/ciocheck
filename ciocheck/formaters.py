@@ -92,8 +92,8 @@ class IsortFormater(Formater):
     @classmethod
     def format_file(cls, path):
         """Format file for use with task queue."""
-        with open(path, 'r') as f:
-            old_contents = f.read()
+        with open(path, 'r') as file_obj:
+            old_contents = file_obj.read()
         new_contents = isort.SortImports(file_contents=old_contents).output
         return old_contents, new_contents, 'utf-8'
 
@@ -124,8 +124,8 @@ class YapfFormater(Formater):
         (new_contents, encoding, changed) = FormatFile(
             path, style_config=style_config)
 
-        with codecs.open(path, 'r', encoding) as f:
-            old_contents = f.read()
+        with codecs.open(path, 'r', encoding) as file_obj:
+            old_contents = file_obj.read()
 
         if platform.system() == 'Windows':
             # yapf screws up line endings on windows
@@ -245,18 +245,18 @@ class PythonFormater(Formater):
         """Load custom encoding and copyright headers if defined."""
         encoding_path = os.path.join(self.cmd_root, COPYRIGHT_HEADER_FILE)
         if os.path.isfile(encoding_path):
-            with open(encoding_path, 'r') as f:
-                self.copyright_header = f.read()
+            with open(encoding_path, 'r') as file_obj:
+                self.copyright_header = file_obj.read()
 
         header_path = os.path.join(self.cmd_root, ENCODING_HEADER_FILE)
         if os.path.isfile(header_path):
-            with open(header_path, 'r') as f:
-                self.encoding_header = f.read()
+            with open(header_path, 'r') as file_obj:
+                self.encoding_header = file_obj.read()
 
     def _add_headers(self, path, header, copy):
         """Add headers as needed in file."""
-        with codecs.open(path, 'r', 'utf-8') as f:
-            old_contents = f.read()
+        with codecs.open(path, 'r', 'utf-8') as file_obj:
+            old_contents = file_obj.read()
 
         have_encoding = (self.encoding_header in old_contents)
         have_copyright = (self.COPYRIGHT_RE.search(old_contents) is not None)

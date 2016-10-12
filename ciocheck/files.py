@@ -98,8 +98,8 @@ class FileManager(object):
 def test():
     """Main local test."""
     folders = [os.path.dirname(os.path.realpath(__file__))]
-    fm = FileManager(folders=folders)
-    files = fm.get_modified_file_lines(diff_mode=COMMITED_MODE)
+    file_manager = FileManager(folders=folders)
+    files = file_manager.get_modified_file_lines(diff_mode=COMMITED_MODE)
     print(files)
 
 
