@@ -89,8 +89,8 @@ class Flake8Linter(Linter):
     # path/to/file.py:328: undefined name '_thing'
     pattern = r'''
         (?P<path>.*?):(?P<line>\d{1,1000}):
-        (?P<column>\d{1,1000}):\ 
-        (?P<type>[EWFCNTIBDSQ]\d{3})\ 
+        (?P<column>\d{1,1000}):\s
+        (?P<type>[EWFCNTIBDSQ]\d{3})\s
         (?P<message>.*)
         '''
 
@@ -107,8 +107,8 @@ class Pep8Linter(Linter):
     # Match lines of the form:
     pattern = r'''
         (?P<path>.*?):(?P<line>\d{1,1000}):
-        (?P<column>\d{1,1000}):\ 
-        (?P<type>[EWFCNTIBDSQ]\d{3})\ 
+        (?P<column>\d{1,1000}):\s
+        (?P<type>[EWFCNTIBDSQ]\d{3})\s
         (?P<message>.*)
         '''
 
@@ -130,7 +130,7 @@ class PydocstyleLinter(Linter):
         (?P<path>.*?):
         (?P<line>\d{1,1000000})\  # 1 million lines of code :-p ?
         (?P<symbol>.*):\n.*?
-        (?P<type>D\d{3}):\ 
+        (?P<type>D\d{3}):\s
         (?P<message>.*)
         '''
 
