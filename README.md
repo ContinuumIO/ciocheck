@@ -2,7 +2,7 @@
 [![Code Issues](https://www.quantifiedcode.com/api/v1/project/ccc68df612024e7e8fd386ffe2252a95/badge.svg)](https://www.quantifiedcode.com/app/project/ccc68df612024e7e8fd386ffe2252a95)
 
 # ciocheck
-Continuum check/test suite helper.
+Continuum Analytics linter, formater and test suite helper.
 
 # How does ciocheck work?
 
@@ -142,8 +142,8 @@ TODO
 ```bash
 usage: ciocheck [-h] [--file-mode {lines,files,all}]
                 [--diff-mode {commited,staged,unstaged}] [--branch BRANCH]
-                [--check {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,pytest} [{pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,pytest} ...]]
-                [--enforce {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,pytest} [{pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,pytest} ...]]
+                [--check {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,pytest}
+                [--enforce {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,pytest}
                 folders_or_files [folders_or_files ...]
 
 Run Continuum IO test suite.
@@ -160,9 +160,9 @@ optional arguments:
                         Define diff mode. Default mode is commited.
   --branch BRANCH       Define branch to compare to. Default branch is
                         "origin/master"
-  --check {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,pytest} [{pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,pytest} ...]
+  --check {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,pytest}
                         Select tools to run. Default is "pep8"
-  --enforce {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,pytest} [{pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,pytest} ...]
+  --enforce {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,pytest}
                         Select tools to enforce. Enforced tools will fail if a
                         result is obtained. Default is none.
 ```
