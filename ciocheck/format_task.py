@@ -32,7 +32,8 @@ def format_file(path):
         if paths:
             formater.cmd_root = root_path
             result = formater.format_task(paths[0])
-            results[formater.name] = result
+            if result:
+                results[formater.name] = result
 
     if results:
         results[path] = path

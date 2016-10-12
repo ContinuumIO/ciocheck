@@ -72,6 +72,7 @@ class CustomConfigParser(configparser.ConfigParser):
 
     Support for bool, and lists only.
     """
+
     SECTION = MAIN_CONFIG_SECTION
 
     def get_value(self, option, section=MAIN_CONFIG_SECTION):

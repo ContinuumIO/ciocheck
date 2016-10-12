@@ -50,17 +50,19 @@ class Formater(Tool):
         except Exception as e:
             error = "{name} crashed on {path}: {error}".format(
                 name=cls.name, path=path, error=e)
-        result = {
-            'error': error,
-            'changed': changed,  # pyformat might create new init files.
-            'new-contents': new_contents,
-            'old-contents': old_contents,
-            'diff': diff(old_contents, new_contents),
-            'created': False
-        }
 
         if changed:
             atomic_replace(path, new_contents, encoding)
+            result = {
+                'error': error,
+                'changed': changed,  # pyformat might create new init files.
+                'new-contents': new_contents,
+                'old-contents': old_contents,
+                'diff': diff(old_contents, new_contents),
+                'created': False
+            }
+        else:
+            result = {}
 
         return result
 
