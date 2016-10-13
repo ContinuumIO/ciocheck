@@ -4,25 +4,15 @@
 # -----------------------------------------------------------------------------
 [ciocheck]
 branch = origin/master
-diff_mode = commited
+diff_mode = unstaged
 file_mode = all
-check = pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,coverage,pytest
-#enforce = pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,coverage,pytest
+check = pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf
+enforce = pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,coverage,pytest
 
 # Python (pyformat)
 add_copyright = true
 add_header = true
 add_init = true
-
-# -----------------------------------------------------------------------------
-# Flake 8
-# http://flake8.readthedocs.io/en/latest/config.html
-# -----------------------------------------------------------------------------
-[flake8]
-exclude = */tests/*
-ignore = E126
-max-line-length = 79
-max-complexity = 64
 
 # -----------------------------------------------------------------------------
 # pep8
@@ -42,11 +32,20 @@ add-ignore = D203
 inherit = false
 
 # -----------------------------------------------------------------------------
+# Flake 8
+# http://flake8.readthedocs.io/en/latest/config.html
+# -----------------------------------------------------------------------------
+[flake8]
+exclude = */tests/*
+ignore = E126
+max-line-length = 79
+max-complexity = 64
+
+# -----------------------------------------------------------------------------
 # pylint
 # https://pylint.readthedocs.io/en/latest/
 # -----------------------------------------------------------------------------
 #[pylint:messages]
-
 
 # -----------------------------------------------------------------------------
 # isort
@@ -64,7 +63,7 @@ line_length = 79
 sections = FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER
 
 # -----------------------------------------------------------------------------
-# YAPF
+# yapf
 # https://github.com/google/yapf#formatting-style
 # -----------------------------------------------------------------------------
 [yapf:style]
