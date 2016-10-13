@@ -21,16 +21,11 @@ import subprocess
 import sys
 import uuid
 
-# Local imports
-from ciocheck.config import (DEFAULT_IGNORE_EXTENSIONS, DEFAULT_IGNORE_FOLDERS,
-                             PY2)
+# Third party imports
+from six.moves import cStringIO as StringIO
 
-if PY2:
-    # Python 2
-    from cStringIO import StringIO
-else:
-    # Python 3
-    from io import StringIO
+# Local imports
+from ciocheck.config import DEFAULT_IGNORE_EXTENSIONS, DEFAULT_IGNORE_FOLDERS
 
 
 class Profiler(object):
