@@ -138,7 +138,7 @@ class PytestTool(Tool):
         if isinstance(paths, (dict, OrderedDict)):
             paths = list(sorted(paths.keys()))
 
-        cov = '--cov={0}'.format(self.cmd_root)
+        cov = '--cov="{0}"'.format(self.cmd_root)
         coverage_args = [cov]
 
         coverage_config_file = os.path.join(self.cmd_root,
