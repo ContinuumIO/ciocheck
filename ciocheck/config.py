@@ -113,12 +113,12 @@ def load_config(folder, cli_args):
             config.readfp(file_obj)
 
     for key, value in DEFAULT_CIOCHECK_CONFIG.items():
+        if not config.has_option('ciocheck', key):
+            config.set_value(key, value)
+
         if hasattr(cli_args, key):
             cli_value = getattr(cli_args, key)
             if cli_value:
-                value = cli_value
-
-        if not config.has_option('ciocheck', key):
-            config.set_value(key, value)
+                config.set_value(key, cli_value)
 
     return config
