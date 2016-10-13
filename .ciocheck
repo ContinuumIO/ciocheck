@@ -7,7 +7,7 @@ branch = origin/master
 diff_mode = commited
 file_mode = all
 check = pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,coverage,pytest
-enforce = pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,coverage,pytest
+enforce = pep8,pydocstyle,flake8,pyformat,isort,yapf,coverage,pytest
 
 # Python (pyformat)
 add_copyright = true
