@@ -31,7 +31,6 @@ MAIN_CONFIG_SECTION = 'ciocheck'
 CONFIGURATION_FILE = '.ciocheck'
 COVERAGE_CONFIGURATION_FILE = '.coveragerc'
 
-ENCODING_HEADER_FILE = '.cioencoding'
 COPYRIGHT_HEADER_FILE = '.ciocopyright'
 
 DEFAULT_ENCODING_HEADER = u"# -*- coding: utf-8 -*-\n"
@@ -50,6 +49,8 @@ DEFAULT_CIOCHECK_CONFIG = {
     'diff_mode': STAGED_MODE,
     'file_mode': MODIFIED_LINES,
     # Python specific/ pyformat
+    'header': DEFAULT_ENCODING_HEADER,
+    'copyright_file': COPYRIGHT_HEADER_FILE,
     'add_copyright': True,
     'add_header': True,
     'add_init': True,

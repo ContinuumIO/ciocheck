@@ -132,7 +132,12 @@ class Runner(object):
         self.clean()
 
         self.process_results(self.all_results)
-        self.enforce_checks()
+        if self.enforce_checks():
+            msg = 'Ciocheck successful run'
+            print('\n\n' + '=' * len(msg))
+            print(msg)
+            print('=' * len(msg))
+            print()
 
     def process_results(self, all_results):
         """Group all results by file path."""
@@ -241,8 +246,11 @@ class Runner(object):
                 print('\n\n' + '=' * len(msg))
                 print(msg)
                 print('=' * len(msg))
+                print()
                 sys.exit(1)
                 break
+
+        return True
 
     def format_diff(self, diff, indent='    '):
         """Format diff to include an indentation for console printing."""

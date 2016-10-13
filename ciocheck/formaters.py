@@ -22,8 +22,7 @@ import autopep8
 import isort
 
 # Local imports
-from ciocheck.config import (COPYRIGHT_HEADER_FILE, DEFAULT_COPYRIGHT_HEADER,
-                             DEFAULT_ENCODING_HEADER, ENCODING_HEADER_FILE)
+from ciocheck.config import DEFAULT_COPYRIGHT_HEADER
 from ciocheck.tools import Tool
 from ciocheck.utils import atomic_replace, cpu_count, diff
 
@@ -290,20 +289,20 @@ class PythonFormater(Formater):
         """Handle __init__.py addition and headers (copyright and encoding)."""
         super(PythonFormater, self).__init__(cmd_root)
         self.config = None
-        self.copyright_header = DEFAULT_COPYRIGHT_HEADER
-        self.encoding_header = DEFAULT_ENCODING_HEADER
+        self.copyright_header = None
+        self.encoding_header = None
 
     def _setup_headers(self):
         """Load custom encoding and copyright headers if defined."""
-        encoding_path = os.path.join(self.cmd_root, COPYRIGHT_HEADER_FILE)
-        if os.path.isfile(encoding_path):
-            with open(encoding_path, 'r') as file_obj:
-                self.copyright_header = file_obj.read()
+        self.encoding_header = self.config.get_value('header')
 
-        header_path = os.path.join(self.cmd_root, ENCODING_HEADER_FILE)
-        if os.path.isfile(header_path):
-            with open(header_path, 'r') as file_obj:
-                self.encoding_header = file_obj.read()
+        copyright_file = self.config.get_value('copyright_file')
+        copyright_path = os.path.join(self.cmd_root, copyright_file)
+        if os.path.isfile(copyright_path):
+            with open(copyright_path, 'r') as file_obj:
+                self.copyright_header = file_obj.read()
+        else:
+            self.copyright_header = DEFAULT_COPYRIGHT_HEADER
 
     def _add_headers(self, path, header, copy):
         """Add headers as needed in file."""

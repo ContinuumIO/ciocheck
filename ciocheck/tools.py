@@ -166,7 +166,9 @@ class PytestTool(Tool):
         self._setup_pytest_coverage_args(paths)
         output, error = run_command(
             ['py.test'] + self.pytest_args, cwd=self.cmd_root)
+
         if error:
+            print()
             print(error)
 
         if output:
