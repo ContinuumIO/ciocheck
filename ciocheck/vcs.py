@@ -100,13 +100,14 @@ class HgDiffTool(DiffToolBase):
 
 class GitDiffTool(DiffToolBase):
     """Thin wrapper for a subset of the `git diff` command."""
+
     # Regular expressions used to parse the diff output
     SRC_FILE_RE = re.compile(r'^diff --git "?a/.*"? "?b/([^ \n"]*)"?')
     MERGE_CONFLICT_RE = re.compile(r'^diff --cc ([^ \n]*)')
     HUNK_LINE_RE = re.compile(r'\+([0-9]*)')
 
     def __init__(self, path):
-        """TODO."""
+        """Thin wrapper for a subset of the `git diff` command."""
         self.path = path
         self._top_level = None
 
@@ -114,7 +115,7 @@ class GitDiffTool(DiffToolBase):
                         branch=DEFAULT_BRANCH,
                         files_only=False,
                         mode=None):
-        """TODO."""
+        """Build git diff command to generate different types of diffs."""
         command = [
             'git',
             '-c',
@@ -152,13 +153,13 @@ class GitDiffTool(DiffToolBase):
 
     def _parse_diff_str(self, diff_str):
         """
-        Parse the output of `git diff` into a dictionary of the form:
-            { SRC_PATH: (ADDED_LINES, DELETED_LINES) }
-        where `ADDED_LINES` and `DELETED_LINES` are lists of line
-        numbers added/deleted respectively.
-        If the output could not be parsed, raises a GitDiffError.
-        """
+        Parse the output of `git diff` into a dictionary.
 
+        Dictionary in the form:
+            { SRC_PATH: (ADDED_LINES, DELETED_LINES) }
+        where `ADDED_LINES` and `DELETED_LINES` are lists of line numbers
+        added/deleted respectively.
+        """
         # Create a dict to hold results
         diff_dict = dict()
 
@@ -175,7 +176,6 @@ class GitDiffTool(DiffToolBase):
 
     def _parse_source_sections(self, diff_str):
         """Parse source sections from git diff."""
-
         # Create a dict to map source files to lines in the diff output
         source_dict = dict()
 
@@ -228,10 +228,7 @@ class GitDiffTool(DiffToolBase):
         return source_dict
 
     def _parse_source_line(self, line):
-        """
-        Given a source line in `git diff` output, return the path
-        to the source file.
-        """
+        """Return path to source given a source line in `git diff`."""
         if '--git' in line:
             regex = self.SRC_FILE_RE
         elif '--cc' in line:
@@ -253,13 +250,11 @@ class GitDiffTool(DiffToolBase):
 
     def _parse_lines(self, diff_lines):
         """
-        Given the diff lines output from `git diff` for a particular
-        source file, return a tuple of `(ADDED_LINES, DELETED_LINES)`
-        where `ADDED_LINES` and `DELETED_LINES` are lists of line
-        numbers added/deleted respectively.
-        Raises a `GitDiffError` if the diff lines are in an invalid format.
-        """
+        Return  `(ADDED_LINES, DELETED_LINES)` for a source file in diff.
 
+        `ADDED_LINES` and `DELETED_LINES` are lists of line numbers
+        added/deleted respectively.
+        """
         added_lines = []
         deleted_lines = []
 
@@ -321,9 +316,10 @@ class GitDiffTool(DiffToolBase):
 
     def _parse_hunk_line(self, line):
         """
-        Given a hunk line in `git diff` output, return the line number
-        at the start of the hunk.  A hunk is a segment of code that
-        contains changes.
+        Return the line number at the start of a hunk in a given line.
+
+        A hunk is a segment of code that contains changes.
+
         The format of the hunk line is:
             @@ -k,l +n,m @@ TEXT
         where `k,l` represent the start line and length before the changes
@@ -383,7 +379,9 @@ class GitDiffTool(DiffToolBase):
         """Return if it is a git repo."""
         args = ['git', 'rev-parse']
         output, error = run_command(args, cwd=self.path)
-        return not bool(error)
+        if error:
+            print(error)
+        return not bool(error) and not bool(output)
 
     @property
     def top_level(self):
@@ -395,6 +393,8 @@ class GitDiffTool(DiffToolBase):
                 ['git', 'rev-parse', '--show-toplevel', '--encoding=utf-8'],
                 cwd=self.path, )
             result = output.split('\n')[0]
+            if error:
+                print(error)
         return result
 
     def commited_files(self, branch=DEFAULT_BRANCH):
@@ -437,14 +437,15 @@ class NoDiffTool(DiffToolBase):
         self.path = path
 
     def _get_files_helper(self, lines=False):
-        res = get_files(paths=[self.path])
+        paths = get_files(paths=[self.path])
         if lines:
-            results = {}
-            for r in res:
-                results[r] = ([-1],
-                              [-1], )
+            paths_dic = {}
+            for path in paths:
+                paths_dic[path] = ([-1],
+                                   range(100000), )
+            results = paths_dic
         else:
-            results = res
+            results = paths
         return results
 
     # --- Public API
@@ -455,7 +456,7 @@ class NoDiffTool(DiffToolBase):
         return self.path
 
     def is_repo(self):
-        """ """
+        """Return always True as this handles folders not under VC."""
         return True
 
     def commited_files(self, branch=DEFAULT_BRANCH):
@@ -499,10 +500,10 @@ class DiffTool(object):
 
         for path in self.paths:
             for diff_tool in self.TOOLS:
-                t = diff_tool(path)
-                if t.is_repo():
-                    if t.top_level not in self.diff_tools:
-                        self.diff_tools[t.top_level] = t
+                tool = diff_tool(path)
+                if tool.is_repo():
+                    if tool.top_level not in self.diff_tools:
+                        self.diff_tools[tool.top_level] = tool
                     break
 
     # --- Public API
