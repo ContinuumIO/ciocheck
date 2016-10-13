@@ -32,6 +32,7 @@ class Runner(object):
         self.config = load_config(cmd_root, cli_args)
         self.file_manager = FileManager(folders=folders, files=files)
         self.all_results = OrderedDict()
+        self.test_results = None
         self.failed_checks = set()
 
         self.check = self.config.get_value('check')
@@ -55,18 +56,18 @@ class Runner(object):
         check_testers = [t for t in TOOLS if t.name in self.check]
         run_multi = any(f for f in MULTI_FORMATERS if f.name in self.check)
 
-        all_tools = []
+        self.all_tools = []
 
         # Linters
         for linter in check_linters:
-            print('Running "{}"...'.format(linter.name))
+            print('Running "{}" ...'.format(linter.name))
             tool = linter(self.cmd_root)
             files = self.file_manager.get_files(
                 branch=self.branch,
                 diff_mode=self.diff_mode,
                 file_mode=self.file_mode,
                 extensions=tool.extensions)
-            all_tools.append(tool)
+            self.all_tools.append(tool)
             tool.create_config(self.config)
             self.all_results[tool.name] = {
                 'files': files,
@@ -75,7 +76,7 @@ class Runner(object):
 
         # Formaters
         for formater in check_formaters:
-            print('Running "{}"'.format(formater.name))
+            print('Running "{}" ...'.format(formater.name))
             tool = formater(self.cmd_root)
             files = self.file_manager.get_files(
                 branch=self.branch,
@@ -83,7 +84,7 @@ class Runner(object):
                 file_mode=self.file_mode,
                 extensions=tool.extensions)
             tool.create_config(self.config)
-            all_tools.append(tool)
+            self.all_tools.append(tool)
             results = tool.format(files)
             # Pyformat might include files in results that are not in files
             # like when an init is created
@@ -111,17 +112,19 @@ class Runner(object):
 
         # Tests
         for tester in check_testers:
-            print('Running "{}"'.format(tester.name))
+            print('Running "{}" ...'.format(tester.name))
             tool = tester(self.cmd_root)
             tool.create_config(self.config)
-            all_tools.append(tool)
+            self.all_tools.append(tool)
             files = self.file_manager.get_files(
                 branch=self.branch,
                 diff_mode=self.diff_mode,
                 file_mode=self.file_mode,
                 extensions=tool.extensions)
             results = tool.run(files)
-            self.all_results.update(results)
+            if results:
+                results['files'] = files
+                self.test_results = results
 
         for tool in LINTERS + FORMATERS + TOOLS:
             tool.remove_config(self.cmd_root)
@@ -139,6 +142,8 @@ class Runner(object):
                 all_changed_paths += [result['path'] for result in results]
 
         all_changed_paths = list(sorted(set(all_changed_paths)))
+        test_files = self.test_results.get('files')
+        test_coverage = self.test_results.get('coverage')
 
         for path in all_changed_paths:
             short_path = path.replace(self.cmd_root, '...')
@@ -196,11 +201,42 @@ class Runner(object):
                         for message in messages:
                             print(message)
 
+            if isinstance(test_files, dict) and test_files:
+                # Asked for lines changed
+                if test_coverage:
+                    lines_changed_not_covered = []
+                    lines = test_files.get(path)
+                    lines_added = lines[-1] if lines else []
+                    lines_covered = test_coverage.get(path)
+                    for line in lines_added:
+                        if line not in lines_covered:
+                            lines_changed_not_covered.append(str(line))
+
+                    if lines_changed_not_covered:
+                        uncov_perc = ((1.0*len(lines_changed_not_covered)) /
+                                      (1.0*len(lines_added)))
+                        cov_perc = (1 - uncov_perc)*100
+                        tool_name = 'coverage'
+                        print('\n  ' + tool_name)
+                        print('  ' + '-' * len(tool_name))
+                        print('    The following lines changed and are not '
+                              'covered by tests ({0}%):'.format(cov_perc))
+                        print('    ' + ', '.join(lines_changed_not_covered))
+
+        print()
+        print(self.all_tools[-1].output)
+
     def enforce_checks(self):
         """Check that enforced checks did not generate reports."""
+        if self.test_results:
+            test_summary = self.test_results['pytest']['report']['summary']
+            if test_summary.get('failed'):
+                self.failed_checks.add('pytest')
+
         for enforce_tool in self.enforce:
             if enforce_tool in self.failed_checks:
-                msg = "Failures in: {0}".format(repr(self.failed_checks))
+                msg = "Ciocheck failures in: {0}".format(
+                    repr(self.failed_checks))
                 print('\n\n' + '=' * len(msg))
                 print(msg)
                 print('=' * len(msg))
