@@ -12,6 +12,7 @@ from collections import OrderedDict
 import argparse
 import os
 import shutil
+import sys
 
 # Local imports
 from ciocheck.config import load_config
@@ -31,6 +32,7 @@ class Runner(object):
         self.config = load_config(cmd_root, cli_args)
         self.file_manager = FileManager(folders=folders, files=files)
         self.all_results = OrderedDict()
+        self.failed_checks = set()
 
         self.check = self.config.get_value('check')
         self.enforce = self.config.get_value('enforce')
@@ -40,6 +42,12 @@ class Runner(object):
 
     def run(self):
         """Run tools."""
+        msg = 'Running ciocheck'
+        print()
+        print('=' * len(msg))
+        print(msg)
+        print('=' * len(msg))
+        print()
         self.clean()
 
         check_linters = [l for l in LINTERS if l.name in self.check]
@@ -85,17 +93,21 @@ class Runner(object):
                     'results': results,
                 }
 
+        # The result of the the multi formater is special!
         if run_multi:
+            print('Running "Multi formater"')
             tool = MultiFormater(self.cmd_root, self.check)
             files = self.file_manager.get_files(
                 branch=self.branch,
                 diff_mode=self.diff_mode,
                 file_mode=self.file_mode,
                 extensions=tool.extensions)
-            self.all_results[tool.name] = {
-                'files': files,
-                'results': tool.format(files),
-            }
+            multi_results = tool.format(files)
+            for key, values in multi_results.items():
+                self.all_results[key] = {
+                    'files': files,
+                    'results': values,
+                }
 
         # Tests
         for tester in check_testers:
@@ -115,11 +127,93 @@ class Runner(object):
             tool.remove_config(self.cmd_root)
         self.clean()
 
-        print(self.all_results)
+        self.process_results(self.all_results)
+        self.enforce_checks()
 
-    def process_results(self, results):
+    def process_results(self, all_results):
         """Group all results by file path."""
-        pass
+        all_changed_paths = []
+        for tool_name, data in all_results.items():
+            if data:
+                files, results = data['files'], data['results']
+                all_changed_paths += [result['path'] for result in results]
+
+        all_changed_paths = list(sorted(set(all_changed_paths)))
+
+        for path in all_changed_paths:
+            short_path = path.replace(self.cmd_root, '...')
+            print()
+            print(short_path)
+            print('-' * len(short_path))
+            for tool_name, data in all_results.items():
+                if data:
+                    files, results = data['files'], data['results']
+                    lines = [[-1], range(100000)]
+
+                    if isinstance(files, dict):
+                        added_lines = files.get(path, lines)[-1]
+                    else:
+                        added_lines = lines[-1]
+
+                    messages = []
+                    for result in results:
+                        res_path = result['path']
+                        if path == res_path:
+                            # LINTERS
+                            line = int(result.get('line', -1))
+                            created = result.get('created')
+                            added_copy = result.get('added-copy')
+                            added_header = result.get('added-header')
+                            diff = result.get('diff')
+                            if line and line in list(added_lines):
+                                spaces = (8 - len(str(line))) * ' '
+                                msg = ('    {line}:{spaces}'
+                                       '{message}').format(**result,
+                                                           spaces=spaces)
+                                messages.append(msg)
+
+                            # FORMATERS
+                            if created:
+                                msg = '    __init__ file created.'
+                                messages.append(msg)
+                            if added_copy:
+                                msg = '    added copyright.'
+                                messages.append(msg)
+                            if added_header:
+                                msg = '    added header.'
+                                messages.append(msg)
+                            if diff:
+                                msg = self.format_diff(diff)
+                                messages.append(msg)
+
+                            # TESTERS / COVERAGE
+
+                    test = [r['path'] for r in results if path == r['path']]
+                    if test and messages:
+                        print('\n  ' + tool_name)
+                        print('  ' + '-' * len(tool_name))
+                        self.failed_checks.add(tool_name)
+                        for message in messages:
+                            print(message)
+
+    def enforce_checks(self):
+        """Check that enforced checks did not generate reports."""
+        for enforce_tool in self.enforce:
+            if enforce_tool in self.failed_checks:
+                msg = "Failures in: {0}".format(repr(self.failed_checks))
+                print('\n\n' + '=' * len(msg))
+                print(msg)
+                print('=' * len(msg))
+                sys.exit(1)
+                break
+
+    def format_diff(self, diff, indent='    '):
+        """Format diff to include an indentation for console printing."""
+        lines = diff.split('\n')
+        new_lines = []
+        for line in lines:
+            new_lines.append(indent + line)
+        return '\n'.join(new_lines)
 
     def clean(self):
         """Remove build directories and temporal config files."""
