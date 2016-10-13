@@ -154,7 +154,7 @@ usage: ciocheck [-h] [--file-mode {lines,files,all}]
 Run Continuum Analytics test suite.
 
 positional arguments:
-  folders_or_files      folders or files to analize
+  folder                folder to analize
 
 optional arguments:
   --help, -h            show this help message and exit

@@ -276,7 +276,7 @@ def main():
     description = 'Run Continuum IO test suite.'
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument(
-        'folders_or_files',
+        'folder',
         help='Folder to analize. Use from repo root.',
         nargs=1)
     parser.add_argument(
@@ -326,7 +326,7 @@ def main():
     root = os.getcwd()
     folders = []
     files = []
-    for folder_or_file in cli_args.folders_or_files:
+    for folder_or_file in cli_args.folder:
         folder_or_file = os.path.abspath(folder_or_file)
         if os.path.isfile(folder_or_file):
             files.append(folder_or_file)
