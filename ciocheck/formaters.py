@@ -18,6 +18,7 @@ import sys
 
 # Third party imports
 from yapf.yapflib.yapf_api import FormatFile
+import autopep8
 import isort
 
 # Local imports
@@ -32,37 +33,31 @@ HERE = os.path.dirname(os.path.realpath(__file__))
 class Formater(Tool):
     """Generic formater tool."""
 
-    @staticmethod
-    def code():
-        current = len(MULTI_FORMATERS)
-        return current * 10 + 5
-
     @classmethod
     def format_task(cls, path):
-        """TODO:"""
+        """Forma trask executed by paralell script helper."""
         changed = False
         old_contents, new_contents = '', ''
         error = None
         try:
             old_contents, new_contents, encoding = cls.format_file(path)
             changed = new_contents != old_contents
-
         except Exception as e:
             error = "{name} crashed on {path}: {error}".format(
                 name=cls.name, path=path, error=e)
 
         if changed:
-            atomic_replace(path, new_contents, encoding)
             result = {
+                'path': path,
                 'error': error,
-                'changed': changed,  # pyformat might create new init files.
-                'new-contents': new_contents,
-                'old-contents': old_contents,
+                #            'new-contents': new_contents,
+                #            'old-contents': old_contents,
                 'diff': diff(old_contents, new_contents),
-                'created': False
+                'created': False,  # pyformat might create new init files.
             }
+            atomic_replace(path, new_contents, encoding)
         else:
-            result = {}
+            return {}
 
         return result
 
@@ -77,7 +72,8 @@ class Formater(Tool):
 
 
 class IsortFormater(Formater):
-    """TODO:"""
+    """Isort code formater."""
+
     language = 'python'
     name = 'isort'
     extensions = ('py', )
@@ -100,7 +96,8 @@ class IsortFormater(Formater):
 
 
 class YapfFormater(Formater):
-    """TODO:"""
+    """Yapf code formater."""
+
     language = 'python'
     name = 'yapf'
     extensions = ('py', )
@@ -137,10 +134,35 @@ class YapfFormater(Formater):
         return old_contents, new_contents, encoding
 
 
+class Autopep8Formater(Formater):
+    """Autopep8 code formater."""
+
+    language = 'python'
+    name = 'autopep8'
+    extensions = ('py', )
+
+    # Config
+    config_file = '.autopep8.cfg'
+    config_sections = [('isort', 'settings')]
+
+    def format(self, paths):
+        """Format paths."""
+        pass
+
+    @classmethod
+    def format_file(cls, path):
+        """Format file for use with task queue."""
+        with open(path, 'r') as file_obj:
+            old_contents = file_obj.read()
+        new_contents = autopep8.fix_code(old_contents)
+        return old_contents, new_contents, 'utf-8'
+
+
 class MultiFormater(object):
     """Formater handling multiple formaters in parallel."""
-    name = 'multiformater'
+
     language = 'generic'
+    name = 'multiformater'
 
     def __init__(self, cmd_root, check):
         """Formater handling multiple formaters in parallel."""
@@ -159,6 +181,20 @@ class MultiFormater(object):
             stdout=subprocess.PIPE,
             stderr=subprocess.PIPE)
         return proc
+
+    def _format_results(self, results):
+        """Rearrange results for standard consumption."""
+        new_results = {}
+        for item in results:
+            for key, value in item.items():
+                if key not in new_results:
+                    new_results[key] = []
+                new_results[key].append(value)
+
+        # Sort by path
+        for key, values in new_results.items():
+            new_results[key] = sorted(values, key=lambda dic: dic['path'])
+        return new_results
 
     @property
     def extensions(self):
@@ -188,11 +224,18 @@ class MultiFormater(object):
                 # We pop(0) because the first process is the oldest
                 proc = processes.pop(0)
                 output, error = proc.communicate()
+
                 if isinstance(output, bytes):
                     output = output.decode()
+
                 if isinstance(error, bytes):
                     error = error.decode()
+
                 output = json.loads(output)
+
+                if error:
+                    print(error)
+
                 return output, error
 
         def await_all_processes():
@@ -209,29 +252,32 @@ class MultiFormater(object):
             """Take n items to pass to the processes."""
             result = []
             while n > 0 and items:
-                result.append(items.pop())
+                result.append(items.pop(0))  # Keep order
                 n = n - 1
-            return result
+            return list(sorted(result))
 
         while paths:
-            # We send a few files to each process to try to reduce
-            # per-process setup time
+            # We send a few files to each process to try to reduce per-process
+            # setup time
             some_files = take_n(paths, 3)
             processes.append(self._format_files(some_files))
 
             # Don't run too many at once, this is a goofy algorithm
             if len(processes) > (cpu_count() * 3):
                 while len(processes) > cpu_count():
+                    print(len(processes))
                     await_one_process()
 
         assert [] == paths
         results = await_all_processes()
+        results = self._format_results(results)
         assert [] == processes
         return results
 
 
 class PythonFormater(Formater):
     """Handle __init__.py addition and headers (copyright and encoding)."""
+
     language = 'python'
     name = 'pyformat'
     extensions = ('py', )
@@ -239,6 +285,7 @@ class PythonFormater(Formater):
     COPYRIGHT_RE = re.compile('# *Copyright ')
 
     def __init__(self, cmd_root):
+        """Handle __init__.py addition and headers (copyright and encoding)."""
         super(PythonFormater, self).__init__(cmd_root)
         self.config = None
         self.copyright_header = DEFAULT_COPYRIGHT_HEADER
@@ -289,22 +336,30 @@ class PythonFormater(Formater):
         if not have_copyright and copy:
             contents += self.copyright_header
         new_contents = contents + old_contents
-        atomic_replace(path, new_contents, 'utf-8')
-        results = {
-            'path': path,
-            'changed': new_contents != old_contents,
-            'diff': diff(old_contents, new_contents),
-            'new-contents': new_contents,
-            'old-contents': old_contents,
-            'created': False,
-            'error': None,
-        }
+        if new_contents != old_contents:
+            results = {
+                'path': path,
+                'diff': diff(old_contents, new_contents),
+                'created': False,
+                'error': None,
+                'added-copy': not have_encoding and header,
+                'added-header': not have_copyright and copy,
+            }
+            atomic_replace(path, new_contents, 'utf-8')
+        else:
+            results = {}
         return results
 
     def _add_missing_init_py(self, paths):
         """Add missing __init__.py files in the module subdirectories."""
-        folders = [os.path.dirname(p) for p in paths]
         results = []
+        folders = [os.path.dirname(p) for p in paths]
+
+        # Avoid adding an init on repo level if setup.py or other script on the
+        # top level has changed
+        if self.cmd_root in folders:
+            folders.remove(self.cmd_root)
+
         for folder in folders:
             init_py = os.path.join(folder, "__init__.py")
             exists = os.path.exists(init_py)
@@ -314,10 +369,7 @@ class PythonFormater(Formater):
                 result = {
                     'path': init_py,
                     'created': not exists,
-                    'changed': False,
                     'diff': diff('', ''),
-                    'new-contents': '',
-                    'old-contents': '',
                     'error': None,
                 }
                 results.append(result)
@@ -374,6 +426,7 @@ FORMATERS = [
 
 
 def test():
+    """Main local test."""
     pass
 
 
