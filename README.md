@@ -121,7 +121,6 @@ spaces_before_comment = 2
 [coverage:run]
 omit =
     */tests/*
-    */Navigator.app/*
 
 [coverage:report]
 fail_under = 0
