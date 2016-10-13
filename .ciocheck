@@ -4,9 +4,9 @@
 # -----------------------------------------------------------------------------
 [ciocheck]
 branch = origin/master
-diff_mode = unstaged
+diff_mode = commited
 file_mode = all
-check = pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf
+check = pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,coverage,pytest
 enforce = pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,coverage,pytest
 
 # Python (pyformat)
@@ -16,7 +16,7 @@ add_init = true
 
 # -----------------------------------------------------------------------------
 # pep8
-# 
+# http://pep8.readthedocs.io/en/latest/intro.html#configuration
 # -----------------------------------------------------------------------------
 [pep8]
 exclude = */tests/*
