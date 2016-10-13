@@ -11,9 +11,8 @@
 import ast
 import os
 
-# Third party imports
+# Local imports
 from setuptools import find_packages, setup
-
 
 HERE = os.path.abspath(os.path.dirname(__file__))
 
@@ -46,6 +45,7 @@ setup(
     maintainer_email='goanpeca@gmail.com',
     packages=packages,
     dependencies=[
+        'autopep8',
         'coverage',
         'flake8',
         'isort',
@@ -55,12 +55,12 @@ setup(
         'pytest-cov',
         'pytest-json',
         'pytest-xdist',
+        'six',
         'yapf',
-        ],
+    ],
     entry_points={
         'gui_scripts': [
             'ciocheck = ciocheck.main:main'
         ]
     },
-    include_package_data=True,
-    )
+    include_package_data=True, )
