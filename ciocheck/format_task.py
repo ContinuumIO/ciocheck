@@ -31,20 +31,22 @@ def format_file(path):
         paths = filter_files([path], formater.extensions)
         if paths:
             formater.cmd_root = root_path
-            result = formater.format_task(paths[0])
+            result = formater.format_task(path)
             if result:
                 results[formater.name] = result
-
-    if results:
-        results[path] = path
-
     return results
 
 
-for filename in sys.argv[1:]:
+def main():
+    """Main script."""
     task_results = []
-    task_result = format_file(filename)
-    task_results.append(task_result)
+    for filename in sys.argv[1:]:
+        task_result = format_file(filename)
+        if task_result:
+            task_results.append(task_result)
+    print(json.dumps(task_results))
+    sys.exit(0)
 
-print(json.dumps(task_results))
-sys.exit(0)
+
+if __name__ == '__main__':
+    main()
