@@ -8,12 +8,20 @@ Continuum Analytics linter, formater and test suite helper.
 
 It leverages on the different available linting, formatting and testing tools 
 availbale for Python, including:
-- [pytest-cov](http://pytest-cov.readthedocs.io/en/latest/)  (Run code [coverage](http://coverage.readthedocs.io/en/latest) with the [pytest](http://pytest.org/latest/) library)
-- [Flake8](http://flake8.readthedocs.io/en/latest/)  (Style check based on [pep8](https://github.com/PyCQA/pycodestyle) and [pyflakes](https://github.com/pyflakes/pyflakes))
+
+## Linters
+- [pep8](https://github.com/PyCQA/pycodestyle)  (Style check)
 - [pydocstyle](https://pydocstyle.readthedocs.io/en/latest/)  (Style check docstrings)
-- [pep8](https://github.com/PyCQA/pycodestyle)  (Style check docstrings)
-- [YAPF](https://github.com/google/yapf)  (Formatter for code)
+- [flake8](http://flake8.readthedocs.io/en/latest/)  (Style check based on [pep8](https://github.com/PyCQA/pycodestyle) and [pyflakes](https://github.com/pyflakes/pyflakes))
+- [pylint](https://github.com/PyCQA/pycodestyle)  (Code quality check)
+
+## Formaters
+- [autopep8](https://github.com/google/yapf)  (Formatter for code)
+- [yapf](https://github.com/google/yapf)  (Formatter for code)
 - [isort](https://github.com/timothycrosley/isort/)  (Formatter for import statements)
+
+## Test and coverage
+- [pytest-cov](http://pytest-cov.readthedocs.io/en/latest/)  (Run code [coverage](http://coverage.readthedocs.io/en/latest) with the [pytest](http://pytest.org/latest/) library)
 
 Plus some extra goodies, like:
 - Single file configuration for all the tools (still working on eliminating 
@@ -37,9 +45,8 @@ Configuration is saved in a single file named `.ciocheck`
 branch = origin/master
 diff_mode = commited
 file_mode = lines
-#check = pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,pytest
-#enforce = pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,pytest
-check = pyformat
+check = pep8,pydocstyle,flake8,pylint,pyformat,isort,autopep8,yapf,coverage,pytest
+enforce = pep8,pydocstyle,flake8,pylint,pyformat,isort,autopep8,yapf,coverage,pytest
 
 # Python (pyformat)
 add_copyright = true
@@ -90,8 +97,8 @@ import_heading_stdlib = Standard library imports
 import_heading_firstparty = Local imports
 import_heading_thirdparty = Third party imports
 indent = '    '
-known_first_party = anaconda_navigator
-known_third_party = six,_license,pytestqt
+known_first_party = ciocheck
+known_third_party = six,pytest,autopep8,yapf,pylint
 line_length = 79
 sections = FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER
 
