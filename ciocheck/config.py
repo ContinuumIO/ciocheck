@@ -9,16 +9,9 @@
 
 # Standard library imports
 import os
-import sys
 
-PY2 = sys.version_info[0] == 2
-
-if PY2:
-    # Python 2
-    import ConfigParser as configparser
-else:
-    # Python 3
-    import configparser
+# Third party imports
+from six.moves import configparser
 
 # Version control modes
 STAGED_MODE = 'staged'
