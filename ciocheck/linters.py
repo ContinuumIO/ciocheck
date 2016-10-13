@@ -19,6 +19,7 @@ from ciocheck.utils import run_command
 
 class Linter(Tool):
     """Generic linter with json and regex output support."""
+
     # Regex matching
     pattern = None
 
@@ -82,6 +83,7 @@ class Linter(Tool):
 
 class Flake8Linter(Linter):
     """Flake8 python tool runner."""
+
     language = 'python'
     name = 'flake8'
     extensions = ('py', )
@@ -101,6 +103,7 @@ class Flake8Linter(Linter):
 
 class Pep8Linter(Linter):
     """Pep8 python tool runner."""
+
     language = 'python'
     name = 'pep8'
     extensions = ('py', )
@@ -119,6 +122,7 @@ class Pep8Linter(Linter):
 
 class PydocstyleLinter(Linter):
     """Pydocstyle python tool runner."""
+
     language = 'python'
     name = 'pydocstyle'
     extensions = ('py', )
@@ -141,6 +145,7 @@ class PydocstyleLinter(Linter):
 
 class PylintLinter(Linter):
     """Pylint python tool runner."""
+
     language = 'python'
     name = 'pylint'
     extensions = ('py', )
@@ -154,9 +159,9 @@ class PylintLinter(Linter):
                  ('path', 'path'), )
 
     def extra_processing(self, results):
-        # Make path an absolute path
+        """Make path an absolute path."""
         for item in results:
-            item['path'] = os.path.join(self.paths[0], item['path'])
+            item['path'] = os.path.join(self.cmd_root, item['path'])
         return results
 
 
