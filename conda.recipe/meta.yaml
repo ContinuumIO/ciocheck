@@ -11,7 +11,7 @@ requirements:
     - python
     - setuptools
   run:
-    - python
+    - autopep8
     - coverage
     - flake8
     - isort
@@ -21,10 +21,12 @@ requirements:
     - pytest-cov
     - pytest-json
     - pytest-xdist
+    - python
+    - six
     - yapf
 
 about:
   home: https://github.com/ContinuumIO/ciocheck
-  summary: "Continuum check/test suite helper"
+  summary: "Continuum Analytics linter/formater/tester helper"
   license: MIT
   dev_url: https://github.com/ContinuumIO/ciocheck
