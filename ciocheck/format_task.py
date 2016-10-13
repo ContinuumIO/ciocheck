@@ -27,6 +27,7 @@ def format_file(path):
     check_multi_formaters = [f for f in MULTI_FORMATERS if f.name in check]
 
     results = {}
+
     for formater in check_multi_formaters:
         paths = filter_files([path], formater.extensions)
         if paths:

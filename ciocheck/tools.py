@@ -213,6 +213,7 @@ class PytestTool(Tool):
         if os.path.isfile(remove_file):
             os.remove(remove_file)
 
+
 TOOLS = [
     CoverageTool,
     PytestTool,

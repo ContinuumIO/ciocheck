@@ -24,15 +24,21 @@ class Linter(Tool):
     pattern = None
 
     # Json matching
-    json_keys = None  # ((old_key, new_key), ...)
+    json_keys = []  # ((old_key, new_key), ...)
     output_on_stderr = False
+
+    def __init__(self, cmd_root):
+        """Generic linter with json and regex output support."""
+        super(Linter, self).__init__(cmd_root)
+        self.paths = None
+        self.regex = None
 
     def _parse_regex(self, string):
         """Parse output with grouped regex."""
         results = []
         self.regex = re.compile(self.pattern, re.VERBOSE)
-        for m in self.regex.finditer(string):
-            results.append(m.groupdict())
+        for matches in self.regex.finditer(string):
+            results.append(matches.groupdict())
         return results
 
     def _parse_json(self, string):
@@ -175,11 +181,12 @@ LINTERS = [
 
 def test():
     """Main local test."""
-    paths = [os.path.dirname(os.path.realpath(__file__))]
-    linter = PylintLinter()
-    res = linter.check(paths)
-    for r in res:
-        print(r)
+    here = os.path.dirname(os.path.realpath(__file__))
+    paths = [here]
+    linter = PylintLinter(here)
+    results = linter.run(paths)
+    for result in results:
+        print(result)
 
 
 if __name__ == '__main__':

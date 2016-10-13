@@ -8,16 +8,16 @@
 """Test pytest runners."""
 
 # Local imports
-from ciocheck.linters import Flake8Linter
+from ciocheck.linters import Flake8Linter, Pep8Linter
 
 
 def test_true():
-    l = Flake8Linter('')
-    l
-    assert 1 == 1
+    """Mock test for checking ciocheck is working."""
+    linter = Flake8Linter('')
+    assert linter.name == 'flake8'
 
 
 def test_false():
-    l = Flake8Linter('')
-    l
-    assert 1 == 1
+    """Mock test for checking ciocheck is working."""
+    linter = Pep8Linter('')
+    assert linter.name == 'pep8'

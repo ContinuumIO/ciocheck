@@ -32,6 +32,7 @@ class Runner(object):
         self.config = load_config(cmd_root, cli_args)
         self.file_manager = FileManager(folders=folders, files=files)
         self.all_results = OrderedDict()
+        self.all_tools = None
         self.test_results = None
         self.failed_checks = set()
 
@@ -85,7 +86,7 @@ class Runner(object):
                 extensions=tool.extensions)
             tool.create_config(self.config)
             self.all_tools.append(tool)
-            results = tool.format(files)
+            results = tool.run(files)
             # Pyformat might include files in results that are not in files
             # like when an init is created
             if results:
@@ -103,7 +104,7 @@ class Runner(object):
                 diff_mode=self.diff_mode,
                 file_mode=self.file_mode,
                 extensions=tool.extensions)
-            multi_results = tool.format(files)
+            multi_results = tool.run(files)
             for key, values in multi_results.items():
                 self.all_results[key] = {
                     'files': files,
@@ -213,9 +214,9 @@ class Runner(object):
                             lines_changed_not_covered.append(str(line))
 
                     if lines_changed_not_covered:
-                        uncov_perc = ((1.0*len(lines_changed_not_covered)) /
-                                      (1.0*len(lines_added)))
-                        cov_perc = (1 - uncov_perc)*100
+                        uncov_perc = ((1.0 * len(lines_changed_not_covered)) /
+                                      (1.0 * len(lines_added)))
+                        cov_perc = (1 - uncov_perc) * 100
                         tool_name = 'coverage'
                         print('\n  ' + tool_name)
                         print('  ' + '-' * len(tool_name))

@@ -17,7 +17,7 @@ import subprocess
 import sys
 
 # Third party imports
-from yapf.yapflib.yapf_api import FormatFile
+from yapf.yapflib.yapf_api import FormatCode
 import autopep8
 import isort
 
@@ -42,9 +42,9 @@ class Formater(Tool):
         try:
             old_contents, new_contents, encoding = cls.format_file(path)
             changed = new_contents != old_contents
-        except Exception as e:
+        except Exception as err:
             error = "{name} crashed on {path}: {error}".format(
-                name=cls.name, path=path, error=e)
+                name=cls.name, path=path, error=err)
 
         if changed:
             result = {
@@ -62,11 +62,18 @@ class Formater(Tool):
         return result
 
     @classmethod
-    def format_file(cls, path):
-        """Format file for use with task queue."""
+    def format_string(cls, old_contents):
+        """Format content of a file."""
         raise NotImplementedError
 
-    def format(self, paths):
+    @classmethod
+    def format_file(cls, path):
+        """Format file for use with task queue."""
+        with open(path, 'r') as file_obj:
+            old_contents = file_obj.read()
+        return cls.format_string(old_contents)
+
+    def run(self, paths):
         """Format paths."""
         raise NotImplementedError
 
@@ -82,15 +89,13 @@ class IsortFormater(Formater):
     config_file = '.isort.cfg'
     config_sections = [('isort', 'settings')]
 
-    def format(self, paths):
+    def run(self, paths):
         """Format paths."""
         pass
 
     @classmethod
-    def format_file(cls, path):
-        """Format file for use with task queue."""
-        with open(path, 'r') as file_obj:
-            old_contents = file_obj.read()
+    def format_string(cls, old_contents):
+        """Format content of a file."""
         new_contents = isort.SortImports(file_contents=old_contents).output
         return old_contents, new_contents, 'utf-8'
 
@@ -106,23 +111,20 @@ class YapfFormater(Formater):
     config_file = '.style.yapf'
     config_sections = [('yapf:style', 'style')]
 
-    def format(self, paths):
+    def run(self, paths):
         """Format paths."""
         pass
 
     @classmethod
-    def format_file(cls, path):
+    def format_string(cls, old_contents):
         """Format file for use with task queue."""
         # cmd_root is assigned to formater inside format_task... ugly!
         style_config = os.path.join(cls.cmd_root, cls.config_file)
         # It might be tempting to use the "inplace" option to FormatFile, but
         # it doesn't do an atomic replace, which is dangerous, so don't use
         # it unless you submit a fix to yapf.
-        (new_contents, encoding, changed) = FormatFile(
-            path, style_config=style_config)
-
-        with codecs.open(path, 'r', encoding) as file_obj:
-            old_contents = file_obj.read()
+        (new_contents, encoding, changed) = FormatCode(
+            old_contents, style_config=style_config)
 
         if platform.system() == 'Windows':
             # yapf screws up line endings on windows
@@ -145,15 +147,13 @@ class Autopep8Formater(Formater):
     config_file = '.autopep8.cfg'
     config_sections = [('isort', 'settings')]
 
-    def format(self, paths):
+    def run(self, paths):
         """Format paths."""
         pass
 
     @classmethod
-    def format_file(cls, path):
+    def format_string(cls, old_contents):
         """Format file for use with task queue."""
-        with open(path, 'r') as file_obj:
-            old_contents = file_obj.read()
         new_contents = autopep8.fix_code(old_contents)
         return old_contents, new_contents, 'utf-8'
 
@@ -204,7 +204,7 @@ class MultiFormater(object):
             all_extensions += list(formater.extensions)
         return all_extensions
 
-    def format(self, paths):
+    def run(self, paths):
         """
         Run formatters.
 
@@ -246,14 +246,16 @@ class MultiFormater(object):
                 output = [o for o in output if o]
                 if output:
                     results += output
+                if error:
+                    print(error)
             return results
 
-        def take_n(items, n):
+        def take_n(items, amount):
             """Take n items to pass to the processes."""
             result = []
-            while n > 0 and items:
+            while amount > 0 and items:
                 result.append(items.pop(0))  # Keep order
-                n = n - 1
+                amount = amount - 1
             return list(sorted(result))
 
         while paths:
@@ -375,7 +377,11 @@ class PythonFormater(Formater):
                 results.append(result)
         return results
 
-    def format(self, paths):
+    def format_string(self, string):
+        """Format content of a file."""
+        pass
+
+    def run(self, paths):
         """Run pyformat formater."""
         paths = list(sorted([p for p in paths]))
         add_copyright = self.config.get_value('add_copyright')
