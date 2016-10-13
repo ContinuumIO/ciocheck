@@ -236,8 +236,8 @@ def main():
         nargs=1)
     parser.add_argument(
         '--file-mode',
+        '-fm',
         dest='file_mode',
-        nargs=1,
         choices=['lines', 'files', 'all'],
         default=None,
         help=('Define if the tool should run on modified '
@@ -245,20 +245,21 @@ def main():
               'all files'))
     parser.add_argument(
         '--diff-mode',
+        '-dm',
         dest='diff_mode',
-        nargs=1,
         choices=['commited', 'staged', 'unstaged'],
         default=None,
         help='Define diff mode. Default mode is commited.')
     parser.add_argument(
         '--branch',
+        '-b',
         dest='branch',
-        nargs=1,
         default=None,
         help=('Define branch to compare to. Default branch is '
               '"origin/master"'))
     parser.add_argument(
         '--check',
+        '-c',
         dest='check',
         nargs='+',
         choices=['pep8', 'pydocstyle', 'flake8', 'pylint', 'pyformat', 'isort',
@@ -267,6 +268,7 @@ def main():
         help='Select tools to run. Default is "pep8"')
     parser.add_argument(
         '--enforce',
+        '-e',
         dest='enforce',
         choices=['pep8', 'pydocstyle', 'flake8', 'pylint', 'pyformat', 'isort',
                  'yapf', 'pytest'],
