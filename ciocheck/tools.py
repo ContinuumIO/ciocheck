@@ -132,13 +132,15 @@ class PytestTool(Tool):
         """Pytest tool runner."""
         super(PytestTool, self).__init__(cmd_root)
         self.pytest_args = None
+        self.output = None
 
     def _setup_pytest_coverage_args(self, paths):
         """Setup pytest-cov arguments and config file path."""
         if isinstance(paths, (dict, OrderedDict)):
             paths = list(sorted(paths.keys()))
 
-        cov = '--cov="{0}"'.format(self.cmd_root)
+        # module = os.path.normpath(os.path.basename(self.cmd_root))
+        cov = '--cov={0}'.format(self.cmd_root)
         coverage_args = [cov]
 
         coverage_config_file = os.path.join(self.cmd_root,
@@ -153,16 +155,14 @@ class PytestTool(Tool):
             enable_xdist = []
         else:
             enable_xdist = ['-n', str(cpu_count())]
-            enable_xdist = []
 
         self.pytest_args = ['--json={0}'.format(self.REPORT_FILE)]
         self.pytest_args = self.pytest_args + enable_xdist
         self.pytest_args = self.pytest_args + coverage_args
-        print(self.pytest_args)
+        # print(self.pytest_args)
 
     def run(self, paths):
         """Run pytest test suite."""
-        # If used with qtpy and pytest-qt
         self._setup_pytest_coverage_args(paths)
         output, error = run_command(
             ['py.test'] + self.pytest_args, cwd=self.cmd_root)
@@ -170,7 +170,7 @@ class PytestTool(Tool):
             print(error)
 
         if output:
-            print(output)
+            self.output = output
 
         covered_lines = self.parse_coverage()
         pytest_report = self.parse_pytest_report()
@@ -203,7 +203,6 @@ class PytestTool(Tool):
             lines = cov['lines']
             for path in sorted(lines):
                 covered_lines[path] = lines[path]
-
         return covered_lines
 
     @classmethod
@@ -213,7 +212,6 @@ class PytestTool(Tool):
         remove_file = os.path.join(path, cls.REPORT_FILE)
         if os.path.isfile(remove_file):
             os.remove(remove_file)
-
 
 TOOLS = [
     CoverageTool,
