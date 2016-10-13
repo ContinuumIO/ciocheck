@@ -12,20 +12,18 @@ from collections import OrderedDict
 import json
 import os
 
-# Local imports
-from ciocheck.config import COVERAGE_CONFIGURATION_FILE, PY2
-from ciocheck.utils import cpu_count, run_command
+# Third party imports
+from six import PY2
+from six.moves import configparser
 
-if PY2:
-    # Python 2
-    import ConfigParser as configparser
-else:
-    # Python 3
-    import configparser
+# Local imports
+from ciocheck.config import COVERAGE_CONFIGURATION_FILE
+from ciocheck.utils import cpu_count, run_command
 
 
 class Tool(object):
     """Generic tool object."""
+
     name = None
     language = None
     extensions = None
@@ -74,6 +72,7 @@ class Tool(object):
 
 class CoverageTool(Tool):
     """Coverage tool runner."""
+
     name = 'coverage'
     language = 'python'
     extensions = ('py', )
@@ -119,6 +118,7 @@ class CoverageTool(Tool):
 
 class PytestTool(Tool):
     """Pytest tool runner."""
+
     name = 'pytest'
     language = 'python'
     extensions = ('py', )
@@ -138,7 +138,6 @@ class PytestTool(Tool):
         if isinstance(paths, (dict, OrderedDict)):
             paths = list(sorted(paths.keys()))
 
-        # FIXME: take into account more paths?
         cov = '--cov={0}'.format(self.cmd_root)
         coverage_args = [cov]
 
