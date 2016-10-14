@@ -9,6 +9,7 @@
 
 # Standard library imports
 from collections import OrderedDict
+import ast
 import json
 import os
 
@@ -27,6 +28,7 @@ class Tool(object):
     name = None
     language = None
     extensions = None
+
     command = None
 
     # Config
@@ -37,6 +39,7 @@ class Tool(object):
         """A Generic tool object."""
         self.cmd_root = cmd_root
         self.config = None
+        self.config_options = None  # dict version of the config
 
     def create_config(self, config):
         """Create a config file for for a given config fname and sections."""
@@ -54,8 +57,39 @@ class Tool(object):
                     for option, value in items:
                         new_config.set(config_section, option, value)
 
-                    with open(new_config_file, 'w') as file_obj:
-                        new_config.write(file_obj)
+            with open(new_config_file, 'w') as file_obj:
+                new_config.write(file_obj)
+
+    @classmethod
+    def make_config_dictionary(cls):
+        """Turn config into a dictionary for later usage."""
+        config_path = os.path.join(cls.cmd_root, cls.config_file)
+        config_options = {}
+
+        if os.path.exists(config_path):
+            config = configparser.ConfigParser()
+
+            with open(config_path, 'r') as file_obj:
+                config.readfp(file_obj)
+
+            for section in config.sections():
+                for key in config[section]:
+                    value = config[section][key]
+                    if ',' in value:
+                        value = [v for v in value.split(',') if v]
+                    elif value.lower() == 'false':
+                        value = False
+                    elif value.lower() == 'true':
+                        value = True
+                    else:
+                        try:
+                            value = ast.literal_eval(value)  # Numbers
+                        except Exception as err:
+                            pass
+
+                    config_options[key.replace('-', '_')] = value
+
+        return config_options
 
     @classmethod
     def remove_config(cls, path):

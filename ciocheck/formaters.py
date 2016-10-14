@@ -45,6 +45,10 @@ class Formater(Tool):
             error = "{name} crashed on {path}: {error}".format(
                 name=cls.name, path=path, error=err)
 
+            with open('error.log', 'w') as f:
+                f.write(cls.name)
+                f.write(str(err))
+
         if changed:
             result = {
                 'path': path,
@@ -143,8 +147,8 @@ class Autopep8Formater(Formater):
     extensions = ('py', )
 
     # Config
-    config_file = '.autopep8.cfg'
-    config_sections = [('isort', 'settings')]
+    config_file = '.autopep8'
+    config_sections = [('autopep8', 'pep8')]
 
     def run(self, paths):
         """Format paths."""
@@ -153,7 +157,9 @@ class Autopep8Formater(Formater):
     @classmethod
     def format_string(cls, old_contents):
         """Format file for use with task queue."""
-        new_contents = autopep8.fix_code(old_contents)
+        config_options = cls.make_config_dictionary()
+        config_options = {}
+        new_contents = autopep8.fix_code(old_contents, options=config_options)
         return old_contents, new_contents, 'utf-8'
 
 
@@ -230,8 +236,8 @@ class MultiFormater(object):
                 if isinstance(error, bytes):
                     error = error.decode()
 
+                print(output, error)
                 output = json.loads(output)
-
                 if error:
                     print(error)
 
@@ -422,11 +428,13 @@ class PythonFormater(Formater):
 MULTI_FORMATERS = [
     IsortFormater,
     YapfFormater,
+    Autopep8Formater,
 ]
 FORMATERS = [
     PythonFormater,
     IsortFormater,
     YapfFormater,
+    Autopep8Formater,
 ]
 
 
