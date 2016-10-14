@@ -122,6 +122,7 @@ spaces_before_comment = 2
 exclude = */tests/*
 ignore = E126,
 max-line-length = 99
+aggressive = 0
 
 # -----------------------------------------------------------------------------
 # Coverage
@@ -156,17 +157,17 @@ python_functions = test_*
 ```bash
 usage: ciocheck [-h] [--file-mode {lines,files,all}]
                 [--diff-mode {commited,staged,unstaged}] [--branch BRANCH]
-                [--check {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,pytest}
-                [--enforce {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,pytest}
-                folders_or_files [folders_or_files ...]
+                [--check {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
+                [--enforce {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
+                folders [folders]
 
 Run Continuum Analytics test suite.
 
 positional arguments:
-  folder                folder to analize
+  folder                Folder to analize. Use from repo root.'
 
 optional arguments:
-  --help, -h            show this help message and exit
+  --help, -h            Show this help message and exit
   --file-mode, -fm {lines,files,all}
                         Define if the tool should run on modified lines of
                         files (default), modified files or all files

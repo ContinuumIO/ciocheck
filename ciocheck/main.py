@@ -313,7 +313,7 @@ def main():
         dest='check',
         nargs='+',
         choices=['pep8', 'pydocstyle', 'flake8', 'pylint', 'pyformat', 'isort',
-                 'yapf', 'pytest'],
+                 'yapf', 'autopep8', 'coverage', 'pytest'],
         default=None,
         help='Select tools to run. Default is "pep8"')
     parser.add_argument(
@@ -321,7 +321,7 @@ def main():
         '-e',
         dest='enforce',
         choices=['pep8', 'pydocstyle', 'flake8', 'pylint', 'pyformat', 'isort',
-                 'yapf', 'pytest'],
+                 'yapf', 'autopep8', 'coverage', 'pytest'],
         default=None,
         nargs='+',
         help=('Select tools to enforce. Enforced tools will '
