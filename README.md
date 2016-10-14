@@ -63,7 +63,7 @@ add_init = true
 # -----------------------------------------------------------------------------
 [pep8]
 exclude = */tests/*
-ignore = E126
+ignore = E126,
 max-line-length = 79
 
 # -----------------------------------------------------------------------------
@@ -71,7 +71,7 @@ max-line-length = 79
 # http://www.pydocstyle.org/en/latest/usage.html#example
 # -----------------------------------------------------------------------------
 [pydocstyle]
-add-ignore = D203
+add-ignore = D203,
 inherit = false
 
 # -----------------------------------------------------------------------------
@@ -80,7 +80,7 @@ inherit = false
 # -----------------------------------------------------------------------------
 [flake8]
 exclude = */tests/*
-ignore = E126
+ignore = E126,
 max-line-length = 79
 max-complexity = 64
 
@@ -113,6 +113,15 @@ sections = FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER
 based_on_style = pep8
 column_limit = 79
 spaces_before_comment = 2
+
+# -----------------------------------------------------------------------------
+# autopep8
+# http://pep8.readthedocs.io/en/latest/intro.html#configuration
+# -----------------------------------------------------------------------------
+[autopep8]
+exclude = */tests/*
+ignore = E126,
+max-line-length = 99
 
 # -----------------------------------------------------------------------------
 # Coverage
