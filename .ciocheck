@@ -6,7 +6,7 @@
 branch = origin/master
 diff_mode = commited
 file_mode = all
-check = pep8,pydocstyle,flake8,pyformat,pylint,isort,yapf,coverage,pytest
+check = pep8,pydocstyle,flake8,pyformat,isort,yapf,coverage,pytest
 enforce = pep8,pydocstyle,flake8,pyformat,isort,yapf,coverage,pytest
 
 # Python (pyformat)
@@ -20,7 +20,7 @@ add_init = true
 # -----------------------------------------------------------------------------
 [pep8]
 exclude = */tests/*
-ignore = E126
+ignore = E126,
 max-line-length = 79
 
 # -----------------------------------------------------------------------------
@@ -37,7 +37,7 @@ inherit = false
 # -----------------------------------------------------------------------------
 [flake8]
 exclude = */tests/*
-ignore = E126
+ignore = E126,
 max-line-length = 79
 max-complexity = 64
 
@@ -70,6 +70,15 @@ sections = FUTURE,STDLIB,THIRDPARTY,FIRSTPARTY,LOCALFOLDER
 based_on_style = pep8
 column_limit = 79
 spaces_before_comment = 2
+
+# -----------------------------------------------------------------------------
+# autopep8
+# http://pep8.readthedocs.io/en/latest/intro.html#configuration
+# -----------------------------------------------------------------------------
+[autopep8]
+exclude = */tests/*
+ignore = E126,
+max-line-length = 79
 
 # -----------------------------------------------------------------------------
 # Coverage

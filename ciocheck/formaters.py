@@ -45,10 +45,6 @@ class Formater(Tool):
             error = "{name} crashed on {path}: {error}".format(
                 name=cls.name, path=path, error=err)
 
-            with open('error.log', 'w') as f:
-                f.write(cls.name)
-                f.write(str(err))
-
         if changed:
             result = {
                 'path': path,
