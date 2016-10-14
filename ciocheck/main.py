@@ -32,7 +32,7 @@ class Runner(object):
         self.config = load_config(cmd_root, cli_args)
         self.file_manager = FileManager(folders=folders, files=files)
         self.all_results = OrderedDict()
-        self.all_tools = None
+        self.all_tools = {}
         self.test_results = None
         self.failed_checks = set()
 
@@ -57,8 +57,6 @@ class Runner(object):
         check_testers = [t for t in TOOLS if t.name in self.check]
         run_multi = any(f for f in MULTI_FORMATERS if f.name in self.check)
 
-        self.all_tools = []
-
         # Linters
         for linter in check_linters:
             print('Running "{}" ...'.format(linter.name))
@@ -68,7 +66,7 @@ class Runner(object):
                 diff_mode=self.diff_mode,
                 file_mode=self.file_mode,
                 extensions=tool.extensions)
-            self.all_tools.append(tool)
+            self.all_tools[tool.name] = tool
             tool.create_config(self.config)
             self.all_results[tool.name] = {
                 'files': files,
@@ -85,7 +83,7 @@ class Runner(object):
                 file_mode=self.file_mode,
                 extensions=tool.extensions)
             tool.create_config(self.config)
-            self.all_tools.append(tool)
+            self.all_tools[tool.name] = tool
             results = tool.run(files)
             # Pyformat might include files in results that are not in files
             # like when an init is created
@@ -116,7 +114,7 @@ class Runner(object):
             print('Running "{}" ...'.format(tester.name))
             tool = tester(self.cmd_root)
             tool.create_config(self.config)
-            self.all_tools.append(tool)
+            self.all_tools[tool.name] = tool
             files = self.file_manager.get_files(
                 branch=self.branch,
                 diff_mode=self.diff_mode,
@@ -148,8 +146,13 @@ class Runner(object):
                 all_changed_paths += [result['path'] for result in results]
 
         all_changed_paths = list(sorted(set(all_changed_paths)))
-        test_files = self.test_results.get('files')
-        test_coverage = self.test_results.get('coverage')
+
+        if self.test_results:
+            test_files = self.test_results.get('files')
+            test_coverage = self.test_results.get('coverage')
+        else:
+            test_files = []
+            test_coverage = []
 
         for path in all_changed_paths:
             short_path = path.replace(self.cmd_root, '...')
@@ -230,7 +233,9 @@ class Runner(object):
                         print('    ' + ', '.join(lines_changed_not_covered))
 
         print()
-        print(self.all_tools[-1].output)
+        pytest_tool = self.all_tools.get('pytest')
+        if pytest_tool:
+            print(pytest_tool.output)
 
     def enforce_checks(self):
         """Check that enforced checks did not generate reports."""
