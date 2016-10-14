@@ -122,7 +122,7 @@ class YapfFormater(Formater):
         # It might be tempting to use the "inplace" option to FormatFile, but
         # it doesn't do an atomic replace, which is dangerous, so don't use
         # it unless you submit a fix to yapf.
-        (new_contents, encoding, changed) = FormatCode(
+        (new_contents, changed) = FormatCode(
             old_contents, style_config=style_config)
 
         if platform.system() == 'Windows':
@@ -132,7 +132,7 @@ class YapfFormater(Formater):
             if len(old_contents) == 0:
                 # Windows yapf seems to force a newline? I dunno
                 new_contents = ""
-        return old_contents, new_contents, encoding
+        return old_contents, new_contents, 'utf-8'
 
 
 class Autopep8Formater(Formater):
