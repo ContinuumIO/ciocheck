@@ -110,6 +110,7 @@ class GitDiffTool(DiffToolBase):
         """Thin wrapper for a subset of the `git diff` command."""
         self.path = path
         self._top_level = None
+        self._is_repo = None
 
     def _git_run_helper(self,
                         branch=DEFAULT_BRANCH,
@@ -377,25 +378,29 @@ class GitDiffTool(DiffToolBase):
     # -------------------------------------------------------------------------
     def is_repo(self):
         """Return if it is a git repo."""
-        args = ['git', 'rev-parse']
-        output, error = run_command(args, cwd=self.path)
-        if error:
-            print(error)
-        return not bool(error) and not bool(output)
+        if self._is_repo is None:
+            args = ['git', 'rev-parse']
+            output, error = run_command(args, cwd=self.path)
+            if error:
+                print(error, file=sys.stderr)
+                return False
+            else:
+                self._is_repo = (not bool(error) and not bool(output))
+        return self._is_repo
 
     @property
     def top_level(self):
         """Return the top level for the git repo."""
-        if self._top_level:
-            result = self._top_level
-        else:
+        if self._top_level is None:
             output, error = run_command(
                 ['git', 'rev-parse', '--show-toplevel', '--encoding=utf-8'],
                 cwd=self.path, )
-            result = output.split('\n')[0]
             if error:
-                print(error)
-        return result
+                print(error, file=sys.stderr)
+                return None
+            else:
+                self._top_level = output.split('\n')[0]
+        return self._top_level
 
     def commited_files(self, branch=DEFAULT_BRANCH):
         """Return list of commited files."""
