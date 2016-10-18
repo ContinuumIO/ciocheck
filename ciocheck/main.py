@@ -192,7 +192,7 @@ class Runner(object):
                                 args = result.copy()
                                 args['spaces'] = spaces
                                 msg = ('    {line}:{spaces}'
-                                       '{message}').format(**args)
+                                       '{type}: {message}').format(**args)
                                 messages.append(msg)
 
                             # FORMATERS
