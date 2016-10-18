@@ -183,9 +183,10 @@ class Runner(object):
                             diff = result.get('diff')
                             if line and line in list(added_lines):
                                 spaces = (8 - len(str(line))) * ' '
+                                args = result.copy()
+                                args['spaces'] = spaces
                                 msg = ('    {line}:{spaces}'
-                                       '{message}').format(**result,
-                                                           spaces=spaces)
+                                       '{message}').format(**args)
                                 messages.append(msg)
 
                             # FORMATERS
