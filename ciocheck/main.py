@@ -41,6 +41,9 @@ class Runner(object):
         self.diff_mode = self.config.get_value('diff_mode')
         self.file_mode = self.config.get_value('file_mode')
         self.branch = self.config.get_value('branch')
+        self.disable_formatters = cli_args.disable_formatters
+        self.disable_linters = cli_args.disable_linters
+        self.disable_tests = cli_args.disable_tests
 
     def run(self):
         """Run tools."""
@@ -57,73 +60,78 @@ class Runner(object):
         check_testers = [t for t in TOOLS if t.name in self.check]
         run_multi = any(f for f in MULTI_FORMATERS if f.name in self.check)
 
-        # Linters
-        for linter in check_linters:
-            print('Running "{}" ...'.format(linter.name))
-            tool = linter(self.cmd_root)
-            files = self.file_manager.get_files(
-                branch=self.branch,
-                diff_mode=self.diff_mode,
-                file_mode=self.file_mode,
-                extensions=tool.extensions)
-            self.all_tools[tool.name] = tool
-            tool.create_config(self.config)
-            self.all_results[tool.name] = {
-                'files': files,
-                'results': tool.run(files),
-            }
+        # Format before lint, because the linters may complain about bad formatting
 
         # Formaters
-        for formater in check_formaters:
-            print('Running "{}" ...'.format(formater.name))
-            tool = formater(self.cmd_root)
-            files = self.file_manager.get_files(
-                branch=self.branch,
-                diff_mode=self.diff_mode,
-                file_mode=self.file_mode,
-                extensions=tool.extensions)
-            tool.create_config(self.config)
-            self.all_tools[tool.name] = tool
-            results = tool.run(files)
-            # Pyformat might include files in results that are not in files
-            # like when an init is created
-            if results:
+        if not self.disable_formatters:
+            for formater in check_formaters:
+                print('Running "{}" ...'.format(formater.name))
+                tool = formater(self.cmd_root)
+                files = self.file_manager.get_files(
+                    branch=self.branch,
+                    diff_mode=self.diff_mode,
+                    file_mode=self.file_mode,
+                    extensions=tool.extensions)
+                tool.create_config(self.config)
+                self.all_tools[tool.name] = tool
+                results = tool.run(files)
+                # Pyformat might include files in results that are not in files
+                # like when an init is created
+                if results:
+                    self.all_results[tool.name] = {
+                        'files': files,
+                        'results': results,
+                    }
+
+            # The result of the the multi formater is special!
+            if run_multi:
+                print('Running "Multi formater"')
+                tool = MultiFormater(self.cmd_root, self.check)
+                files = self.file_manager.get_files(
+                    branch=self.branch,
+                    diff_mode=self.diff_mode,
+                    file_mode=self.file_mode,
+                    extensions=tool.extensions)
+                multi_results = tool.run(files)
+                for key, values in multi_results.items():
+                    self.all_results[key] = {
+                        'files': files,
+                        'results': values,
+                    }
+
+        # Linters
+        if not self.disable_linters:
+            for linter in check_linters:
+                print('Running "{}" ...'.format(linter.name))
+                tool = linter(self.cmd_root)
+                files = self.file_manager.get_files(
+                    branch=self.branch,
+                    diff_mode=self.diff_mode,
+                    file_mode=self.file_mode,
+                    extensions=tool.extensions)
+                self.all_tools[tool.name] = tool
+                tool.create_config(self.config)
                 self.all_results[tool.name] = {
                     'files': files,
-                    'results': results,
-                }
-
-        # The result of the the multi formater is special!
-        if run_multi:
-            print('Running "Multi formater"')
-            tool = MultiFormater(self.cmd_root, self.check)
-            files = self.file_manager.get_files(
-                branch=self.branch,
-                diff_mode=self.diff_mode,
-                file_mode=self.file_mode,
-                extensions=tool.extensions)
-            multi_results = tool.run(files)
-            for key, values in multi_results.items():
-                self.all_results[key] = {
-                    'files': files,
-                    'results': values,
+                    'results': tool.run(files),
                 }
 
         # Tests
-        for tester in check_testers:
-            print('Running "{}" ...'.format(tester.name))
-            tool = tester(self.cmd_root)
-            tool.create_config(self.config)
-            self.all_tools[tool.name] = tool
-            files = self.file_manager.get_files(
-                branch=self.branch,
-                diff_mode=self.diff_mode,
-                file_mode=self.file_mode,
-                extensions=tool.extensions)
-            results = tool.run(files)
-            if results:
-                results['files'] = files
-                self.test_results = results
+        if not self.disable_tests:
+            for tester in check_testers:
+                print('Running "{}" ...'.format(tester.name))
+                tool = tester(self.cmd_root)
+                tool.create_config(self.config)
+                self.all_tools[tool.name] = tool
+                files = self.file_manager.get_files(
+                    branch=self.branch,
+                    diff_mode=self.diff_mode,
+                    file_mode=self.file_mode,
+                    extensions=tool.extensions)
+                results = tool.run(files)
+                if results:
+                    results['files'] = files
+                    self.test_results = results
 
         for tool in LINTERS + FORMATERS + TOOLS:
             tool.remove_config(self.cmd_root)
@@ -181,9 +189,10 @@ class Runner(object):
                             diff = result.get('diff')
                             if line and line in list(added_lines):
                                 spaces = (8 - len(str(line))) * ' '
+                                args = result.copy()
+                                args['spaces'] = spaces
                                 msg = ('    {line}:{spaces}'
-                                       '{message}').format(**result,
-                                                           spaces=spaces)
+                                       '{type}: {message}').format(**args)
                                 messages.append(msg)
 
                             # FORMATERS
@@ -240,8 +249,11 @@ class Runner(object):
     def enforce_checks(self):
         """Check that enforced checks did not generate reports."""
         if self.test_results:
-            test_summary = self.test_results['pytest']['report']['summary']
-            if test_summary.get('failed'):
+            if 'pytest' in self.test_results:
+                test_summary = self.test_results['pytest']['report']['summary']
+                if test_summary.get('failed'):
+                    self.failed_checks.add('pytest')
+            else:
                 self.failed_checks.add('pytest')
 
         for enforce_tool in self.enforce:
@@ -281,9 +293,24 @@ def main():
     description = 'Run Continuum IO test suite.'
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument(
-        'folder',
-        help='Folder to analize. Use from repo root.',
-        nargs=1)
+        'folders',
+        help='Folders to analyze. Use from repo root.',
+        nargs='+')
+    parser.add_argument(
+        '--disable-formatters',
+        action='store_true',
+        default=False,
+        help=('Skip all configured formatters'))
+    parser.add_argument(
+        '--disable-linters',
+        action='store_true',
+        default=False,
+        help=('Skip all configured linters'))
+    parser.add_argument(
+        '--disable-tests',
+        action='store_true',
+        default=False,
+        help=('Skip running tests'))
     parser.add_argument(
         '--file-mode',
         '-fm',
@@ -331,7 +358,7 @@ def main():
     root = os.getcwd()
     folders = []
     files = []
-    for folder_or_file in cli_args.folder:
+    for folder_or_file in cli_args.folders:
         folder_or_file = os.path.abspath(folder_or_file)
         if os.path.isfile(folder_or_file):
             files.append(folder_or_file)

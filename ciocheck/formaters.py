@@ -232,7 +232,6 @@ class MultiFormater(object):
                 if isinstance(error, bytes):
                     error = error.decode()
 
-                print(output, error)
                 output = json.loads(output)
                 if error:
                     print(error)
@@ -268,7 +267,6 @@ class MultiFormater(object):
             # Don't run too many at once, this is a goofy algorithm
             if len(processes) > (cpu_count() * 3):
                 while len(processes) > cpu_count():
-                    print(len(processes))
                     await_one_process()
 
         assert [] == paths
