@@ -240,8 +240,11 @@ class Runner(object):
     def enforce_checks(self):
         """Check that enforced checks did not generate reports."""
         if self.test_results:
-            test_summary = self.test_results['pytest']['report']['summary']
-            if test_summary.get('failed'):
+            if 'pytest' in self.test_results:
+                test_summary = self.test_results['pytest']['report']['summary']
+                if test_summary.get('failed'):
+                    self.failed_checks.add('pytest')
+            else:
                 self.failed_checks.add('pytest')
 
         for enforce_tool in self.enforce:
