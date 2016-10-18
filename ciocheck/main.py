@@ -57,21 +57,7 @@ class Runner(object):
         check_testers = [t for t in TOOLS if t.name in self.check]
         run_multi = any(f for f in MULTI_FORMATERS if f.name in self.check)
 
-        # Linters
-        for linter in check_linters:
-            print('Running "{}" ...'.format(linter.name))
-            tool = linter(self.cmd_root)
-            files = self.file_manager.get_files(
-                branch=self.branch,
-                diff_mode=self.diff_mode,
-                file_mode=self.file_mode,
-                extensions=tool.extensions)
-            self.all_tools[tool.name] = tool
-            tool.create_config(self.config)
-            self.all_results[tool.name] = {
-                'files': files,
-                'results': tool.run(files),
-            }
+        # Format before lint, because the linters may complain about bad formatting
 
         # Formaters
         for formater in check_formaters:
@@ -108,6 +94,22 @@ class Runner(object):
                     'files': files,
                     'results': values,
                 }
+
+        # Linters
+        for linter in check_linters:
+            print('Running "{}" ...'.format(linter.name))
+            tool = linter(self.cmd_root)
+            files = self.file_manager.get_files(
+                branch=self.branch,
+                diff_mode=self.diff_mode,
+                file_mode=self.file_mode,
+                extensions=tool.extensions)
+            self.all_tools[tool.name] = tool
+            tool.create_config(self.config)
+            self.all_results[tool.name] = {
+                'files': files,
+                'results': tool.run(files),
+            }
 
         # Tests
         for tester in check_testers:
