@@ -168,18 +168,27 @@ positional arguments:
 
 optional arguments:
   --help, -h            Show this help message and exit
-  --file-mode, -fm {lines,files,all}
+
+  --file-mode, -fm      {lines,files,all}
                         Define if the tool should run on modified lines of
                         files (default), modified files or all files
-  --diff-mode, -dm {commited,staged,unstaged}
+
+  --diff-mode, -dm      {commited,staged,unstaged}
                         Define diff mode. Default mode is commited.
-  --branch, -b BRANCH       Define branch to compare to. Default branch is
+
+  --branch, -b BRANCH   Define branch to compare to. Default branch is
                         "origin/master"
-  --check, -c {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
+
+  --check, -c           {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
                         Select tools to run. Default is "pep8"
-  --enforce, -e {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
+
+  --enforce, -e         {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
                         Select tools to enforce. Enforced tools will fail if a
                         result is obtained. Default is none.
+
+  --config, cf CONFIG_FILE
+                        Select a config file to use. Default is none.
+
 ```
 
 Check format of imports only in `some_module`.
