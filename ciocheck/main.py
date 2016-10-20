@@ -60,7 +60,7 @@ class Runner(object):
         check_testers = [t for t in TOOLS if t.name in self.check]
         run_multi = any(f for f in MULTI_FORMATERS if f.name in self.check)
 
-        # Format before lint, because the linters may complain about bad formatting
+        # Format before lint, linters may complain about bad formatting
 
         # Formaters
         if not self.disable_formatters:
@@ -293,9 +293,7 @@ def main():
     description = 'Run Continuum IO test suite.'
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument(
-        'folders',
-        help='Folders to analyze. Use from repo root.',
-        nargs='+')
+        'folders', help='Folders to analyze. Use from repo root.', nargs='+')
     parser.add_argument(
         '--disable-formatters',
         action='store_true',
@@ -354,6 +352,13 @@ def main():
         help=('Select tools to enforce. Enforced tools will '
               'fail if a result is obtained. Default is '
               'none.'))
+    parser.add_argument(
+        '--config',
+        '-cf',
+        dest='config_file',
+        default=None,
+        help=('Select a config file to use. Default is none.'))
+
     cli_args = parser.parse_args()
     root = os.getcwd()
     folders = []
