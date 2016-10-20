@@ -108,8 +108,8 @@ def load_config(folder, cli_args):
     """Load the configuration located at `folder` and return the parser."""
     config_file = os.path.join(folder, CONFIGURATION_FILE)
 
+    config = CustomConfigParser()
     if os.path.isfile(config_file):
-        config = CustomConfigParser()
         with open(config_file, 'r') as file_obj:
             config.readfp(file_obj)
 

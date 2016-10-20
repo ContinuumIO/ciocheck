@@ -136,7 +136,8 @@ def get_files(paths,
 
 def filter_files(files, extensions):
     """Filter files based on a list of extensions."""
-    for file in files.copy():
+    copy_of_files = files.copy()
+    for file in files:
         if extensions:
             tests = [file.endswith('.' + ext) for ext in extensions]
         else:
@@ -144,10 +145,10 @@ def filter_files(files, extensions):
 
         if not any(tests):
             if isinstance(files, dict):
-                files.pop(file)
+                copy_of_files.pop(file)
             else:
-                files.remove(file)
-    return files
+                copy_of_files.remove(file)
+    return copy_of_files
 
 
 def _rename_over_existing(src, dest):
