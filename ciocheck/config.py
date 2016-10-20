@@ -104,17 +104,43 @@ class CustomConfigParser(configparser.ConfigParser):
             self.set(self.SECTION, option, value)
 
 
-def load_config(folder, cli_args):
-    """Load the configuration located at `folder` and return the parser."""
-    config_file = os.path.join(folder, CONFIGURATION_FILE)
+def load_file_config(folder, file_name=None):
+    """
+    Load configuration at `folder` or `file_name` and return the parser.
+
+    file_name is assumed to be located on folder.
+    """
+    if file_name is None:
+        config_file = os.path.join(folder, CONFIGURATION_FILE)
+    else:
+        config_file = os.path.join(folder, file_name)
 
     config = CustomConfigParser()
     if os.path.isfile(config_file):
         with open(config_file, 'r') as file_obj:
             config.readfp(file_obj)
 
+        if config.has_option(MAIN_CONFIG_SECTION, 'inherit_config'):
+            base_config_path = config[MAIN_CONFIG_SECTION]['inherit_config']
+            base_config = load_file_config(
+                folder=folder, file_name=base_config_path)
+
+            # Merge the config files
+            for section in config:
+                for opt in config[section]:
+                    base_config[section][opt] = config[section][opt]
+
+            config = base_config
+
+    return config
+
+
+def load_config(folder, cli_args):
+    """Load the configuration, load defaults and return the parser."""
+    config = load_file_config(folder, file_name=cli_args.config_file)
+
     for key, value in DEFAULT_CIOCHECK_CONFIG.items():
-        if not config.has_option('ciocheck', key):
+        if not config.has_option(MAIN_CONFIG_SECTION, key):
             config.set_value(key, value)
 
         if hasattr(cli_args, key):
