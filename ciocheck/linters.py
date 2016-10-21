@@ -158,11 +158,12 @@ class PylintLinter(Linter):
     command = ('pylint', '--output-format', 'json', '-j', '0')
     config_file = '.pydocstyle'
     config_sections = [('pydocstyle', 'pydocstyle')]
-    json_keys = (('message', 'message'),
-                 ('line', 'line'),
-                 ('column', 'column'),
-                 ('type', 'type'),
-                 ('path', 'path'), )
+    json_keys = (
+        ('message', 'message'),
+        ('line', 'line'),
+        ('column', 'column'),
+        ('type', 'type'),
+        ('path', 'path'), )
 
     def extra_processing(self, results):
         """Make path an absolute path."""
