@@ -50,11 +50,11 @@ class Runner(object):
     def run(self):
         """Run tools."""
         msg = 'Running ciocheck'
-        print()
+        print('')
         print('=' * len(msg))
         print(msg)
         print('=' * len(msg))
-        print()
+        print('')
         self.clean()
 
         check_linters = [l for l in LINTERS if l.name in self.check]
@@ -149,7 +149,7 @@ class Runner(object):
             print('\n\n' + '=' * len(msg))
             print(msg)
             print('=' * len(msg))
-            print()
+            print('')
 
     def process_results(self, all_results):
         """Group all results by file path."""
@@ -170,7 +170,7 @@ class Runner(object):
 
         for path in all_changed_paths:
             short_path = path.replace(self.cmd_root, '...')
-            print()
+            print('')
             print(short_path)
             print('-' * len(short_path))
             for tool_name, data in all_results.items():
@@ -247,7 +247,7 @@ class Runner(object):
                               'covered by tests ({0}%):'.format(cov_perc))
                         print('    ' + ', '.join(lines_changed_not_covered))
 
-        print()
+        print('')
         pytest_tool = self.all_tools.get('pytest')
         if pytest_tool:
             if pytest_tool.coverage_fail:
@@ -270,7 +270,7 @@ class Runner(object):
                 print('\n\n' + '=' * len(msg))
                 print(msg)
                 print('=' * len(msg))
-                print()
+                print('')
                 sys.exit(1)
                 break
 
@@ -347,16 +347,20 @@ def main():
         '-c',
         dest='check',
         nargs='+',
-        choices=['pep8', 'pydocstyle', 'flake8', 'pylint', 'pyformat', 'isort',
-                 'yapf', 'autopep8', 'coverage', 'pytest'],
+        choices=[
+            'pep8', 'pydocstyle', 'flake8', 'pylint', 'pyformat', 'isort',
+            'yapf', 'autopep8', 'coverage', 'pytest'
+        ],
         default=None,
         help='Select tools to run. Default is "pep8"')
     parser.add_argument(
         '--enforce',
         '-e',
         dest='enforce',
-        choices=['pep8', 'pydocstyle', 'flake8', 'pylint', 'pyformat', 'isort',
-                 'yapf', 'autopep8', 'coverage', 'pytest'],
+        choices=[
+            'pep8', 'pydocstyle', 'flake8', 'pylint', 'pyformat', 'isort',
+            'yapf', 'autopep8', 'coverage', 'pytest'
+        ],
         default=None,
         nargs='+',
         help=('Select tools to enforce. Enforced tools will '
