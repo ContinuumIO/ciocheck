@@ -70,6 +70,7 @@ class ShortOutput(object):
         self._stderr = sys.stderr
         sys.stdout = self._stringio_output = StringIO()
         sys.stderr = self._stringio_error = StringIO()
+        return self
 
     def __exit__(self, *args):
         """Restore stdout and stderr and format found values."""
@@ -78,6 +79,8 @@ class ShortOutput(object):
         sys.stdout = self._stdout
         sys.stderr = self._stderr
 
+        self.output = out
+        self.error = err
         for output in [out, err]:
             for line in output:
                 print(line)
