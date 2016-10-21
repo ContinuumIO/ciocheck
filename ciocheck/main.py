@@ -31,6 +31,8 @@ class Runner(object):
         self.cmd_root = cmd_root  # Folder on which the command was executed
         self.config = load_config(cmd_root, cli_args)
         self.file_manager = FileManager(folders=folders, files=files)
+        self.folders = folders
+        self.files = files
         self.all_results = OrderedDict()
         self.all_tools = {}
         self.test_results = None
@@ -123,6 +125,10 @@ class Runner(object):
                 tool = tester(self.cmd_root)
                 tool.create_config(self.config)
                 self.all_tools[tool.name] = tool
+
+                if tool.name == 'pytest':
+                    tool.setup_pytest_coverage_args(self.folders)
+
                 files = self.file_manager.get_files(
                     branch=self.branch,
                     diff_mode=self.diff_mode,
@@ -244,7 +250,8 @@ class Runner(object):
         print()
         pytest_tool = self.all_tools.get('pytest')
         if pytest_tool:
-            print(pytest_tool.output)
+            if pytest_tool.coverage_fail:
+                self.failed_checks.add('coverage')
 
     def enforce_checks(self):
         """Check that enforced checks did not generate reports."""

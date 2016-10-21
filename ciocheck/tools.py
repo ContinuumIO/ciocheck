@@ -14,12 +14,14 @@ import json
 import os
 
 # Third party imports
+from pytest_cov.plugin import CoverageError
 from six import PY2
 from six.moves import configparser
+import pytest
 
 # Local imports
 from ciocheck.config import COVERAGE_CONFIGURATION_FILE
-from ciocheck.utils import cpu_count, run_command
+from ciocheck.utils import ShortOutput, cpu_count
 
 
 class Tool(object):
@@ -167,15 +169,20 @@ class PytestTool(Tool):
         super(PytestTool, self).__init__(cmd_root)
         self.pytest_args = None
         self.output = None
+        self.coverage_fail = False
 
-    def _setup_pytest_coverage_args(self, paths):
+    def setup_pytest_coverage_args(self, paths):
         """Setup pytest-cov arguments and config file path."""
         if isinstance(paths, (dict, OrderedDict)):
             paths = list(sorted(paths.keys()))
 
-        # module = os.path.normpath(os.path.basename(self.cmd_root))
-        cov = '--cov={0}'.format(self.cmd_root)
-        coverage_args = [cov]
+        for path in paths:
+            if os.path.isdir(path):
+                cov = '--cov={0}'.format(path)
+                coverage_args = [cov]
+                break
+        else:
+            coverage_args = []
 
         coverage_config_file = os.path.join(self.cmd_root,
                                             COVERAGE_CONFIGURATION_FILE)
@@ -196,17 +203,21 @@ class PytestTool(Tool):
 
     def run(self, paths):
         """Run pytest test suite."""
-        self._setup_pytest_coverage_args(paths)
-        cmd = ['py.test'] + paths + self.pytest_args
-        # print(cmd)
-        output, error = run_command(cmd, cwd=self.cmd_root)
+        cmd = paths + self.pytest_args
 
-        if error:
-            print()
-            print(error)
+        with ShortOutput(self.cmd_root) as so:
+            errno = pytest.main(cmd)
 
-        if output:
-            self.output = output
+        output_lines = ''.join(so.output).lower()
+        if 'FAIL Required test coverage'.lower() in output_lines:
+            self.coverage_fail = True
+
+        try:
+            if errno != 0:
+                print("pytest failed, code {errno}".format(errno=errno))
+        except CoverageError as e:
+            print("Test coverage failure: " + str(e))
+            self.coverage_fail = True
 
         covered_lines = self.parse_coverage()
         pytest_report = self.parse_pytest_report()
