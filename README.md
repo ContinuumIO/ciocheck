@@ -156,11 +156,13 @@ python_functions = test_*
 # Usage
 
 ```bash
-usage: ciocheck [-h] [--file-mode {lines,files,all}]
+usage: ciocheck [-h] [--disable-formatters] [--disable-linters]
+                [--disable-tests] [--file-mode {lines,files,all}]
                 [--diff-mode {commited,staged,unstaged}] [--branch BRANCH]
-                [--check {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
-                [--enforce {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
-                folders [folders]
+                [--check {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest} [{pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest} ...]]
+                [--enforce {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest} [{pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest} ...]]
+                [--config CONFIG_FILE]
+                folders [folders ...]
 
 Run Continuum Analytics test suite.
 
