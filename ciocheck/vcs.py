@@ -10,7 +10,6 @@
 # Standard library imports
 import os
 import re
-import sys
 
 # Local imports
 from ciocheck.config import (COMMITED_MODE, DEFAULT_BRANCH, STAGED_MODE,
@@ -383,7 +382,7 @@ class GitDiffTool(DiffToolBase):
             args = ['git', 'rev-parse']
             output, error = run_command(args, cwd=self.path)
             if error:
-                print(error, file=sys.stderr)
+                print(error)
                 return False
             else:
                 self._is_repo = (not bool(error) and not bool(output))
@@ -397,7 +396,7 @@ class GitDiffTool(DiffToolBase):
                 ['git', 'rev-parse', '--show-toplevel', '--encoding=utf-8'],
                 cwd=self.path, )
             if error:
-                print(error, file=sys.stderr)
+                print(error)
                 return None
             else:
                 self._top_level = output.split('\n')[0]
@@ -447,8 +446,9 @@ class NoDiffTool(DiffToolBase):
         if lines:
             paths_dic = {}
             for path in paths:
-                paths_dic[path] = ([-1],
-                                   range(100000), )
+                paths_dic[path] = (
+                    [-1],
+                    range(100000), )
             results = paths_dic
         else:
             results = paths
