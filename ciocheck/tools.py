@@ -205,14 +205,14 @@ class PytestTool(Tool):
         """Run pytest test suite."""
         cmd = paths + self.pytest_args
 
-        with ShortOutput(self.cmd_root) as so:
-            errno = pytest.main(cmd)
-
-        output_lines = ''.join(so.output).lower()
-        if 'FAIL Required test coverage'.lower() in output_lines:
-            self.coverage_fail = True
-
         try:
+            with ShortOutput(self.cmd_root) as so:
+                errno = pytest.main(cmd)
+            output_lines = ''.join(so.output).lower()
+
+            if 'FAIL Required test coverage'.lower() in output_lines:
+                self.coverage_fail = True
+
             if errno != 0:
                 print("pytest failed, code {errno}".format(errno=errno))
         except CoverageError as e:
