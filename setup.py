@@ -11,7 +11,7 @@
 import ast
 import os
 
-# Local imports
+# Third party imports
 from setuptools import find_packages, setup
 
 HERE = os.path.abspath(os.path.dirname(__file__))
