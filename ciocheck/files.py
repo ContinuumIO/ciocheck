@@ -25,8 +25,8 @@ class FileManager(object):
         """File manager with git support."""
         self.folders = folders or []
         self.files = files or []
-        self.paths = [os.path.dirname(p) for p in self.files] + self.folders
-        self.diff_tool = DiffTool(paths=self.paths)
+        self.paths = self.files + self.folders
+        self.diff_tool = DiffTool(paths=folders)
         self.cache = {}
 
     def get_files(self,
