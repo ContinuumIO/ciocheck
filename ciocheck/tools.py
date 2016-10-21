@@ -85,7 +85,7 @@ class Tool(object):
                         try:
                             value = ast.literal_eval(value)  # Numbers
                         except Exception as err:
-                            pass
+                            print(err)
 
                     config_options[key.replace('-', '_')] = value
 

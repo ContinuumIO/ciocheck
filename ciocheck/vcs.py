@@ -10,6 +10,7 @@
 # Standard library imports
 import os
 import re
+import sys
 
 # Local imports
 from ciocheck.config import (COMMITED_MODE, DEFAULT_BRANCH, STAGED_MODE,
