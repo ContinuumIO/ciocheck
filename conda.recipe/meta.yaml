@@ -27,7 +27,7 @@ requirements:
     - pytest-xdist
     - python
     - six
-    - yapf
+    - yapf >=0.12
 
 about:
   home: https://github.com/ContinuumIO/ciocheck
