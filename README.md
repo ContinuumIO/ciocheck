@@ -44,6 +44,7 @@ Configuration is saved in a single file named `.ciocheck`
 # https://github.com/ContinuumIO/ciocheck
 # -----------------------------------------------------------------------------
 [ciocheck]
+inherit_config = .ciocheck
 branch = origin/master
 diff_mode = commited
 file_mode = lines
@@ -164,30 +165,35 @@ usage: ciocheck [-h] [--file-mode {lines,files,all}]
 Run Continuum Analytics test suite.
 
 positional arguments:
-  folder                Folder to analize. Use from repo root.'
+  folder                    Folder to analize. Use from repo root.'
 
 optional arguments:
-  --help, -h            Show this help message and exit
+  --help, -h                Show this help message and exit
 
-  --file-mode, -fm      {lines,files,all}
-                        Define if the tool should run on modified lines of
-                        files (default), modified files or all files
+  --disable-formatters, -df Skip all configured formatters
 
-  --diff-mode, -dm      {commited,staged,unstaged}
-                        Define diff mode. Default mode is commited.
+  --disable-linters, -dl    Skip all configured linters
 
-  --branch, -b BRANCH   Define branch to compare to. Default branch is
-                        "origin/master"
+  --disable-tests, -dt      Skip running tests
 
-  --check, -c           {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
-                        Select tools to run. Default is "pep8"
+  --file-mode, -fm          {lines,files,all}
+                            Define if the tool should run on modified lines of
+                            files (default), modified files or all files
 
-  --enforce, -e         {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
-                        Select tools to enforce. Enforced tools will fail if a
-                        result is obtained. Default is none.
+  --diff-mode, -dm          {commited,staged,unstaged}
+                            Define diff mode. Default mode is commited.
 
-  --config, cf CONFIG_FILE
-                        Select a config file to use. Default is none.
+  --branch, -b BRANCH       Define branch to compare to. Default branch is
+                            "origin/master"
+
+  --check, -c               {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
+                            Select tools to run. Default is "pep8"
+
+  --enforce, -e             {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
+                            Select tools to enforce. Enforced tools will fail if a
+                            result is obtained. Default is none.
+
+  --config, -cf CONFIG_FILE Select a config file to use. Default is none.
 
 ```
 
