@@ -11,6 +11,7 @@ from __future__ import absolute_import, print_function
 
 # Standard library imports
 from collections import OrderedDict
+from copy import deepcopy
 import codecs
 import cProfile
 import difflib
@@ -118,8 +119,10 @@ def get_files(paths,
                 new_folders = []
                 for folder in folders:
                     if folder[0] != '.':
-                        tests = [folder != ignore_folder
-                                 for ignore_folder in ignore_folders]
+                        tests = [
+                            folder != ignore_folder
+                            for ignore_folder in ignore_folders
+                        ]
                         if all(tests):
                             new_folders.append(folder)
                 folders[:] = new_folders
@@ -129,8 +132,9 @@ def get_files(paths,
                 for file in files:
                     tests, pass_tests = [True], [True]
                     if ignore_exts:
-                        tests = [not file.endswith('.' + ext)
-                                 for ext in ignore_exts]
+                        tests = [
+                            not file.endswith('.' + ext) for ext in ignore_exts
+                        ]
                     if exts:
                         pass_tests = [file.endswith('.' + ext) for ext in exts]
 
@@ -142,7 +146,7 @@ def get_files(paths,
 
 def filter_files(files, extensions):
     """Filter files based on a list of extensions."""
-    copy_of_files = files.copy()
+    copy_of_files = deepcopy(files)
     for file in files:
         if extensions:
             tests = [file.endswith('.' + ext) for ext in extensions]
