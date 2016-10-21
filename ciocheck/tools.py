@@ -193,13 +193,13 @@ class PytestTool(Tool):
         self.pytest_args = ['--json={0}'.format(self.REPORT_FILE)]
         self.pytest_args = self.pytest_args + enable_xdist
         self.pytest_args = self.pytest_args + coverage_args
-        # print(self.pytest_args)
 
     def run(self, paths):
         """Run pytest test suite."""
         self._setup_pytest_coverage_args(paths)
-        output, error = run_command(
-            ['py.test'] + self.pytest_args, cwd=self.cmd_root)
+        cmd = ['py.test'] + paths + self.pytest_args
+        # print(cmd)
+        output, error = run_command(cmd, cwd=self.cmd_root)
 
         if error:
             print()

@@ -15,7 +15,7 @@ import shutil
 import sys
 
 # Local imports
-from ciocheck.config import load_config
+from ciocheck.config import ALL_FILES, load_config
 from ciocheck.files import FileManager
 from ciocheck.formaters import FORMATERS, MULTI_FORMATERS, MultiFormater
 from ciocheck.linters import LINTERS
@@ -126,7 +126,7 @@ class Runner(object):
                 files = self.file_manager.get_files(
                     branch=self.branch,
                     diff_mode=self.diff_mode,
-                    file_mode=self.file_mode,
+                    file_mode=ALL_FILES,
                     extensions=tool.extensions)
                 results = tool.run(files)
                 if results:
