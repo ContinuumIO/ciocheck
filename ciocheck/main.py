@@ -296,16 +296,19 @@ def main():
         'folders', help='Folders to analyze. Use from repo root.', nargs='+')
     parser.add_argument(
         '--disable-formatters',
+        '-df',
         action='store_true',
         default=False,
         help=('Skip all configured formatters'))
     parser.add_argument(
         '--disable-linters',
+        '-dl',
         action='store_true',
         default=False,
         help=('Skip all configured linters'))
     parser.add_argument(
         '--disable-tests',
+        '-dt',
         action='store_true',
         default=False,
         help=('Skip running tests'))
