@@ -95,9 +95,7 @@ fail_under = 0
 show_missing = true
 skip_covered = true
 exclude_lines =
-    # Have to re-enable the standard pragma
     pragma: no cover
-    # Ignore local file testing
     def test():
     if __name__ == .__main__.:
 
