@@ -107,29 +107,32 @@ def get_files(paths,
     """Return all files matching the defined conditions."""
     all_files = []
     for path in paths:
-        for root, folders, files in os.walk(path):
-            # Chop out hidden directories
-            new_folders = []
-            for folder in folders:
-                if folder[0] != '.':
-                    tests = [folder != ignore_folder
-                             for ignore_folder in ignore_folders]
-                    if all(tests):
-                        new_folders.append(folder)
-            folders[:] = new_folders
+        if os.path.isfile(path):
+            all_files.append(path)
+        else:
+            for root, folders, files in os.walk(path):
+                # Chop out hidden directories
+                new_folders = []
+                for folder in folders:
+                    if folder[0] != '.':
+                        tests = [folder != ignore_folder
+                                 for ignore_folder in ignore_folders]
+                        if all(tests):
+                            new_folders.append(folder)
+                folders[:] = new_folders
 
-            # Chop out hidden files and walk files
-            files = [f for f in files if f[0] != '.']
-            for file in files:
-                tests, pass_tests = [True], [True]
-                if ignore_exts:
-                    tests = [not file.endswith('.' + ext)
-                             for ext in ignore_exts]
-                if exts:
-                    pass_tests = [file.endswith('.' + ext) for ext in exts]
+                # Chop out hidden files and walk files
+                files = [f for f in files if f[0] != '.']
+                for file in files:
+                    tests, pass_tests = [True], [True]
+                    if ignore_exts:
+                        tests = [not file.endswith('.' + ext)
+                                 for ext in ignore_exts]
+                    if exts:
+                        pass_tests = [file.endswith('.' + ext) for ext in exts]
 
-                if all(tests) and any(pass_tests):
-                    all_files.append(os.path.join(root, file))
+                    if all(tests) and any(pass_tests):
+                        all_files.append(os.path.join(root, file))
 
     return list(sorted(all_files))
 
