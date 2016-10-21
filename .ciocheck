@@ -91,7 +91,7 @@ omit =
     */build/*
 
 [coverage:report]
-fail_under = 20
+fail_under = 0
 show_missing = true
 skip_covered = true
 exclude_lines =
