@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # -----------------------------------------------------------------------------
-# Copyright 2016 Continuum Analytics, Inc.
+# Copyright (c) 2016 Continuum Analytics, Inc.
 #
 # May be copied and distributed freely only as part of an Anaconda or
 # Miniconda installation.
@@ -41,7 +41,7 @@ setup(
     long_description=get_readme(),
     author='Gonzalo Peña-Castellanos',
     author_email='goanpeca@gmail.com',
-    maintainer='Gonzalo Peña-Castellanos',
+    maintainer='Gonzalo Pena-Castellanos',
     maintainer_email='goanpeca@gmail.com',
     packages=packages,
     dependencies=[
