@@ -111,26 +111,31 @@ def load_file_config(folder, file_name=None):
     file_name is assumed to be located on folder.
     """
     if file_name is None:
-        config_file = os.path.join(folder, CONFIGURATION_FILE)
+        config_path = os.path.join(folder, CONFIGURATION_FILE)
     else:
-        config_file = os.path.join(folder, file_name)
+        config_path = os.path.join(folder, file_name)
 
     config = CustomConfigParser()
-    if os.path.isfile(config_file):
-        with open(config_file, 'r') as file_obj:
+    if os.path.isfile(config_path):
+        with open(config_path, 'r') as file_obj:
             config.readfp(file_obj)
 
         if config.has_option(MAIN_CONFIG_SECTION, 'inherit_config'):
-            base_config_path = config[MAIN_CONFIG_SECTION]['inherit_config']
-            base_config = load_file_config(
-                folder=folder, file_name=base_config_path)
+            base_config_file = config[MAIN_CONFIG_SECTION]['inherit_config']
+            base_config_path = os.path.join(folder, base_config_file)
 
-            # Merge the config files
-            for section in config:
-                for opt in config[section]:
-                    base_config[section][opt] = config[section][opt]
+            # If a config file refers to itself, avoid entering and endless
+            # recursion
+            if config_path != base_config_path:
+                base_config = load_file_config(
+                    folder=folder, file_name=base_config_file)
 
-            config = base_config
+                # Merge the config files
+                for section in config:
+                    for opt in config[section]:
+                        base_config[section][opt] = config[section][opt]
+
+                config = base_config
 
     return config
 
