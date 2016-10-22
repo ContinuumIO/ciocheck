@@ -39,7 +39,7 @@ setup(
     version=get_version(),
     description='Continuum IO check/test suite',
     long_description=get_readme(),
-    author='Gonzalo Peña-Castellanos',
+    author='Gonzalo Pena-Castellanos',
     author_email='goanpeca@gmail.com',
     maintainer='Gonzalo Pena-Castellanos',
     maintainer_email='goanpeca@gmail.com',
