@@ -1,9 +1,11 @@
+# Build Status
+
 [![Build Status](https://travis-ci.org/ContinuumIO/ciocheck.svg?branch=master)](https://travis-ci.org/ContinuumIO/ciocheck)
 [![Build status](https://ci.appveyor.com/api/projects/status/ylipp3kgn5t4hpdw?svg=true)](https://ci.appveyor.com/project/ContinuumAnalytics/ciocheck)
 [![CircleCI](https://circleci.com/gh/ContinuumIO/ciocheck/tree/master.svg?style=svg)](https://circleci.com/gh/ContinuumIO/ciocheck/tree/master)
-[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ContinuumIO/ciocheck/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ContinuumIO/ciocheck/?branch=master)
-[![Code Issues](https://www.quantifiedcode.com/api/v1/project/ccc68df612024e7e8fd386ffe2252a95/badge.svg)](https://www.quantifiedcode.com/app/project/ccc68df612024e7e8fd386ffe2252a95)
 [![Coverage Status](https://coveralls.io/repos/github/ContinuumIO/ciocheck/badge.svg?branch=master)](https://coveralls.io/github/ContinuumIO/ciocheck?branch=master)
+[![Code Issues](https://www.quantifiedcode.com/api/v1/project/ccc68df612024e7e8fd386ffe2252a95/badge.svg)](https://www.quantifiedcode.com/app/project/ccc68df612024e7e8fd386ffe2252a95)
+[![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ContinuumIO/ciocheck/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ContinuumIO/ciocheck/?branch=master)
 
 # ciocheck
 Continuum Analytics linter, formater and test suite helper.
