@@ -1,5 +1,6 @@
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ContinuumIO/ciocheck/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ContinuumIO/ciocheck/?branch=master)
 [![Code Issues](https://www.quantifiedcode.com/api/v1/project/ccc68df612024e7e8fd386ffe2252a95/badge.svg)](https://www.quantifiedcode.com/app/project/ccc68df612024e7e8fd386ffe2252a95)
+[![Coverage Status](https://coveralls.io/repos/github/ContinuumIO/ciocheck/badge.svg?branch=master)](https://coveralls.io/github/ContinuumIO/ciocheck?branch=master)
 
 # ciocheck
 Continuum Analytics linter, formater and test suite helper.
@@ -7,7 +8,7 @@ Continuum Analytics linter, formater and test suite helper.
 # How does ciocheck work?
 
 It leverages on the different available linting, formatting and testing tools 
-availbale for Python, including:
+availbale for Python (but other languages could also be added), including:
 
 ## Linters
 - [pep8](https://pep8.readthedocs.io/)  (Style check for code)
@@ -33,7 +34,9 @@ Plus some extra goodies, like:
 
 # Why ciocheck?
 There are many post commit tools out there for testing code quality, but the
-idea of ciocheck is to perform checks and autoformating before a commit-push.
+idea of ciocheck is to perform checks and autoformating before a commit-push,
+and to use it as part of the CI system, so that if any of the enforced checks
+does not comply, CI will fail.
 
 # Example config file
 Configuration is saved in a single file named `.ciocheck`
@@ -53,7 +56,7 @@ enforce = pep8,pydocstyle,flake8,pylint,pyformat,isort,autopep8,yapf,coverage,py
 
 # Python (pyformat)
 header = # -*- coding: utf-8 -*-
-copyright_file = '.cioencoding'
+copyright_file = .ciocopyright
 add_copyright = true
 add_header = true
 add_init = true
@@ -138,9 +141,7 @@ fail_under = 0
 show_missing = true
 skip_covered = true
 exclude_lines =
-    # Have to re-enable the standard pragma
     pragma: no cover
-    # Ignore local file testing
     def test():
     if __name__ == .__main__.:
 
@@ -159,8 +160,8 @@ python_functions = test_*
 usage: ciocheck [-h] [--disable-formatters] [--disable-linters]
                 [--disable-tests] [--file-mode {lines,files,all}]
                 [--diff-mode {commited,staged,unstaged}] [--branch BRANCH]
-                [--check {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest} [{pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest} ...]]
-                [--enforce {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest} [{pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest} ...]]
+                [--check {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
+                [--enforce {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
                 [--config CONFIG_FILE]
                 folders [folders ...]
 
