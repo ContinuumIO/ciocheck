@@ -87,7 +87,6 @@ max-line-length = 79
 [coverage:run]
 omit =
     */tests/*
-    */Navigator.app/*
     */build/*
 
 [coverage:report]

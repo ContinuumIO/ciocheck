@@ -204,6 +204,7 @@ class PytestTool(Tool):
     def run(self, paths):
         """Run pytest test suite."""
         cmd = paths + self.pytest_args
+        print(cmd)
 
         try:
             with ShortOutput(self.cmd_root) as so:
