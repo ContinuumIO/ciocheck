@@ -1,3 +1,6 @@
+[![Build Status](https://travis-ci.org/ContinuumIO/ciocheck.svg?branch=master)](https://travis-ci.org/ContinuumIO/ciocheck)
+[![Build status](https://ci.appveyor.com/api/projects/status/ylipp3kgn5t4hpdw?svg=true)](https://ci.appveyor.com/project/ContinuumAnalytics/ciocheck)
+[![CircleCI](https://circleci.com/gh/ContinuumIO/ciocheck/tree/master.svg?style=svg)](https://circleci.com/gh/ContinuumIO/ciocheck/tree/master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ContinuumIO/ciocheck/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ContinuumIO/ciocheck/?branch=master)
 [![Code Issues](https://www.quantifiedcode.com/api/v1/project/ccc68df612024e7e8fd386ffe2252a95/badge.svg)](https://www.quantifiedcode.com/app/project/ccc68df612024e7e8fd386ffe2252a95)
 [![Coverage Status](https://coveralls.io/repos/github/ContinuumIO/ciocheck/badge.svg?branch=master)](https://coveralls.io/github/ContinuumIO/ciocheck?branch=master)
@@ -168,35 +171,35 @@ usage: ciocheck [-h] [--disable-formatters] [--disable-linters]
 Run Continuum Analytics test suite.
 
 positional arguments:
-  folder                    Folder to analize. Use from repo root.'
+  folder                     Folder to analize. Use from repo root.'
 
 optional arguments:
-  --help, -h                Show this help message and exit
+  --help, -h                 Show this help message and exit
 
-  --disable-formatters, -df Skip all configured formatters
+  --disable-formatters, -df  Skip all configured formatters
 
-  --disable-linters, -dl    Skip all configured linters
+  --disable-linters, -dl     Skip all configured linters
 
-  --disable-tests, -dt      Skip running tests
+  --disable-tests, -dt       Skip running tests
 
-  --file-mode, -fm          {lines,files,all}
-                            Define if the tool should run on modified lines of
-                            files (default), modified files or all files
+  --file-mode, -fm           {lines,files,all}
+                             Define if the tool should run on modified lines of
+                             files (default), modified files or all files
 
-  --diff-mode, -dm          {commited,staged,unstaged}
-                            Define diff mode. Default mode is commited.
+  --diff-mode, -dm           {commited,staged,unstaged}
+                             Define diff mode. Default mode is commited.
 
-  --branch, -b BRANCH       Define branch to compare to. Default branch is
-                            "origin/master"
+  --branch, -b BRANCH        Define branch to compare to. Default branch is
+                             "origin/master"
 
-  --check, -c               {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
-                            Select tools to run. Default is "pep8"
+  --check, -c                {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
+                             Select tools to run. Default is "pep8"
 
-  --enforce, -e             {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
-                            Select tools to enforce. Enforced tools will fail if a
-                            result is obtained. Default is none.
+  --enforce, -e              {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
+                             Select tools to enforce. Enforced tools will fail if a
+                             result is obtained. Default is none.
 
-  --config, -cf CONFIG_FILE Select a config file to use. Default is none.
+  --config, -cf CONFIG_FILE  Select a config file to use. Default is none.
 
 ```
 
