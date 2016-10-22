@@ -1,0 +1,53 @@
+matrix:
+  fast_finish: true
+
+environment:
+
+  global:
+    # Used by qthelpers to close widgets after a defined time
+    TEST_CI: True
+    # Environment variables used by astropy helpers
+    PYTHON: "C:\\conda"
+    CMD_IN_ENV: "cmd /E:ON /V:ON /C .\\ci-helpers\\appveyor\\windows_sdk.cmd"
+    PYTHON_ARCH: "64" # needs to be set for CMD_IN_ENV to succeed. If a mix
+                      # of 32 bit and 64 bit builds are needed, move this
+                      # to the matrix section.
+    CONDA_DEPENDENCIES: "autopep8>=1.2 coverage>=4.2 flake8>=3.0 isort>=4.2 pydocstyle>=1.1 pylint>=1.6 pytest>=3.0 pytest-cov>=2.4 pytest-json>=0.4 pytest-xdist>=1.15 six>=1.10 yapf>=0.12"
+    CONDA_CHANNELS: "conda-forge continuumcrew"
+    PIP_DEPENDENCIES_2: "coveralls"  # Fix when fixed upstream
+
+  matrix:
+    - PYTHON_VERSION: "2.7"
+    - PYTHON_VERSION: "3.4"
+    - PYTHON_VERSION: "3.5"
+
+platform:
+  -x64
+
+install:
+  # If there is a newer build queued for the same PR, cancel this one.
+  # The AppVeyor 'rollout builds' option is supposed to serve the same
+  # purpose but it is problematic because it tends to cancel builds pushed
+  # directly to master instead of just PR builds (or the converse).
+  # credits: JuliaLang developers.
+#  - ps: if ($env:APPVEYOR_PULL_REQUEST_NUMBER -and $env:APPVEYOR_BUILD_NUMBER -ne ((Invoke-RestMethod `
+#      https://ci.appveyor.com/api/projects/$env:APPVEYOR_ACCOUNT_NAME/$env:APPVEYOR_PROJECT_SLUG/history?recordsNumber=50).builds | `
+#      Where-Object pullRequestId -eq $env:APPVEYOR_PULL_REQUEST_NUMBER)[0].buildNumber) { `
+#        throw "There are newer queued builds for this pull request, failing early." }
+  # Astropy ci-helpers. See https://github.com/astropy/ci-helpers
+  - "git clone git://github.com/astropy/ci-helpers.git"
+  - "powershell ci-helpers/appveyor/install-miniconda.ps1"
+  - "SET PATH=%PYTHON%;%PYTHON%\\Scripts;%PATH%"
+  - "activate test"
+  # Install pip dependencies.
+  - "pip install %PIP_DEPENDENCIES_2%"
+  - "python setup.py develop"
+
+# Not a .NET project, we build in the install step instead
+build: false
+
+test_script:
+  - ciocheck ciocheck
+
+#on_success:
+#  - "%CMD_IN_ENV% coveralls"  # For now only report coveralls on Travis-CI
