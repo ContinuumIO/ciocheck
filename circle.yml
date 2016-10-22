@@ -1,0 +1,25 @@
+machine:
+  environment:
+    # Used by qthelpers to close widgets after a defined time
+    TEST_CI: "True"
+    # Python versions to tests (Maximum of 4 different versions)
+    PY_VERSIONS: "2.7 3.4 3.5"
+    # Environment variables used by astropy helpers
+    TRAVIS_OS_NAME: "linux"
+    CONDA_CHANNELS: "conda-forge continuum-crew"
+    CONDA_DEPENDENCIES: "autopep8>=1.2 coverage >=4.2 flake8>=3.0 isort>=4.2 pydocstyle>=1.1 pylint>=1.6 pytest>=3.0 pytest-cov>=2.4 pytest-json>=0.4 pytest-xdist>=1.15 six>=1.10 yapf>=0.12"
+    PIP_DEPENDENCIES: "coveralls"
+
+dependencies:
+  override:
+    # First convert PY_VERSIONS to an array and then select the python version based on the CIRCLE_NODE_INDEX
+    - export PY_VERSIONS=($PY_VERSIONS) &&
+      export TRAVIS_PYTHON_VERSION=${PY_VERSIONS[$CIRCLE_NODE_INDEX]} && 
+      echo -e "PYTHON = $TRAVIS_PYTHON_VERSION \n============" &&
+      git clone git://github.com/astropy/ci-helpers.git &&
+      source ci-helpers/travis/setup_conda_$TRAVIS_OS_NAME.sh &&
+      PATH="$HOME/miniconda/bin:$PATH" "$HOME/miniconda/envs/test/bin/python" setup.py install;
+test:
+  override:
+    - PATH="$HOME/miniconda/bin:$PATH" "$HOME/miniconda/envs/test/bin/ciocheck" ciocheck: # note the colon
+        parallel: true
