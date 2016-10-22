@@ -6,8 +6,8 @@ machine:
     PY_VERSIONS: "2.7 3.4 3.5"
     # Environment variables used by astropy helpers
     TRAVIS_OS_NAME: "linux"
-    CONDA_CHANNELS: "conda-forge continuum-crew"
-    CONDA_DEPENDENCIES: "autopep8>=1.2 coverage >=4.2 flake8>=3.0 isort>=4.2 pydocstyle>=1.1 pylint>=1.6 pytest>=3.0 pytest-cov>=2.4 pytest-json>=0.4 pytest-xdist>=1.15 six>=1.10 yapf>=0.12"
+    CONDA_CHANNELS: "conda-forge continuumcrew"
+    CONDA_DEPENDENCIES: "autopep8>=1.2 coverage>=4.2 flake8>=3.0 isort>=4.2 pydocstyle>=1.1 pylint>=1.6 pytest>=3.0 pytest-cov>=2.4 pytest-json>=0.4 pytest-xdist>=1.15 six>=1.10 yapf>=0.12"
     PIP_DEPENDENCIES: "coveralls"
 
 dependencies:
