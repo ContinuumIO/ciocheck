@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # -----------------------------------------------------------------------------
-# Copyright © 2016 Continuum Analytics, Inc.
+# Copyright (c) 2016 Continuum Analytics, Inc.
 #
 # Licensed under the terms of the MIT License
 # (see LICENSE.txt for details)
@@ -36,7 +36,7 @@ COPYRIGHT_HEADER_FILE = '.ciocopyright'
 DEFAULT_ENCODING_HEADER = u"# -*- coding: utf-8 -*-\n"
 DEFAULT_COPYRIGHT_HEADER = u"""
 # -----------------------------------------------------------------------------
-# Copyright 2016 Continuum Analytics, Inc.
+# Copyright (c) 2016 Continuum Analytics, Inc.
 #
 # May be copied and distributed freely only as part of an Anaconda or
 # Miniconda installation.
