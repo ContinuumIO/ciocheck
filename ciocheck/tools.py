@@ -128,6 +128,7 @@ class CoverageTool(Tool):
         pytest-cov ignores the option even if included in the .coveragerc
         configuration file.
         """
+
 #        try:
 #            original_init = coverage.summary.SummaryReporter.__init__
 #
