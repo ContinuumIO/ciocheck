@@ -18,8 +18,11 @@ dependencies:
       echo -e "PYTHON = $TRAVIS_PYTHON_VERSION \n============" &&
       git clone git://github.com/astropy/ci-helpers.git &&
       source ci-helpers/travis/setup_conda_$TRAVIS_OS_NAME.sh &&
-      PATH="$HOME/miniconda/bin:$PATH" "$HOME/miniconda/envs/test/bin/python" setup.py install;
+      export PATH="$HOME/miniconda/bin:$PATH" &&
+      source activate test &&
+      python setup.py develop;
+
 test:
   override:
-    - PATH="$HOME/miniconda/bin:$PATH" "$HOME/miniconda/envs/test/bin/ciocheck" ciocheck: # note the colon
+    - export PATH="$HOME/miniconda/bin:$PATH" && source activate test && ciocheck ciocheck: # note the colon
         parallel: true
