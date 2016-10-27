@@ -32,6 +32,3 @@ install:
 
 script:
   - ciocheck ciocheck
-
-after_success:
-  - coveralls

@@ -1,3 +1,5 @@
+# https://circleci.com/gh/ContinuumIO/ciocheck
+
 machine:
   environment:
     # Used by coveralls
