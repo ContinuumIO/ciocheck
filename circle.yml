@@ -1,5 +1,7 @@
 machine:
   environment:
+    # Used by coveralls
+    COVERALLS_REPO_TOKEN: "66ZaKL2l7tzcKQvDskjRhkVc6XJyQQ4SV"    
     # Used by qthelpers to close widgets after a defined time
     TEST_CI: "True"
     # Python versions to tests (Maximum of 4 different versions)
