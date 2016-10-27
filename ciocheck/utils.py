@@ -101,6 +101,10 @@ def run_command(args, cwd=None):
     if isinstance(error, bytes):
         error = error.decode()
 
+    print(args)
+    print(cwd)
+    print(error)
+    print(output)
     return output, error
 
 
