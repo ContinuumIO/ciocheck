@@ -1,5 +1,4 @@
 # https://circleci.com/gh/ContinuumIO/ciocheck
-
 machine:
   environment:
     # Used by coveralls
@@ -7,11 +6,23 @@ machine:
     # Used by qthelpers to close widgets after a defined time
     TEST_CI: "True"
     # Python versions to tests (Maximum of 4 different versions)
-    PY_VERSIONS: "2.7 3.4 3.5"
+    PY_VERSIONS: "3.5 3.4 2.7"
     # Environment variables used by astropy helpers
     TRAVIS_OS_NAME: "linux"
-    CONDA_CHANNELS: "conda-forge continuumcrew"
-    CONDA_DEPENDENCIES: "autopep8>=1.2 coverage>=4.2 flake8>=3.0 isort>=4.2 pydocstyle>=1.1 pylint>=1.6 pytest>=3.0 pytest-cov>=2.4 pytest-json>=0.4 pytest-xdist>=1.15 six>=1.10 yapf>=0.12"
+    CONDA_CHANNELS: "conda-forge"
+    CONDA_DEPENDENCIES: >
+      autopep8>=1.2
+      coverage>=4.2
+      flake8>=3.0
+      isort>=4.2
+      pydocstyle>=1.1
+      pylint>=1.6
+      pytest>=3.0
+      pytest-cov>=2.4
+      pytest-json>=0.4
+      pytest-xdist>=1.15
+      six>=1.10
+      yapf>=0.12"
     PIP_DEPENDENCIES: "coveralls"
 
 dependencies:
