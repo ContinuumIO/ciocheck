@@ -22,7 +22,7 @@ machine:
       pytest-json>=0.4
       pytest-xdist>=1.15
       six>=1.10
-      yapf>=0.12"
+      yapf>=0.12
     PIP_DEPENDENCIES: "coveralls"
 
 dependencies:
