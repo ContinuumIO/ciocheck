@@ -1,4 +1,6 @@
-# Build Status
+# Ciocheck
+
+## Build Status
 
 [![Build Status](https://travis-ci.org/ContinuumIO/ciocheck.svg?branch=master)](https://travis-ci.org/ContinuumIO/ciocheck)
 [![Build status](https://ci.appveyor.com/api/projects/status/ylipp3kgn5t4hpdw?svg=true)](https://ci.appveyor.com/project/ContinuumAnalytics/ciocheck)
@@ -7,26 +9,26 @@
 [![Code Issues](https://www.quantifiedcode.com/api/v1/project/ccc68df612024e7e8fd386ffe2252a95/badge.svg)](https://www.quantifiedcode.com/app/project/ccc68df612024e7e8fd386ffe2252a95)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ContinuumIO/ciocheck/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ContinuumIO/ciocheck/?branch=master)
 
-# ciocheck
+## Description
 Continuum Analytics linter, formater and test suite helper.
 
-# How does ciocheck work?
+## How does ciocheck work?
 
 It leverages on the different available linting, formatting and testing tools 
 availbale for Python (but other languages could also be added), including:
 
-## Linters
+### Linters
 - [pep8](https://pep8.readthedocs.io/)  (Style check for code)
 - [pydocstyle](https://pydocstyle.readthedocs.io/en/latest/)  (Style check for docstrings)
 - [flake8](http://flake8.readthedocs.io/en/latest/)  (Style check based on [pep8](https://pep8.readthedocs.io/) and [pyflakes](https://github.com/pyflakes/pyflakes))
 - [pylint](https://pylint.readthedocs.io/)  (Code quality check)
 
-## Formaters
+### Formaters
 - [autopep8](https://github.com/hhatto/autopep8)  (Code formater)
 - [yapf](https://github.com/google/yapf)  (Code formater)
 - [isort](https://github.com/timothycrosley/isort/)  (Import statements formater)
 
-## Test and coverage
+### Test and coverage
 - [pytest-cov](http://pytest-cov.readthedocs.io/en/latest/)  (Run code [coverage](http://coverage.readthedocs.io/en/latest) with the [pytest](http://pytest.org/latest/) library)
 
 Plus some extra goodies, like:
@@ -37,13 +39,13 @@ Plus some extra goodies, like:
 - Run the tools for staged/unstaged or committed diffs only (git support only)
 - Run the tools for modified lines, modified files or all files.
 
-# Why ciocheck?
+## Why ciocheck?
 There are many post commit tools out there for testing code quality, but the
 idea of ciocheck is to perform checks and autoformating before a commit-push,
 and to use it as part of the CI system, so that if any of the enforced checks
 does not comply, CI will fail.
 
-# Example config file
+## Example config file
 Configuration is saved in a single file named `.ciocheck`
 
 ```ini
@@ -159,7 +161,7 @@ addopts = -rfew --durations=10
 python_functions = test_*
 ```
 
-# Usage
+## Usage
 
 ```bash
 usage: ciocheck [-h] [--disable-formatters] [--disable-linters]
@@ -211,4 +213,10 @@ Use ciocheck from the root of the git repo (for now...).
 
 ```bash
 $ ciocheck some_module/
+```
+
+## Installation
+
+```bash
+conda install ciocheck -c conda-forge
 ```
