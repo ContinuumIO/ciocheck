@@ -163,7 +163,7 @@ python_functions = test_*
 
 ## Usage
 
-```bash
+```text
 usage: ciocheck [-h] [--disable-formatters] [--disable-linters]
                 [--disable-tests] [--file-mode {lines,files,all}]
                 [--diff-mode {commited,staged,unstaged}] [--branch BRANCH]
