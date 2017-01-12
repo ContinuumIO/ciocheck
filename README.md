@@ -218,12 +218,12 @@ $ ciocheck some_module/
 ## Installation
 
 ```bash
-conda install ciocheck -c conda-forge
+$ conda install ciocheck -c conda-forge
 ```
 
 ## For development
 
 ```bash
-conda install ciocheck -c conda-forge
-python setup.py develop
+$ conda install ciocheck -c conda-forge
+$ python setup.py develop
 ```
