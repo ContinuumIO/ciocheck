@@ -220,3 +220,10 @@ $ ciocheck some_module/
 ```bash
 conda install ciocheck -c conda-forge
 ```
+
+## For development
+
+```bash
+conda install ciocheck -c conda-forge
+python setup.py develop
+```
