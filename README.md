@@ -87,7 +87,7 @@ inherit = false
 
 # -----------------------------------------------------------------------------
 # Flake 8
-# https://flake8.readthedocs.io/en/latest/config.html
+# https://flake8.readthedocs.io/en/latest/user/configuration.html
 # -----------------------------------------------------------------------------
 [flake8]
 exclude = */tests/*
