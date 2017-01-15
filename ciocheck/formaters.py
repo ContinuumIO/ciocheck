@@ -29,7 +29,7 @@ from ciocheck.utils import atomic_replace, cpu_count, diff
 HERE = os.path.dirname(os.path.realpath(__file__))
 
 
-class Formater(Tool):
+class Formatter(Tool):
     """Generic formatter tool."""
 
     @classmethod
@@ -77,7 +77,7 @@ class Formater(Tool):
         raise NotImplementedError
 
 
-class IsortFormater(Formater):
+class IsortFormatter(Formatter):
     """Isort code formatter."""
 
     language = 'python'
@@ -99,7 +99,7 @@ class IsortFormater(Formater):
         return old_contents, new_contents, 'utf-8'
 
 
-class YapfFormater(Formater):
+class YapfFormatter(Formatter):
     """Yapf code formatter."""
 
     language = 'python'
@@ -135,7 +135,7 @@ class YapfFormater(Formater):
         return old_contents, new_contents, 'utf-8'
 
 
-class Autopep8Formater(Formater):
+class Autopep8Formatter(Formatter):
     """Autopep8 code formatter."""
 
     language = 'python'
@@ -159,11 +159,11 @@ class Autopep8Formater(Formater):
         return old_contents, new_contents, 'utf-8'
 
 
-class MultiFormater(object):
+class MultiFormatter(object):
     """Formatter handling multiple formatters in parallel."""
 
     language = 'generic'
-    name = 'multiformater'
+    name = 'multiformatter'
 
     def __init__(self, cmd_root, check):
         """Formatter handling multiple formatters in parallel."""
@@ -201,8 +201,8 @@ class MultiFormater(object):
     def extensions(self):
         """Return all extensions of the used multiformatters."""
         all_extensions = []
-        for formater in MULTI_FORMATERS:
-            all_extensions += list(formater.extensions)
+        for formatter in MULTI_FORMATTERS:
+            all_extensions += list(formatter.extensions)
         return all_extensions
 
     def run(self, paths):
@@ -276,7 +276,7 @@ class MultiFormater(object):
         return results
 
 
-class PythonFormater(Formater):
+class PythonFormatter(Formatter):
     """Handle __init__.py addition and headers (copyright and encoding)."""
 
     language = 'python'
@@ -287,7 +287,7 @@ class PythonFormater(Formater):
 
     def __init__(self, cmd_root):
         """Handle __init__.py addition and headers (copyright and encoding)."""
-        super(PythonFormater, self).__init__(cmd_root)
+        super(PythonFormatter, self).__init__(cmd_root)
         self.config = None
         self.copyright_header = None
         self.encoding_header = None
@@ -419,16 +419,16 @@ class PythonFormater(Formater):
         return results
 
 
-MULTI_FORMATERS = [
-    IsortFormater,
-    YapfFormater,
-    Autopep8Formater,
+MULTI_FORMATTERS = [
+    IsortFormatter,
+    YapfFormatter,
+    Autopep8Formatter,
 ]
-FORMATERS = [
-    PythonFormater,
-    IsortFormater,
-    YapfFormater,
-    Autopep8Formater,
+FORMATTERS = [
+    PythonFormatter,
+    IsortFormatter,
+    YapfFormatter,
+    Autopep8Formatter,
 ]
 
 

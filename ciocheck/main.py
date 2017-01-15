@@ -17,7 +17,7 @@ import sys
 # Local imports
 from ciocheck.config import ALL_FILES, load_config
 from ciocheck.files import FileManager
-from ciocheck.formaters import FORMATERS, MULTI_FORMATERS, MultiFormater
+from ciocheck.formatters import FORMATTERS, MULTI_FORMATTERS, MultiFormatter
 from ciocheck.linters import LINTERS
 from ciocheck.tools import TOOLS
 
@@ -58,17 +58,17 @@ class Runner(object):
         self.clean()
 
         check_linters = [l for l in LINTERS if l.name in self.check]
-        check_formaters = [f for f in FORMATERS if f.name in self.check]
+        check_formatters = [f for f in FORMATTERS if f.name in self.check]
         check_testers = [t for t in TOOLS if t.name in self.check]
-        run_multi = any(f for f in MULTI_FORMATERS if f.name in self.check)
+        run_multi = any(f for f in MULTI_FORMATTERS if f.name in self.check)
 
         # Format before lint, linters may complain about bad formatting
 
         # Formatters
         if not self.disable_formatters:
-            for formater in check_formaters:
-                print('Running "{}" ...'.format(formater.name))
-                tool = formater(self.cmd_root)
+            for formatter in check_formatters:
+                print('Running "{}" ...'.format(formatter.name))
+                tool = formatter(self.cmd_root)
                 files = self.file_manager.get_files(
                     branch=self.branch,
                     diff_mode=self.diff_mode,
@@ -88,7 +88,7 @@ class Runner(object):
             # The result of the the multi formatter is special!
             if run_multi:
                 print('Running "Multi formatter"')
-                tool = MultiFormater(self.cmd_root, self.check)
+                tool = MultiFormatter(self.cmd_root, self.check)
                 files = self.file_manager.get_files(
                     branch=self.branch,
                     diff_mode=self.diff_mode,
@@ -139,7 +139,7 @@ class Runner(object):
                     results['files'] = files
                     self.test_results = results
 
-        for tool in LINTERS + FORMATERS + TOOLS:
+        for tool in LINTERS + FORMATTERS + TOOLS:
             tool.remove_config(self.cmd_root)
         self.clean()
 
