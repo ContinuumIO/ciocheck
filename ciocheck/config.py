@@ -54,7 +54,7 @@ DEFAULT_CIOCHECK_CONFIG = {
     'add_copyright': True,
     'add_header': True,
     'add_init': True,
-    # Linters/Formaters/Testers
+    # Linters/Formatters/Testers
     'check': ['pep8'],
     'enforce': [],
 }

@@ -31,6 +31,6 @@ requirements:
 
 about:
   home: https://github.com/ContinuumIO/ciocheck
-  summary: "Continuum Analytics linter/formater/tester helper"
+  summary: "Continuum Analytics linter/formatter/tester helper"
   license: MIT
   license_family: MIT
