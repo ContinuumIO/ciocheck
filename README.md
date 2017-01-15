@@ -10,7 +10,7 @@
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ContinuumIO/ciocheck/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ContinuumIO/ciocheck/?branch=master)
 
 ## Description
-Continuum Analytics linter, formater and test suite helper.
+Continuum Analytics linter, formatter and test suite helper.
 
 ## How does ciocheck work?
 
@@ -23,10 +23,10 @@ availbale for Python (but other languages could also be added), including:
 - [flake8](http://flake8.readthedocs.io/en/latest/)  (Style check based on [pep8](https://pep8.readthedocs.io/) and [pyflakes](https://github.com/pyflakes/pyflakes))
 - [pylint](https://pylint.readthedocs.io/)  (Code quality check)
 
-### Formaters
-- [autopep8](https://github.com/hhatto/autopep8)  (Code formater)
-- [yapf](https://github.com/google/yapf)  (Code formater)
-- [isort](https://github.com/timothycrosley/isort/)  (Import statements formater)
+### Formatters
+- [autopep8](https://github.com/hhatto/autopep8)  (Code formatter)
+- [yapf](https://github.com/google/yapf)  (Code formatter)
+- [isort](https://github.com/timothycrosley/isort/)  (Import statements formatter)
 
 ### Test and coverage
 - [pytest-cov](http://pytest-cov.readthedocs.io/en/latest/)  (Run code [coverage](http://coverage.readthedocs.io/en/latest) with the [pytest](http://pytest.org/latest/) library)

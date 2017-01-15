@@ -5,7 +5,7 @@
 # Licensed under the terms of the MIT License
 # (see LICENSE.txt for details)
 # -----------------------------------------------------------------------------
-"""Generic and custom code formaters."""
+"""Generic and custom code formatters."""
 
 # Standard library imports
 import codecs
@@ -30,7 +30,7 @@ HERE = os.path.dirname(os.path.realpath(__file__))
 
 
 class Formater(Tool):
-    """Generic formater tool."""
+    """Generic formatter tool."""
 
     @classmethod
     def format_task(cls, path):
@@ -78,7 +78,7 @@ class Formater(Tool):
 
 
 class IsortFormater(Formater):
-    """Isort code formater."""
+    """Isort code formatter."""
 
     language = 'python'
     name = 'isort'
@@ -100,7 +100,7 @@ class IsortFormater(Formater):
 
 
 class YapfFormater(Formater):
-    """Yapf code formater."""
+    """Yapf code formatter."""
 
     language = 'python'
     name = 'yapf'
@@ -117,7 +117,7 @@ class YapfFormater(Formater):
     @classmethod
     def format_string(cls, old_contents):
         """Format file for use with task queue."""
-        # cmd_root is assigned to formater inside format_task... ugly!
+        # cmd_root is assigned to formatter inside format_task... ugly!
         style_config = os.path.join(cls.cmd_root, cls.config_file)
         # It might be tempting to use the "inplace" option to FormatFile, but
         # it doesn't do an atomic replace, which is dangerous, so don't use
@@ -136,7 +136,7 @@ class YapfFormater(Formater):
 
 
 class Autopep8Formater(Formater):
-    """Autopep8 code formater."""
+    """Autopep8 code formatter."""
 
     language = 'python'
     name = 'autopep8'
@@ -160,13 +160,13 @@ class Autopep8Formater(Formater):
 
 
 class MultiFormater(object):
-    """Formater handling multiple formaters in parallel."""
+    """Formatter handling multiple formatters in parallel."""
 
     language = 'generic'
     name = 'multiformater'
 
     def __init__(self, cmd_root, check):
-        """Formater handling multiple formaters in parallel."""
+        """Formatter handling multiple formatters in parallel."""
         self.cmd_root = cmd_root
         self.check = check
 
@@ -199,7 +199,7 @@ class MultiFormater(object):
 
     @property
     def extensions(self):
-        """Return all extensions of the used multiformaters."""
+        """Return all extensions of the used multiformatters."""
         all_extensions = []
         for formater in MULTI_FORMATERS:
             all_extensions += list(formater.extensions)
@@ -381,7 +381,7 @@ class PythonFormater(Formater):
         pass
 
     def run(self, paths):
-        """Run pyformat formater."""
+        """Run pyformat formatter."""
         paths = list(sorted([p for p in paths]))
         add_copyright = self.config.get_value('add_copyright')
         add_header = self.config.get_value('add_header')

@@ -64,7 +64,7 @@ class Runner(object):
 
         # Format before lint, linters may complain about bad formatting
 
-        # Formaters
+        # Formatters
         if not self.disable_formatters:
             for formater in check_formaters:
                 print('Running "{}" ...'.format(formater.name))
@@ -85,9 +85,9 @@ class Runner(object):
                         'results': results,
                     }
 
-            # The result of the the multi formater is special!
+            # The result of the the multi formatter is special!
             if run_multi:
-                print('Running "Multi formater"')
+                print('Running "Multi formatter"')
                 tool = MultiFormater(self.cmd_root, self.check)
                 files = self.file_manager.get_files(
                     branch=self.branch,
@@ -201,7 +201,7 @@ class Runner(object):
                                        '{type}: {message}').format(**args)
                                 messages.append(msg)
 
-                            # FORMATERS
+                            # Formatters
                             if created:
                                 msg = '    __init__ file created.'
                                 messages.append(msg)

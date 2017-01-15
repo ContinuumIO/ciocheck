@@ -5,7 +5,7 @@
 # Licensed under the terms of the MIT License
 # (see LICENSE.txt for details)
 # -----------------------------------------------------------------------------
-"""Setup auxiliary process so we can run formaters in parallel."""
+"""Setup auxiliary process so we can run formatters in parallel."""
 
 from __future__ import absolute_import, print_function
 
@@ -21,7 +21,7 @@ from ciocheck.utils import filter_files
 
 
 def format_file(path):
-    """Format a file (path) using the available formaters."""
+    """Format a file (path) using the available formatters."""
     root_path = os.environ.get('CIOCHECK_PROJECT_ROOT')
     check = ast.literal_eval(os.environ.get('CIOCHECK_CHECK'))
     check_multi_formaters = [f for f in MULTI_FORMATERS if f.name in check]
