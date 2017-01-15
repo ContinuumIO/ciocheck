@@ -20,7 +20,7 @@ availbale for Python (but other languages could also be added), including:
 ### Linters
 - [pep8](https://pep8.readthedocs.io/)  (Style check for code)
 - [pydocstyle](https://pydocstyle.readthedocs.io/en/latest/)  (Style check for docstrings)
-- [flake8](http://flake8.readthedocs.io/en/latest/)  (Style check based on [pep8](https://pep8.readthedocs.io/) and [pyflakes](https://github.com/pyflakes/pyflakes))
+- [flake8](https://flake8.readthedocs.io/en/latest/)  (Style check based on [pep8](https://pep8.readthedocs.io/) and [pyflakes](https://github.com/pyflakes/pyflakes))
 - [pylint](https://pylint.readthedocs.io/)  (Code quality check)
 
 ### Formatters
@@ -29,7 +29,7 @@ availbale for Python (but other languages could also be added), including:
 - [isort](https://github.com/timothycrosley/isort/)  (Import statements formatter)
 
 ### Test and coverage
-- [pytest-cov](http://pytest-cov.readthedocs.io/en/latest/)  (Run code [coverage](http://coverage.readthedocs.io/en/latest) with the [pytest](http://pytest.org/latest/) library)
+- [pytest-cov](https://pytest-cov.readthedocs.io/en/latest/)  (Run code [coverage](https://coverage.readthedocs.io/en/latest) with the [pytest](http://pytest.org/latest/) library)
 
 Plus some extra goodies, like:
 - Single file configuration for all the tools (still working on eliminating 
@@ -87,7 +87,7 @@ inherit = false
 
 # -----------------------------------------------------------------------------
 # Flake 8
-# http://flake8.readthedocs.io/en/latest/config.html
+# https://flake8.readthedocs.io/en/latest/user/configuration.html
 # -----------------------------------------------------------------------------
 [flake8]
 exclude = */tests/*
@@ -127,7 +127,7 @@ spaces_before_comment = 2
 
 # -----------------------------------------------------------------------------
 # autopep8
-# http://pep8.readthedocs.io/en/latest/intro.html#configuration
+# https://pep8.readthedocs.io/en/latest/intro.html#configuration
 # -----------------------------------------------------------------------------
 [autopep8]
 exclude = */tests/*
@@ -137,7 +137,7 @@ aggressive = 0
 
 # -----------------------------------------------------------------------------
 # Coverage
-# http://coverage.readthedocs.io/en/latest/config.html
+# https://coverage.readthedocs.io/en/latest/config.html
 # -----------------------------------------------------------------------------
 [coverage:run]
 omit =
