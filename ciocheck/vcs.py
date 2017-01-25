@@ -125,7 +125,7 @@ class GitDiffTool(DiffToolBase):
         ]
 
         if mode == COMMITED_MODE:
-            command.append("{branch}...HEAD".format(branch=branch))
+            command.append("HEAD...{branch}".format(branch=branch))
         elif mode == STAGED_MODE:
             command.append('--cached')
 
