@@ -14,8 +14,8 @@ Continuum Analytics linter, formatter and test suite helper.
 
 ## How does ciocheck work?
 
-It leverages on the different available linting, formatting and testing tools 
-availbale for Python (but other languages could also be added), including:
+It aggregates multiple linting, formatting and testing tools available for
+Python (but other languages could also be added), including:
 
 ### Linters
 - [pep8](https://pep8.readthedocs.io/)  (Style check for code)
