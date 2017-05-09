@@ -144,7 +144,7 @@ class Autopep8Formatter(Formatter):
 
     # Config
     config_file = '.autopep8'
-    config_sections = [('autopep8', 'pep8')]
+    config_sections = [('autopep8', 'pycodestyle')]
 
     def run(self, paths):
         """Format paths."""

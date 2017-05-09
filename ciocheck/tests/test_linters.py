@@ -20,4 +20,4 @@ def test_true():
 def test_false():
     """Mock test for checking ciocheck is working."""
     linter = Pep8Linter('')
-    assert linter.name == 'pep8'
+    assert linter.name == 'pycodestyle'

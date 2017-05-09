@@ -348,18 +348,18 @@ def main():
         dest='check',
         nargs='+',
         choices=[
-            'pep8', 'pydocstyle', 'flake8', 'pylint', 'pyformat', 'isort',
-            'yapf', 'autopep8', 'coverage', 'pytest'
+            'pycodestyle', 'pydocstyle', 'flake8', 'pylint', 'pyformat',
+            'isort', 'yapf', 'autopep8', 'coverage', 'pytest'
         ],
         default=None,
-        help='Select tools to run. Default is "pep8"')
+        help='Select tools to run. Default is "pycodestyle"')
     parser.add_argument(
         '--enforce',
         '-e',
         dest='enforce',
         choices=[
-            'pep8', 'pydocstyle', 'flake8', 'pylint', 'pyformat', 'isort',
-            'yapf', 'autopep8', 'coverage', 'pytest'
+            'pycodestyle', 'pydocstyle', 'flake8', 'pylint', 'pyformat',
+            'isort', 'yapf', 'autopep8', 'coverage', 'pytest'
         ],
         default=None,
         nargs='+',

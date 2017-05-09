@@ -18,7 +18,7 @@ It leverages on the different available linting, formatting and testing tools
 availbale for Python (but other languages could also be added), including:
 
 ### Linters
-- [pep8](https://pep8.readthedocs.io/)  (Style check for code)
+- [pycodestyle](https://pycodestyle.readthedocs.io/en/latest/)  (Style check for code)
 - [pydocstyle](https://pydocstyle.readthedocs.io/en/latest/)  (Style check for docstrings)
 - [flake8](https://flake8.readthedocs.io/en/latest/)  (Style check based on [pep8](https://pep8.readthedocs.io/) and [pyflakes](https://github.com/pyflakes/pyflakes))
 - [pylint](https://pylint.readthedocs.io/)  (Code quality check)
@@ -58,8 +58,8 @@ inherit_config = .ciocheck
 branch = origin/master
 diff_mode = commited
 file_mode = lines
-check = pep8,pydocstyle,flake8,pylint,pyformat,isort,autopep8,yapf,coverage,pytest
-enforce = pep8,pydocstyle,flake8,pylint,pyformat,isort,autopep8,yapf,coverage,pytest
+check = pycodestyle,pydocstyle,flake8,pylint,pyformat,isort,autopep8,yapf,coverage,pytest
+enforce = pycodestyle,pydocstyle,flake8,pylint,pyformat,isort,autopep8,yapf,coverage,pytest
 
 # Python (pyformat)
 header = # -*- coding: utf-8 -*-
@@ -69,10 +69,10 @@ add_header = true
 add_init = true
 
 # -----------------------------------------------------------------------------
-# pep8
-# https://pep8.readthedocs.io/en/release-1.7.x/intro.html#configuration
+# pycodestyle
+# https://pycodestyle.readthedocs.io/en/latest/intro.html#configuration
 # -----------------------------------------------------------------------------
-[pep8]
+[pycodestyle]
 exclude = */tests/*
 ignore = E126,
 max-line-length = 79
@@ -127,7 +127,7 @@ spaces_before_comment = 2
 
 # -----------------------------------------------------------------------------
 # autopep8
-# https://pep8.readthedocs.io/en/latest/intro.html#configuration
+# https://pycodestyle.readthedocs.io/en/latest/intro.html#configuration
 # -----------------------------------------------------------------------------
 [autopep8]
 exclude = */tests/*
@@ -167,8 +167,8 @@ python_functions = test_*
 usage: ciocheck [-h] [--disable-formatters] [--disable-linters]
                 [--disable-tests] [--file-mode {lines,files,all}]
                 [--diff-mode {commited,staged,unstaged}] [--branch BRANCH]
-                [--check {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
-                [--enforce {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
+                [--check {pycodestyle,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
+                [--enforce {pycodestyle,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
                 [--config CONFIG_FILE]
                 folders [folders ...]
 
@@ -196,10 +196,10 @@ optional arguments:
   --branch, -b BRANCH        Define branch to compare to. Default branch is
                              "origin/master"
 
-  --check, -c                {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
-                             Select tools to run. Default is "pep8"
+  --check, -c                {pycodestyle,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
+                             Select tools to run. Default is "pycodestyle"
 
-  --enforce, -e              {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
+  --enforce, -e              {pycodestyle,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
                              Select tools to enforce. Enforced tools will fail if a
                              result is obtained. Default is none.
 

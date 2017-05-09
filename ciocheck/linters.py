@@ -111,11 +111,11 @@ class Pep8Linter(Linter):
     """Pep8 python tool runner."""
 
     language = 'python'
-    name = 'pep8'
+    name = 'pycodestyle'
     extensions = ('py', )
-    command = ('pep8', )
-    config_file = '.pep8'
-    config_sections = [('pep8', 'pep8')]
+    command = ('pycodestyle', )
+    config_file = '.pycodestyle'
+    config_sections = [('pycodestyle', 'pycodestyle')]
 
     # Match lines of the form:
     pattern = r'''

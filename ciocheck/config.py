@@ -55,7 +55,7 @@ DEFAULT_CIOCHECK_CONFIG = {
     'add_header': True,
     'add_init': True,
     # Linters/Formatters/Testers
-    'check': ['pep8'],
+    'check': ['pycodestyle'],
     'enforce': [],
 }
 
