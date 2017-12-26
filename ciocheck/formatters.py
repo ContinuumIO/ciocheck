@@ -34,7 +34,7 @@ class Formatter(Tool):
 
     @classmethod
     def format_task(cls, path):
-        """Forma trask executed by paralell script helper."""
+        """Forma trask executed by parallel script helper."""
         changed = False
         old_contents, new_contents = '', ''
         error = None

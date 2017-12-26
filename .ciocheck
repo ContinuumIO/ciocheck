@@ -4,7 +4,7 @@
 # -----------------------------------------------------------------------------
 [ciocheck]
 branch = origin/master
-diff_mode = commited
+diff_mode = committed
 file_mode = all
 check = pep8,pydocstyle,flake8,pyformat,isort,yapf,coverage,pytest
 enforce = pep8,pydocstyle,flake8,pyformat,isort,yapf,coverage,pytest

@@ -56,7 +56,7 @@ Configuration is saved in a single file named `.ciocheck`
 [ciocheck]
 inherit_config = .ciocheck
 branch = origin/master
-diff_mode = commited
+diff_mode = committed
 file_mode = lines
 check = pep8,pydocstyle,flake8,pylint,pyformat,isort,autopep8,yapf,coverage,pytest
 enforce = pep8,pydocstyle,flake8,pylint,pyformat,isort,autopep8,yapf,coverage,pytest
@@ -166,7 +166,7 @@ python_functions = test_*
 ```text
 usage: ciocheck [-h] [--disable-formatters] [--disable-linters]
                 [--disable-tests] [--file-mode {lines,files,all}]
-                [--diff-mode {commited,staged,unstaged}] [--branch BRANCH]
+                [--diff-mode {committed,staged,unstaged}] [--branch BRANCH]
                 [--check {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
                 [--enforce {pep8,pydocstyle,flake8,pylint,pyformat,isort,yapf,autopep8,coverage,pytest}
                 [--config CONFIG_FILE]
@@ -190,8 +190,8 @@ optional arguments:
                              Define if the tool should run on modified lines of
                              files (default), modified files or all files
 
-  --diff-mode, -dm           {commited,staged,unstaged}
-                             Define diff mode. Default mode is commited.
+  --diff-mode, -dm           {committed,staged,unstaged}
+                             Define diff mode. Default mode is committed.
 
   --branch, -b BRANCH        Define branch to compare to. Default branch is
                              "origin/master"

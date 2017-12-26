@@ -5,7 +5,7 @@
 # Licensed under the terms of the MIT License
 # (see LICENSE.txt for details)
 # -----------------------------------------------------------------------------
-"""Version control helpers. Find staged, commited, modified files/lines."""
+"""Version control helpers. Find staged, committed, modified files/lines."""
 
 # Standard library imports
 import os
@@ -18,7 +18,7 @@ from ciocheck.utils import get_files, make_sorted_dict, run_command
 
 
 class DiffToolBase(object):
-    """Base version controll diff tool."""
+    """Base version control diff tool."""
 
     # --- Public API
     # -------------------------------------------------------------------------
@@ -32,7 +32,7 @@ class DiffToolBase(object):
         raise NotImplementedError
 
     def commited_files(self, branch=DEFAULT_BRANCH):
-        """Return list of commited files."""
+        """Return list of committed files."""
         raise NotImplementedError
 
     def staged_files(self):
@@ -44,7 +44,7 @@ class DiffToolBase(object):
         raise NotImplementedError
 
     def commited_file_lines(self, branch=DEFAULT_BRANCH):
-        """Return commited files and lines modified."""
+        """Return committed files and lines modified."""
         raise NotImplementedError
 
     def staged_file_lines(self):
@@ -74,7 +74,7 @@ class HgDiffTool(DiffToolBase):
         return False
 
     def commited_files(self, branch=DEFAULT_BRANCH):
-        """Return list of commited files."""
+        """Return list of committed files."""
         return []
 
     def staged_files(self):
@@ -86,7 +86,7 @@ class HgDiffTool(DiffToolBase):
         return []
 
     def commited_file_lines(self, branch=DEFAULT_BRANCH):
-        """Return commited files and lines modified."""
+        """Return committed files and lines modified."""
         return {}
 
     def staged_file_lines(self):
@@ -403,7 +403,7 @@ class GitDiffTool(DiffToolBase):
         return self._top_level
 
     def commited_files(self, branch=DEFAULT_BRANCH):
-        """Return list of commited files."""
+        """Return list of committed files."""
         result = self._git_run_helper(
             branch=branch, files_only=True, mode=COMMITED_MODE)
         return result
@@ -419,7 +419,7 @@ class GitDiffTool(DiffToolBase):
         return result
 
     def commited_file_lines(self, branch=DEFAULT_BRANCH):
-        """Return commited files and lines modified."""
+        """Return committed files and lines modified."""
         result = self._parse_diff_str(self._diff_committed(branch=branch))
         return result
 
@@ -466,7 +466,7 @@ class NoDiffTool(DiffToolBase):
         return True
 
     def commited_files(self, branch=DEFAULT_BRANCH):
-        """Return list of commited files."""
+        """Return list of committed files."""
         return self._get_files_helper()
 
     def staged_files(self):
@@ -478,7 +478,7 @@ class NoDiffTool(DiffToolBase):
         return self._get_files_helper()
 
     def commited_file_lines(self, branch=DEFAULT_BRANCH):
-        """Return commited files and lines modified."""
+        """Return committed files and lines modified."""
         return self._get_files_helper(lines=True)
 
     def staged_file_lines(self):
@@ -515,7 +515,7 @@ class DiffTool(object):
     # --- Public API
     # -------------------------------------------------------------------------
     def commited_files(self, branch=DEFAULT_BRANCH):
-        """Return list of commited files."""
+        """Return list of committed files."""
         results = []
         for diff_tool in self.diff_tools.values():
             results += diff_tool.commited_files(branch=branch)
@@ -536,7 +536,7 @@ class DiffTool(object):
         return list(sorted(results))
 
     def commited_file_lines(self, branch=DEFAULT_BRANCH):
-        """Return commited files and lines modified."""
+        """Return committed files and lines modified."""
         results = {}
         for diff_tool in self.diff_tools.values():
             results.update(diff_tool.commited_file_lines(branch=branch))

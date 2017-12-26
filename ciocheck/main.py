@@ -334,7 +334,7 @@ def main():
         dest='diff_mode',
         choices=['commited', 'staged', 'unstaged'],
         default=None,
-        help='Define diff mode. Default mode is commited.')
+        help='Define diff mode. Default mode is committed.')
     parser.add_argument(
         '--branch',
         '-b',
